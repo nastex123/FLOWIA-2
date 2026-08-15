@@ -1,0 +1,1 @@
+# FlowMind-AI-Repository-Development-Guidelines
