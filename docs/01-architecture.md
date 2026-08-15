@@ -6,45 +6,43 @@ Este documento representa la fuente de verdad técnica sobre la arquitectura de 
 
 ## 1. Visión General
 
-FlowMind AI es un sistema SaaS multi-tenant que procesa archivos de negocio (Excel, CSV, PDF) y automatiza la extracción estructurada mediante **motores locales de Machine Learning y procesamiento determinista**, sin transferir datos a LLMs de terceros en la nube.
+FlowMind AI es una plataforma SaaS multi-tenant que procesa archivos de negocio (Excel, CSV, PDF) y automatiza la extracción estructurada mediante **motores locales de Machine Learning y procesamiento determinista**, garantizando **cero fugas de datos hacia LLMs o APIs en la nube (Zero Cloud Data Leakage)**.
+
+El sistema funciona de forma **100% autónoma en local** (usando SQLite Asíncrono, almacenamiento en disco y colas en segundo plano de FastAPI) o desplegable con PostgreSQL, Redis y MinIO/S3 en entornos productivos.
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer ["Capa de Cliente"]
-        UI["Next.js Web Frontend"]
-        API_CLIENT["Clientes API / Webhooks"]
+    subgraph ClientLayer ["Capa de Cliente (Next.js 14 + React + Tailwind)"]
+        UI_DASH["Dashboard & Métricas"]
+        UI_STUDIO["Studio de Subida (Drag & Drop)"]
+        UI_VIEWER["Visualizador de Tablas & Campos"]
+        UI_SCHEMAS["Gestor de Esquemas & Mapeador Visual"]
     end
 
     subgraph APILayer ["Backend API (FastAPI)"]
-        AUTH["Auth & Tenant Resolver"]
-        VALIDATOR["File & Schema Validator"]
-        ORCH["Orquestador de Tareas"]
+        AUTH["Auth & Tenant Resolver (X-Organization-Id)"]
+        VALIDATOR["File & MIME Security Validator"]
+        ROUTER["REST API Routes (/documents, /schemas, /normalize)"]
     end
 
-    subgraph AsyncLayer ["Workers Asíncronos"]
-        WORKER["Worker Queue (Redis)"]
-        PARSER["Tabular & PDF Parsers"]
-        EXTRACT["Extraction Engines"]
-        CLASSIFY["ML / Rules Classifier"]
+    subgraph ProcessingLayer ["Motores de Inteligencia Local & Workers"]
+        PARSER["Tabular & PDF Parsers (pandas, openpyxl, pdfplumber, fitz)"]
+        EXTRACT["Regex & Rule Extractors (RuleExtractor)"]
+        CLASSIFY["ML Classifier (scikit-learn TF-IDF + LogisticRegression)"]
+        MAPPER["Schema Normalizer & Fuzzy Matcher (rapidfuzz)"]
     end
 
-    subgraph StorageLayer ["Persistencia & Almacenamiento"]
-        DB[("PostgreSQL\n(Multi-tenant Schemas)")]
-        CACHE[("Redis Cache")]
-        STORAGE[("Local Storage / MinIO")]
+    subgraph StorageLayer ["Persistencia Multi-Tenant"]
+        DB[("Base de Datos\n(SQLite Async / PostgreSQL)")]
+        STORAGE[("Almacenamiento Local / S3\n(./data/storage/{org_id}/{doc_id})")]
     end
 
-    UI --> AUTH
-    API_CLIENT --> AUTH
-    AUTH --> VALIDATOR
-    VALIDATOR --> ORCH
-    ORCH --> STORAGE
-    ORCH --> DB
-    ORCH -->|Enqueue Job| WORKER
-    WORKER --> PARSER
-    PARSER --> EXTRACT
-    EXTRACT --> CLASSIFY
-    CLASSIFY -->|Save Results| DB
+    ClientLayer <-->|HTTP / REST JSON| APILayer
+    APILayer --> VALIDATOR
+    VALIDATOR --> STORAGE
+    APILayer --> DB
+    APILayer -->|Async BackgroundTask| ProcessingLayer
+    ProcessingLayer --> DB
 ```
 
 ---
@@ -53,64 +51,66 @@ flowchart TD
 
 ### 2.1 Backend (`backend/`)
 * **Framework:** FastAPI (Python 3.11+ asíncrono).
-* **Validación:** Pydantic v2 para todos los DTOs de entrada y salida.
-* **ORM & Acceso a Datos:** SQLAlchemy v2 con soporte `asyncio` y migraciones con Alembic.
-* **Control de Acceso:** Aislamiento multi-tenant por `organization_id` inyectado en cada consulta de sesión.
+* **Validación:** Pydantic v2 para todos los esquemas DTO de entrada y salida con tipado estricto.
+* **ORM & Acceso a Datos:** SQLAlchemy v2 con soporte asíncrono nativo (`aiosqlite` en local y `asyncpg` para PostgreSQL).
+* **Control de Acceso Multi-Tenant:** Aislamiento estricto por `organization_id` en persistencia y almacenamiento.
 
-### 2.2 Motor de Extracción e Inteligencia Local (`backend/app/services/`)
-El procesamiento inteligente se descompone en servicios modulares:
+### 2.2 Motores de Inteligencia Local (`backend/app/services/`)
+El procesamiento inteligente se descompone en servicios modulares sin dependencias de LLMs externos:
 
-1. **Tabular Extractor:** Procesa archivos `.xlsx`, `.xls` y `.csv` usando `pandas` y `openpyxl`. Detecta cabeceras ambiguas, convierte tipos de datos automáticamente y aplica sanitización.
-2. **PDF Extractor:** Usa `PyMuPDF` (`fitz`) para lectura rápida de texto plano y metadatos, y `pdfplumber` para detección de rejillas y extracción de tablas complejas.
-3. **Rule & Regex Extractor:** Extrae patrones específicos como CIF/NIF, códigos postales, IBANs, correos electrónicos, números de factura y fechas.
-4. **Fuzzy Entity Matcher:** Utiliza `rapidfuzz` para asociar encabezados libres con el diccionario canónico de campos del esquema configurado.
-5. **Clasificador ML & Heurístico:** 
-   * Nivel 1: Clasificación heurística por palabras clave / metadatos.
-   * Nivel 2: Clasificación supervisada clásica con `scikit-learn` (`TfidfVectorizer` + `LogisticRegression` / `MultinomialNB`).
+1. **Tabular Extractor (`TabularExtractor`):** Procesa archivos `.xlsx`, `.xls` y `.csv` usando `pandas` y `openpyxl`. Detecta delimitadores automáticamente mediante sniffing, extrae múltiples hojas y sanea inyecciones de fórmulas (`=`, `+`, `@`).
+2. **PDF Extractor (`PDFExtractor`):** Usa `PyMuPDF` (`pymupdf`) para lectura de texto plano de alto rendimiento y `pdfplumber` para análisis geométrico de rejillas y extracción de tablas.
+3. **Rule & Regex Extractor (`RuleExtractor`):** Extrae patrones deterministas con límites de palabra (CIF/NIF con o sin guiones, importes monetarios, fechas, emails, números de factura).
+4. **Clasificador ML & Heurístico (`MLClassifier` / `RuleClassifier`):**
+   * *Nivel 1 (Heurístico):* Detección por palabras clave y patrones estructurales.
+   * *Nivel 2 (Machine Learning clásico):* Pipeline supervisado con `TfidfVectorizer` y clasificador `LogisticRegression` de `scikit-learn` que provee explicabilidad de características y puntuaciones de confianza.
+5. **Motor de Esquemas y Normalización (`SchemaNormalizer`):**
+   * Emplea `rapidfuzz` para calcular la similitud difusa entre columnas origen y campos canónicos del esquema mediante asignación óptima voraz.
+   * Normaliza tipos de datos: limpieza de monedas (`1.250,50 €` ➔ `1250.5`), fechas a formato ISO (`15/06/2024` ➔ `2024-06-15`), booleanos y sanitización.
 
-### 2.3 Workers (`workers/`)
-* Ejecutan las tareas pesadas de parsing y extracción fuera del ciclo de vida de la petición HTTP.
-* Garantizan reintentos controlados e idempotencia para fallos transitorios.
-
-### 2.4 Frontend (`frontend/`)
-* Construido con Next.js (App Router), React y Tailwind CSS.
-* Interfaz reactiva para subida de archivos con barra de progreso, visualizador de tablas extraídas y editor de reglas de mapeo.
+### 2.3 Frontend Dashboard (`frontend/`)
+* Construido con **Next.js 14+ (App Router), React 18, TypeScript y Tailwind CSS**.
+* **Dashboard Principal:** Métricas en vivo (total de archivos, procesados, en cola, privacidad).
+* **Upload Studio:** Zona interactiva de arrastrar y soltar con validación en cliente.
+* **Visor de Documentos:** Pestañas por hoja/tabla, buscador en vivo de celdas, cuadrícula de campos normalizados y descarga en CSV/JSON.
+* **Gestor de Esquemas (`/schemas`):** Constructor visual de esquemas con 4 plantillas estándar empresariales precargadas y creador de esquemas personalizados.
+* **Modal de Mapeo Interactivo:** Mapeo asistido con porcentajes de afinidad y preview en tiempo real de la tabla normalizada.
 
 ---
 
 ## 3. Pipeline de Procesamiento de Documentos
 
-Cada documento transita por un ciclo de vida bien definido:
+Cada documento transita por el siguiente ciclo de vida:
 
 ```text
 [UPLOAD]
    │
    ▼
-[VALIDATE] ──> Valida MIME real, extensión y tamaño máximo (<25MB)
+[VALIDATE] ────────> Inspecciona extensión permitida, tamaño (<25MB) y MIME
    │
    ▼
-[STORE] ─────> Guarda en almacenamiento local o S3 con UUID aislado
+[STORE] ───────────> Guarda en disco local o S3 bajo ./data/storage/{org_id}/{doc_id}/
    │
    ▼
-[PARSE] ─────> Convierte a estructura tabular intermedia (DataFrame / Dicts)
+[ENQUEUE PIPELINE] ─> Encola tarea en segundo plano sin bloquear la respuesta HTTP
    │
    ▼
-[EXTRACT] ───> Aplica extractores deterministas, regex y fuzzy matching
+[PARSE & EXTRACT] ─> Extracción de tablas (pandas/openpyxl/pdfplumber) y entidades (RuleExtractor)
    │
    ▼
-[CLASSIFY] ──> Determina tipo de documento (Factura, Pedido, Inventario, Nómina)
+[CLASSIFY] ────────> Clasificación ML (TF-IDF + LogisticRegression) con score de confianza
    │
    ▼
-[VALIDATE RESULT] ─> Valida el modelo contra Pydantic schemas
+[PERSIST RESULTS] ─> Guarda ExtractionRecord estructurado en la base de datos local
    │
    ▼
-[PERSIST] ───> Almacena el resultado estructurado en PostgreSQL con organization_id
+[OPTIONAL MAPPING] ─> El usuario o workflow aplica SchemaNormalizer para exportación estandarizada
 ```
 
 ---
 
-## 4. Multi-tenancy
+## 4. Multi-tenancy & Seguridad
 
-* Toda tabla transaccional contiene una columna `organization_id` no nula e indexada.
-* Las consultas de repositorio están parametrizadas con el tenant autenticado.
-* Los archivos en almacenamiento se guardan en rutas estructuradas por organización: `storage/{organization_id}/{document_id}/{filename}`.
+1. **Aislamiento en Base de Datos:** Toda entidad (`documents`, `extraction_records`, `schema_definitions`) incluye una clave foránea indexada `organization_id`.
+2. **Aislamiento en Disco:** Rutas estructuradas por organización: `./data/storage/{organization_id}/{document_id}/{filename}` con verificación de path traversal (`os.path.commonpath`).
+3. **Privacidad Total:** 100% de inferencia y extracción ejecutada en el host local sin llamadas a APIs externas.
