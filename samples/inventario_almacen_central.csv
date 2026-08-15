@@ -1,0 +1,9 @@
+SKU;Descripcion_Articulo;Categoria;Stock_Actual;Stock_Minimo;Coste_Unitario;Ubicacion_Pasillo
+HW-SRV-01;Servidor ProLiant DL380 Gen10;Servidores;14;5;2100.5;P01-E03
+HW-SWT-02;Switch Ethernet 24 Puertos Gigabit;Networking;32;10;420.0;P02-E01
+HW-RTR-03;Router VPN Empresarial Dual-WAN;Networking;8;4;680.75;P02-E04
+ACC-CAB-04;Latiguillo RJ45 Cat6A 2m Gris;Accesorios;250;50;3.2;P05-E01
+ACC-CAB-05;Latiguillo Fibra Optica LC-LC 5m;Accesorios;85;20;12.5;P05-E02
+PWR-UPS-06;Sistema SAI Online 3000VA Rack;Energia;6;2;1150.0;P03-E02
+STO-HDD-07;Disco Duro Enterprise SATA 8TB 7200RPM;Almacenamiento;45;15;185.0;P04-E01
+STO-SSD-08;Unidad SSD NVMe PCIe 4.0 2TB;Almacenamiento;60;20;140.0;P04-E03

@@ -21,7 +21,7 @@ class RuleExtractor:
             r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
         ),
         "tax_id": re.compile(
-            r"\b(?:[A-HJ-NP-SUVW]\d{7}[0-9A-J]|\d{8}[A-Z]|[XYZ]\d{7}[A-Z]|[A-Z]{3}\d{6}[A-Z0-9]{3})\b",
+            r"\b(?:[A-HJ-NP-SUVW]-?\d{7}[0-9A-J]|\d{8}-?[A-Z]|[XYZ]-?\d{7}[A-Z]|[A-Z]{3}-?\d{6}[A-Z0-9]{3})\b",
             re.IGNORECASE,
         ),
         "invoice_number": re.compile(

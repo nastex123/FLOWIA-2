@@ -1,0 +1,5 @@
+PO_Number,Order_Date,Vendor_Name,Vendor_Tax_ID,Item_Code,Description,Quantity,Unit_Price,Total_Price
+PO-4091,2024-06-10,TechSupply Distribution SL,B-99887766,ITM-101,Monitor Profesional 27 IPS 4K,10,299.0,2990.0
+PO-4091,2024-06-10,TechSupply Distribution SL,B-99887766,ITM-102,Teclado Mecanico Inalambrico,10,75.0,750.0
+PO-4091,2024-06-10,TechSupply Distribution SL,B-99887766,ITM-103,Raton Ergonomico Bluetooth,10,45.5,455.0
+PO-4091,2024-06-10,TechSupply Distribution SL,B-99887766,ITM-104,Docking Station USB-C Triple Display,10,160.0,1600.0

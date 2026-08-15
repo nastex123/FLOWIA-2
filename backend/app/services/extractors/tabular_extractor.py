@@ -183,18 +183,22 @@ class TabularExtractor(BaseExtractor):
         raise ValueError(f"Invalid file_input type: {type(file_input)}")
 
     def _guess_document_type(self, tables: List[ExtractedTable], fields: Dict[str, ExtractedField]) -> DocumentType:
-        """Heuristically guesses document type based on discovered fields & headers."""
-        all_headers = set()
+        """Heuristically guesses document type based on discovered fields, sheet names & headers."""
+        all_tokens = []
         for t in tables:
-            all_headers.update([h.lower() for h in t.headers])
+            all_tokens.append(t.sheet_or_page.lower())
+            for h in t.headers:
+                all_tokens.append(h.lower())
 
-        if "invoice_number" in fields or any(k in all_headers for k in ["factura", "invoice", "iva", "nif", "cif"]):
-            return DocumentType.INVOICE
-        if any(k in all_headers for k in ["sku", "stock", "inventario", "cantidad", "almacen"]):
-            return DocumentType.INVENTORY
-        if any(k in all_headers for k in ["salario", "nomina", "payroll", "irpf", "bruto", "neto"]):
+        combined_text = " ".join(all_tokens)
+
+        if any(w in combined_text for w in ["salario", "nomina", "nómina", "payroll", "irpf", "devengos", "deducciones", "cotización", "sueldo"]):
             return DocumentType.PAYROLL
-        if any(k in all_headers for k in ["pedido", "purchase_order", "po_number", "orden"]):
+        if "invoice_number" in fields or any(w in combined_text for w in ["factura", "invoice", "iva", "nif", "cif", "base imponible"]):
+            return DocumentType.INVOICE
+        if any(w in combined_text for w in ["sku", "stock", "inventario", "existencias", "almacen", "almacén"]):
+            return DocumentType.INVENTORY
+        if any(w in combined_text for w in ["pedido", "purchase_order", "po_number", "orden de compra", "po_"]):
             return DocumentType.PURCHASE_ORDER
 
         return DocumentType.UNKNOWN
