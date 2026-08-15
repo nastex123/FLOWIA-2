@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   Brain,
+  Database,
   Download,
   FileCode,
   FileSpreadsheet,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { DocumentDetail, ExtractedTable } from "@/types";
 import { downloadCSV, downloadJSON } from "@/lib/utils";
+import SchemaMapperModal from "@/components/SchemaMapperModal";
 
 interface ExtractedDataViewerProps {
   document: DocumentDetail;
@@ -27,6 +29,7 @@ export default function ExtractedDataViewer({ document }: ExtractedDataViewerPro
 
   const [activeTableIndex, setActiveTableIndex] = useState(0);
   const [tableSearch, setTableSearch] = useState("");
+  const [isMapperOpen, setIsMapperOpen] = useState(false);
 
   if (!extraction) {
     return (
@@ -154,16 +157,29 @@ export default function ExtractedDataViewer({ document }: ExtractedDataViewerPro
               </h2>
             </div>
 
-            {/* Table Search */}
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Filtrar celdas en tabla..."
-                value={tableSearch}
-                onChange={(e) => setTableSearch(e.target.value)}
-                className="pl-9 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-64"
-              />
+            <div className="flex items-center gap-3">
+              {/* Map to Schema Button */}
+              {currentTable && (
+                <button
+                  onClick={() => setIsMapperOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 text-xs font-semibold flex items-center gap-2 transition-colors shadow-sm"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Mapear a Esquema</span>
+                </button>
+              )}
+
+              {/* Table Search */}
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Filtrar celdas en tabla..."
+                  value={tableSearch}
+                  onChange={(e) => setTableSearch(e.target.value)}
+                  className="pl-9 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-64"
+                />
+              </div>
             </div>
           </div>
 
@@ -246,6 +262,19 @@ export default function ExtractedDataViewer({ document }: ExtractedDataViewerPro
             </div>
           )}
         </div>
+      )}
+
+      {/* Schema Mapping Modal */}
+      {currentTable && (
+        <SchemaMapperModal
+          isOpen={isMapperOpen}
+          onClose={() => setIsMapperOpen(false)}
+          documentId={document.document_id}
+          filename={document.filename}
+          tableIndex={activeTableIndex}
+          tableName={currentTable.sheet_or_page}
+          availableColumns={currentTable.headers}
+        />
       )}
     </div>
   );

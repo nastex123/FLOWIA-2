@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 import uuid
 
-from fastapi import BackgroundTasks, Depends, FastAPI, File, Header, HTTPException, UploadFile, status
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Header, HTTPException, Query, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -258,3 +258,303 @@ async def extract_document_direct(
             raise DocumentValidationError(f"No extractor available for .{ext}")
     except ExtractionError as e:
         raise HTTPException(status_code=422, detail=f"Extraction failed: {e.message}")
+
+
+# ==========================================
+# Schema Definitions & Normalization Endpoints
+# ==========================================
+
+from app.domain.schema_models import (
+    AutoMapResponse,
+    AutoMapSuggestion,
+    NormalizedDatasetResponse,
+    NormalizeRequest,
+    SchemaCreate,
+    SchemaResponse,
+    SchemaUpdate,
+)
+from app.infrastructure.models import SchemaDefinition
+from app.services.mapping.schema_normalizer import SchemaNormalizer
+
+schema_normalizer = SchemaNormalizer()
+
+
+@app.get(
+    "/api/v1/schemas",
+    response_model=List[SchemaResponse],
+    tags=["Schemas"],
+)
+async def list_schemas(
+    x_organization_id: Optional[str] = Header(default="default-org", alias="X-Organization-Id"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Lists all active schema definitions for the organization."""
+    stmt = (
+        select(SchemaDefinition)
+        .where(
+            (SchemaDefinition.organization_id == x_organization_id)
+            | (SchemaDefinition.organization_id == "default-org")
+        )
+        .order_by(SchemaDefinition.created_at.asc())
+    )
+    result = await db.execute(stmt)
+    schemas = result.scalars().all()
+
+    return [
+        SchemaResponse(
+            id=s.id,
+            organization_id=s.organization_id,
+            name=s.name,
+            description=s.description,
+            document_type=s.document_type,
+            fields=s.fields_config_json,
+            created_at=s.created_at.isoformat(),
+            updated_at=s.updated_at.isoformat(),
+        )
+        for s in schemas
+    ]
+
+
+@app.post(
+    "/api/v1/schemas",
+    response_model=SchemaResponse,
+    tags=["Schemas"],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_schema(
+    schema_in: SchemaCreate,
+    x_organization_id: Optional[str] = Header(default="default-org", alias="X-Organization-Id"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Creates a new canonical data schema for an organization."""
+    import uuid
+
+    fields_data = [f.model_dump() for f in schema_in.fields]
+    schema_id = str(uuid.uuid4())
+
+    new_schema = SchemaDefinition(
+        id=schema_id,
+        organization_id=x_organization_id,
+        name=schema_in.name,
+        description=schema_in.description,
+        document_type=schema_in.document_type,
+        fields_config_json=fields_data,
+    )
+    db.add(new_schema)
+    await db.commit()
+    await db.refresh(new_schema)
+
+    return SchemaResponse(
+        id=new_schema.id,
+        organization_id=new_schema.organization_id,
+        name=new_schema.name,
+        description=new_schema.description,
+        document_type=new_schema.document_type,
+        fields=new_schema.fields_config_json,
+        created_at=new_schema.created_at.isoformat(),
+        updated_at=new_schema.updated_at.isoformat(),
+    )
+
+
+@app.get(
+    "/api/v1/schemas/{schema_id}",
+    response_model=SchemaResponse,
+    tags=["Schemas"],
+)
+async def get_schema_detail(
+    schema_id: str,
+    x_organization_id: Optional[str] = Header(default="default-org", alias="X-Organization-Id"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Retrieves a specific schema definition."""
+    stmt = select(SchemaDefinition).where(
+        SchemaDefinition.id == schema_id,
+        (SchemaDefinition.organization_id == x_organization_id)
+        | (SchemaDefinition.organization_id == "default-org"),
+    )
+    result = await db.execute(stmt)
+    schema_def = result.scalar_one_or_none()
+
+    if not schema_def:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Schema '{schema_id}' not found.",
+        )
+
+    return SchemaResponse(
+        id=schema_def.id,
+        organization_id=schema_def.organization_id,
+        name=schema_def.name,
+        description=schema_def.description,
+        document_type=schema_def.document_type,
+        fields=schema_def.fields_config_json,
+        created_at=schema_def.created_at.isoformat(),
+        updated_at=schema_def.updated_at.isoformat(),
+    )
+
+
+@app.delete(
+    "/api/v1/schemas/{schema_id}",
+    tags=["Schemas"],
+    status_code=status.HTTP_200_OK,
+)
+async def delete_schema(
+    schema_id: str,
+    x_organization_id: Optional[str] = Header(default="default-org", alias="X-Organization-Id"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Deletes a custom schema definition."""
+    stmt = select(SchemaDefinition).where(
+        SchemaDefinition.id == schema_id,
+        SchemaDefinition.organization_id == x_organization_id,
+    )
+    result = await db.execute(stmt)
+    schema_def = result.scalar_one_or_none()
+
+    if not schema_def:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Schema '{schema_id}' not found or cannot be deleted.",
+        )
+
+    await db.delete(schema_def)
+    await db.commit()
+    return {"status": "deleted", "schema_id": schema_id}
+
+
+@app.post(
+    "/api/v1/documents/{document_id}/auto-map",
+    response_model=AutoMapResponse,
+    tags=["Mapping & Normalization"],
+)
+async def auto_map_document_columns(
+    document_id: str,
+    schema_id: str = Query(..., description="Target schema ID to match against"),
+    table_index: int = Query(default=0, ge=0, description="Index of the extracted table"),
+    x_organization_id: Optional[str] = Header(default="default-org", alias="X-Organization-Id"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Suggests fuzzy column pairings between document tables and a target schema."""
+    # 1. Fetch document
+    stmt_doc = (
+        select(Document)
+        .options(selectinload(Document.extraction_record))
+        .where(
+            Document.id == document_id,
+            Document.organization_id == x_organization_id,
+        )
+    )
+    res_doc = await db.execute(stmt_doc)
+    doc = res_doc.scalar_one_or_none()
+    if not doc or not doc.extraction_record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document or extraction record not found.",
+        )
+
+    # 2. Fetch schema
+    stmt_schema = select(SchemaDefinition).where(
+        SchemaDefinition.id == schema_id,
+        (SchemaDefinition.organization_id == x_organization_id)
+        | (SchemaDefinition.organization_id == "default-org"),
+    )
+    res_schema = await db.execute(stmt_schema)
+    schema_def = res_schema.scalar_one_or_none()
+    if not schema_def:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Target schema '{schema_id}' not found.",
+        )
+
+    tables = doc.extraction_record.tables_json or []
+    if table_index >= len(tables):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Table index {table_index} is out of bounds (found {len(tables)} tables).",
+        )
+
+    target_table = tables[table_index]
+    source_columns = target_table.get("headers", [])
+
+    suggestions = schema_normalizer.auto_suggest_mappings(
+        source_columns=source_columns,
+        schema_fields=schema_def.fields_config_json,
+    )
+
+    return AutoMapResponse(
+        schema_id=schema_def.id,
+        schema_name=schema_def.name,
+        available_source_columns=source_columns,
+        mappings=[AutoMapSuggestion(**s) for s in suggestions],
+    )
+
+
+@app.post(
+    "/api/v1/documents/{document_id}/normalize",
+    response_model=NormalizedDatasetResponse,
+    tags=["Mapping & Normalization"],
+)
+async def normalize_document(
+    document_id: str,
+    request: NormalizeRequest,
+    x_organization_id: Optional[str] = Header(default="default-org", alias="X-Organization-Id"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Applies confirmed column mapping and produces a standardized dataset."""
+    # 1. Fetch document
+    stmt_doc = (
+        select(Document)
+        .options(selectinload(Document.extraction_record))
+        .where(
+            Document.id == document_id,
+            Document.organization_id == x_organization_id,
+        )
+    )
+    res_doc = await db.execute(stmt_doc)
+    doc = res_doc.scalar_one_or_none()
+    if not doc or not doc.extraction_record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document or extraction record not found.",
+        )
+
+    # 2. Fetch schema
+    stmt_schema = select(SchemaDefinition).where(
+        SchemaDefinition.id == request.schema_id,
+        (SchemaDefinition.organization_id == x_organization_id)
+        | (SchemaDefinition.organization_id == "default-org"),
+    )
+    res_schema = await db.execute(stmt_schema)
+    schema_def = res_schema.scalar_one_or_none()
+    if not schema_def:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Target schema '{request.schema_id}' not found.",
+        )
+
+    tables = doc.extraction_record.tables_json or []
+    if request.table_index >= len(tables):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Table index {request.table_index} is out of bounds.",
+        )
+
+    target_table = tables[request.table_index]
+    source_records = target_table.get("records", [])
+
+    normalized_records, val_errors = schema_normalizer.normalize_records(
+        source_records=source_records,
+        column_mapping=request.column_mapping,
+        schema_fields=schema_def.fields_config_json,
+    )
+
+    schema_headers = [f["name"] for f in schema_def.fields_config_json]
+
+    return NormalizedDatasetResponse(
+        schema_id=schema_def.id,
+        schema_name=schema_def.name,
+        total_records=len(normalized_records),
+        headers=schema_headers,
+        records=normalized_records,
+        validation_errors=val_errors,
+    )

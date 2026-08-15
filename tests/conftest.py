@@ -10,16 +10,16 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 import asyncio
-from app.infrastructure.database import Base, engine
+from app.infrastructure.database import Base, engine, init_db
 
 
 @pytest.fixture(autouse=True)
 def clean_db():
-    """Ensures each test starts with a clean isolated database state."""
+    """Ensures each test starts with a clean isolated database state with standard presets."""
     async def _reset():
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
-            await conn.run_sync(Base.metadata.create_all)
+        await init_db()
     asyncio.run(_reset())
     yield
 

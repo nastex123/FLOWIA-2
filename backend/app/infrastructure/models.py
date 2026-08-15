@@ -122,3 +122,24 @@ class ExtractionRecord(Base):
     document: Mapped["Document"] = relationship(
         "Document", back_populates="extraction_record"
     )
+
+
+class SchemaDefinition(Base):
+    __tablename__ = "schema_definitions"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("organizations.id"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    document_type: Mapped[str] = mapped_column(String(50), default="custom")
+    fields_config_json: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=get_utc_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=get_utc_now, onupdate=get_utc_now
+    )

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Cpu, FileSpreadsheet, Layers, ShieldCheck, Zap } from "lucide-react";
+import { Cpu, Database, FileSpreadsheet, Layers, ShieldCheck, Zap } from "lucide-react";
 import { getHealth } from "@/lib/api";
 
 export default function Navbar() {
@@ -49,6 +49,19 @@ export default function Navbar() {
               <span className="flex items-center gap-2">
                 <Layers className="w-4 h-4" />
                 Dashboard & Subida
+              </span>
+            </Link>
+            <Link
+              href="/schemas"
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                pathname === "/schemas"
+                  ? "bg-slate-800 text-white"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <Database className="w-4 h-4" />
+                Esquemas de Datos
               </span>
             </Link>
           </nav>

@@ -53,8 +53,32 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Initializes tables for local development."""
+    """Initializes tables for local development and seeds standard presets."""
     logger.info("Initializing database tables...")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    # Seed default schema presets
+    from app.infrastructure.models import SchemaDefinition
+    from app.infrastructure.presets import DEFAULT_SCHEMA_PRESETS
+    from sqlalchemy import select
+
+    async with async_session_factory() as session:
+        result = await session.execute(select(SchemaDefinition).limit(1))
+        existing = result.scalar_one_or_none()
+        if not existing:
+            logger.info("Seeding default business schema presets...")
+            for p in DEFAULT_SCHEMA_PRESETS:
+                schema_def = SchemaDefinition(
+                    id=p["id"],
+                    organization_id="default-org",
+                    name=p["name"],
+                    description=p["description"],
+                    document_type=p["document_type"],
+                    fields_config_json=p["fields_config_json"],
+                )
+                session.add(schema_def)
+            await session.commit()
+            logger.info("Default schema presets seeded successfully.")
+
     logger.info("Database initialized successfully.")

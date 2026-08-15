@@ -12,6 +12,7 @@ from app.infrastructure.models import (
     DocumentStatus,
     ExtractionRecord,
     Organization,
+    SchemaDefinition,
     User,
 )
 
@@ -26,4 +27,5 @@ __all__ = [
     "Document",
     "DocumentStatus",
     "ExtractionRecord",
+    "SchemaDefinition",
 ]
