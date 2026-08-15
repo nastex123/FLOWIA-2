@@ -1,6 +1,6 @@
 """Global application settings using Pydantic Settings."""
 
-from typing import List
+from typing import List, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -18,12 +18,12 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "insecure-secret-key-change-in-production"
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
 
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/flowmind"
+    # Database (Default: SQLite local asynchronous, or PostgreSQL)
+    DATABASE_URL: str = "sqlite+aiosqlite:///./data/flowmind.db"
     DATABASE_ECHO: bool = False
 
-    # Redis
-    REDIS_URL: str = "redis://localhost:6379/0"
+    # Redis (Optional in local mode, fallback to in-memory queue)
+    REDIS_URL: Optional[str] = None
 
     # Storage
     STORAGE_BACKEND: str = "local"  # "local" | "s3"

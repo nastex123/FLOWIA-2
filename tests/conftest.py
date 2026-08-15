@@ -9,6 +9,20 @@ BACKEND_DIR = Path(__file__).parent.parent / "backend"
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
+import asyncio
+from app.infrastructure.database import Base, engine
+
+
+@pytest.fixture(autouse=True)
+def clean_db():
+    """Ensures each test starts with a clean isolated database state."""
+    async def _reset():
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(Base.metadata.create_all)
+    asyncio.run(_reset())
+    yield
+
 
 @pytest.fixture
 def sample_csv_invoice():
