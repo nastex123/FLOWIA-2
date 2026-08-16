@@ -53,12 +53,15 @@ Construir un sistema B2B completo, autónomo y privado que permita a empresas su
 
 ## 🔮 Próximos Hitos
 
-### 🚀 Fase 6: Reglas de Automatización de Negocio & Webhooks Salientes
-- [ ] Definición de reglas heurísticas (ej. *"Alertar si total > 5.000€"*, *"Validar obligatoriedad de CIF"*).
-- [ ] Disparador de **Webhooks HTTP salientes** hacia ERPs, Zapier, Make o n8n al completar la extracción o normalización.
-- [ ] Registro de auditoría y trazabilidad de ejecuciones de webhooks.
+### ✅ Fase 6: Reglas de Automatización de Negocio & Webhooks Salientes
+- [x] Modelo `AutomationRule` con operadores deterministas (`gt`, `lt`, `gte`, `lte`, `eq`, `neq`, `contains`, `is_empty`, `not_empty`) y eventos `extraction_completed` / `normalization_completed`.
+- [x] Motor de evaluación de reglas (`RuleEngine`) con normalización numérica (incluye decimales europeos) y coincidencia case-insensitive.
+- [x] Disparador de **Webhooks HTTP salientes** hacia ERPs, Zapier, Make o n8n al completar la extracción o normalización (firma HMAC opcional, timeouts y reintentos configurables).
+- [x] Registro de auditoría y trazabilidad de ejecuciones (`WebhookDelivery`) y test de envío por webhook.
+- [x] CRUD completo de reglas y webhooks en la API y panel de gestión en el frontend (`/settings`).
 
-### 🔐 Fase 7: Autenticación, API Keys & Multi-Tenant RBAC
-- [ ] Autenticación de usuarios con JWT y hashing seguro de contraseñas.
-- [ ] Generación de API Keys para ingesta desatendida mediante cURL y scripts externos.
-- [ ] Roles de usuario (Admin, Member, Viewer) y selector de organizaciones en la interfaz.
+### ✅ Fase 7: Autenticación, API Keys & Multi-Tenant RBAC
+- [x] Autenticación de usuarios con JWT (HS256) y hashing seguro de contraseñas (PBKDF2-SHA256).
+- [x] Generación de API Keys con prefijo `fm_` para ingesta desatendida mediante cURL y scripts externos (solo hash almacenado, rotación/revocación).
+- [x] Roles de usuario (Admin, Member, Viewer), membresías por organización, selector de organizaciones en la interfaz y aislamiento estricto multi-tenant.
+- [x] Página de inicio de sesión (`/login`) y guard de autenticación en el frontend.

@@ -13,9 +13,12 @@ import {
 import UploadDropzone from "@/components/UploadDropzone";
 import DocumentListTable from "@/components/DocumentListTable";
 import { listDocuments } from "@/lib/api";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import { DocumentListItem } from "@/types";
 
 export default function DashboardPage() {
+  useAuthGuard();
+
   const [documents, setDocuments] = useState<DocumentListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

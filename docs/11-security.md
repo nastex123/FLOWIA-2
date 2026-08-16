@@ -40,7 +40,25 @@ Al exportar o procesar archivos tabulares, cualquier celda que comience con `=`,
 
 ---
 
-## 4. Gestión de Secretos y Logging
+## 4. Autenticación, API Keys y RBAC
+
+* **Contraseñas:** Almacenadas con hash **PBKDF2-SHA256** (`hashlib.pbkdf2_hmac`, 310.000 iteraciones) y salt aleatorio por usuario; nunca en texto plano.
+* **Tokens JWT:** Firmados con HMAC-SHA256 usando `SECRET_KEY` (variable de entorno). Expiración por defecto 24h (`JWT_EXPIRES_MINUTES`). El JWT solo contiene `sub` (user id), `role`, `org` y expiración.
+* **API Keys:** Generadas con prefijo `fm_` y 32 bytes de entropía. Solo se persiste el hash SHA-256 del valor en claro; el secreto se muestra una única vez al crearlo. Rotación mediante revocación (`is_active=False`).
+* **RBAC por Organización:** Roles `admin`, `member`, `viewer`. Las operaciones de escritura en reglas y webhooks están restringidas a `admin`; esquemas y API Keys a `admin`/`member`. Toda operación verifica la membresía del usuario en la organización del contexto (`X-Organization-Id`).
+
+---
+
+## 5. Webhooks Salientes y Datos Confidenciales
+
+* Los webhooks salientes solo se envían a URLs **configuradas explícitamente** por un administrador de la organización.
+* Si el webhook define un `secret`, cada petición incluye la cabecera `X-Webhook-Signature: sha256=<hmac>` firmando el cuerpo, para que el receptor valide autenticidad e integridad.
+* Los secretos de webhook se almacenan cifrados a un solo lado (solo se expone `has_secret` en la API).
+* El registro de auditoría (`webhook_deliveries`) guarda URL destino, estado, código HTTP y error, pero **nunca el cuerpo del documento enviado**.
+
+---
+
+## 6. Gestión de Secretos y Logging
 
 * **Variables de Entorno:** Toda clave secreta (`SECRET_KEY`, credenciales de DB, Redis) se obtiene mediante `Pydantic Settings` desde variables de entorno.
 * **Cero Secretos en Repositorio:** El archivo `.gitignore` excluye `.env`, certificados y archivos de credenciales.

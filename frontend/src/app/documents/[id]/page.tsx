@@ -6,9 +6,12 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import ExtractedDataViewer from "@/components/ExtractedDataViewer";
 import { getDocument } from "@/lib/api";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import { DocumentDetail } from "@/types";
 
 export default function DocumentDetailPage() {
+  useAuthGuard();
+
   const params = useParams();
   const documentId = params?.id as string;
 

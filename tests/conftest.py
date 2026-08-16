@@ -10,7 +10,11 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 import asyncio
+import pytest
+import pytest_asyncio
 from app.infrastructure.database import Base, engine, init_db
+
+from app.core.config import settings
 
 
 @pytest.fixture(autouse=True)
@@ -22,6 +26,27 @@ def clean_db():
         await init_db()
     asyncio.run(_reset())
     yield
+
+
+@pytest_asyncio.fixture
+async def auth_client():
+    """AsyncClient authenticated as the seeded default admin user."""
+    from httpx import ASGITransport, AsyncClient
+    from app.main import app
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": settings.DEFAULT_ADMIN_EMAIL,
+                "password": settings.DEFAULT_ADMIN_PASSWORD,
+            },
+        )
+        assert response.status_code == 200, response.text
+        token = response.json()["access_token"]
+        client.headers["Authorization"] = f"Bearer {token}"
+        yield client
 
 
 @pytest.fixture

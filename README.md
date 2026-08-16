@@ -30,7 +30,7 @@ FlowMind-AI-Repository-Development/
 ├── frontend/                  # Interfaz web en Next.js 14 + TypeScript + Tailwind CSS
 ├── samples/                   # Documentos reales de prueba (XLSX, CSV, PDF)
 ├── scripts/                   # Scripts de inicio y generador de archivos
-└── tests/                     # Suite de pruebas unitarias e integración (22 tests)
+└── tests/                     # Suite de pruebas unitarias e integración (36 tests)
 ```
 
 ---
@@ -62,6 +62,16 @@ FlowMind-AI-Repository-Development/
 ```
 * **Aplicación Web:** `http://localhost:3000`
 * **Gestor de Esquemas:** `http://localhost:3000/schemas`
+* **Automatización & Seguridad:** `http://localhost:3000/settings`
+
+### 3. Acceder a la Plataforma
+Al iniciarse, el backend crea automáticamente una organización y un usuario administrador por defecto:
+
+* **Correo:** `admin@flowmind.local`
+* **Contraseña:** `admin123`
+* **Organización:** `default-org`
+
+Inicia sesión en `http://localhost:3000/login`. Todo el frontend exige autenticación; también puedes integrar vía API con `Authorization: Bearer <jwt>` o una API Key (`fm_...`) creada desde `/settings`.
 
 ---
 
@@ -79,7 +89,7 @@ Los archivos se guardarán automáticamente en `samples/` listos para ser arrast
 ## 🧪 Ejecutar Pruebas Automatizadas
 
 ```powershell
-# Ejecutar la suite completa de 22 tests
+# Ejecutar la suite completa de 36 tests
 python -m pytest tests/
 ```
 

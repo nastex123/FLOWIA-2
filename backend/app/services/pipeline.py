@@ -13,6 +13,7 @@ from app.services.classifiers.ml_classifier import MLClassifier
 from app.services.classifiers.rule_classifier import RuleClassifier
 from app.services.extractors.pdf_extractor import PDFExtractor
 from app.services.extractors.tabular_extractor import TabularExtractor
+from app.services.automation.runner import run_automation_rules
 
 
 async def process_document_pipeline(
@@ -95,6 +96,22 @@ async def process_document_pipeline(
             doc.error_message = None
             await session.commit()
             logger.info(f"Pipeline successfully completed for document {document_id} in {elapsed_ms:.2f}ms")
+
+            # Fire business automation rules for the extraction event
+            try:
+                await run_automation_rules(
+                    session,
+                    event="extraction_completed",
+                    document_id=document_id,
+                    organization_id=organization_id,
+                    filename=filename,
+                    document_type=classification.document_type.value,
+                    fields=fields_data,
+                )
+            except Exception:
+                logger.exception(
+                    f"Automation rules dispatch failed for document {document_id}"
+                )
 
         except Exception as e:
             logger.exception(f"Pipeline error processing document {document_id}")

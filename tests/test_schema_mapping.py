@@ -1,8 +1,6 @@
 """Tests for Schema Definition, Fuzzy Column Auto-Mapping, and Normalization."""
 
 import pytest
-from httpx import ASGITransport, AsyncClient
-from app.main import app
 from app.services.mapping.schema_normalizer import SchemaNormalizer
 from app.infrastructure.presets import DEFAULT_SCHEMA_PRESETS
 
@@ -83,48 +81,46 @@ def test_normalize_records_with_validation_errors(normalizer):
 
 
 @pytest.mark.asyncio
-async def test_schemas_api_endpoints():
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        # 1. List pre-seeded schemas
-        res = await client.get("/api/v1/schemas")
-        assert res.status_code == 200
-        schemas = res.json()
-        assert len(schemas) >= 4
+async def test_schemas_api_endpoints(auth_client):
+    # 1. List pre-seeded schemas
+    res = await auth_client.get("/api/v1/schemas")
+    assert res.status_code == 200
+    schemas = res.json()
+    assert len(schemas) >= 4
 
-        # 2. Create custom schema
-        payload = {
-            "name": "Custom ERP Catalog",
-            "description": "Test schema for catalog items",
-            "document_type": "inventory",
-            "fields": [
-                {
-                    "name": "item_code",
-                    "label": "Código Artículo",
-                    "data_type": "string",
-                    "required": True,
-                    "aliases": ["cod", "referencia"],
-                },
-                {
-                    "name": "pvp",
-                    "label": "PVP Recomendado (€)",
-                    "data_type": "number",
-                    "required": False,
-                    "aliases": ["precio", "pvp"],
-                },
-            ],
-        }
-        res_create = await client.post("/api/v1/schemas", json=payload)
-        assert res_create.status_code == 201
-        created = res_create.json()
-        schema_id = created["id"]
-        assert created["name"] == "Custom ERP Catalog"
+    # 2. Create custom schema
+    payload = {
+        "name": "Custom ERP Catalog",
+        "description": "Test schema for catalog items",
+        "document_type": "inventory",
+        "fields": [
+            {
+                "name": "item_code",
+                "label": "Código Artículo",
+                "data_type": "string",
+                "required": True,
+                "aliases": ["cod", "referencia"],
+            },
+            {
+                "name": "pvp",
+                "label": "PVP Recomendado (€)",
+                "data_type": "number",
+                "required": False,
+                "aliases": ["precio", "pvp"],
+            },
+        ],
+    }
+    res_create = await auth_client.post("/api/v1/schemas", json=payload)
+    assert res_create.status_code == 201
+    created = res_create.json()
+    schema_id = created["id"]
+    assert created["name"] == "Custom ERP Catalog"
 
-        # 3. Get schema detail
-        res_get = await client.get(f"/api/v1/schemas/{schema_id}")
-        assert res_get.status_code == 200
-        assert len(res_get.json()["fields"]) == 2
+    # 3. Get schema detail
+    res_get = await auth_client.get(f"/api/v1/schemas/{schema_id}")
+    assert res_get.status_code == 200
+    assert len(res_get.json()["fields"]) == 2
 
-        # 4. Delete custom schema
-        res_del = await client.delete(f"/api/v1/schemas/{schema_id}")
-        assert res_del.status_code == 200
+    # 4. Delete custom schema
+    res_del = await auth_client.delete(f"/api/v1/schemas/{schema_id}")
+    assert res_del.status_code == 200

@@ -1,0 +1,1 @@
+"""Business automation rules engine (deterministic, local)."""

@@ -16,9 +16,12 @@ import {
   X,
 } from "lucide-react";
 import { createSchema, deleteSchema, listSchemas } from "@/lib/api";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import { DataType, FieldDefinition, SchemaCreate, SchemaResponse } from "@/types";
 
 export default function SchemasPage() {
+  useAuthGuard();
+
   const [schemas, setSchemas] = useState<SchemaResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

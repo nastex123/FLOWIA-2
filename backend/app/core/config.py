@@ -18,6 +18,14 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "insecure-secret-key-change-in-production"
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
 
+    # Authentication & JWT
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRES_MINUTES: int = 60 * 24
+    API_KEY_PREFIX: str = "fm_"
+    DEFAULT_ADMIN_EMAIL: str = "admin@flowmind.local"
+    DEFAULT_ADMIN_PASSWORD: str = "admin123"
+    DEFAULT_ADMIN_ORG: str = "default-org"
+
     # Database (Default: SQLite local asynchronous, or PostgreSQL)
     DATABASE_URL: str = "sqlite+aiosqlite:///./data/flowmind.db"
     DATABASE_ECHO: bool = False
@@ -41,6 +49,11 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: List[str] = Field(
         default_factory=lambda: ["xlsx", "xls", "csv", "pdf"]
     )
+
+    # Webhooks
+    WEBHOOK_TIMEOUT_SECONDS: int = 10
+    WEBHOOK_MAX_RETRIES: int = 2
+    WEBHOOK_RETRY_DELAY_SECONDS: float = 1.0
 
 
 settings = Settings()

@@ -20,9 +20,9 @@ flowchart TD
     end
 
     subgraph APILayer ["Backend API (FastAPI)"]
-        AUTH["Auth & Tenant Resolver (X-Organization-Id)"]
+        AUTH["Auth & RBAC (JWT / API Keys / X-Organization-Id)"]
         VALIDATOR["File & MIME Security Validator"]
-        ROUTER["REST API Routes (/documents, /schemas, /normalize)"]
+        ROUTER["REST API Routes (/documents, /schemas, /normalize, /auth, /rules, /webhooks)"]
     end
 
     subgraph ProcessingLayer ["Motores de Inteligencia Local & Workers"]
@@ -30,6 +30,12 @@ flowchart TD
         EXTRACT["Regex & Rule Extractors (RuleExtractor)"]
         CLASSIFY["ML Classifier (scikit-learn TF-IDF + LogisticRegression)"]
         MAPPER["Schema Normalizer & Fuzzy Matcher (rapidfuzz)"]
+    end
+
+    subgraph AutomationLayer ["Automatización de Negocio"]
+        RULES["Rule Engine (operadores deterministas)"]
+        WEBHOOKS["Webhook Dispatcher (HMAC + retries)"]
+        AUDIT["WebhookDelivery Auditoría"]
     end
 
     subgraph StorageLayer ["Persistencia Multi-Tenant"]
@@ -43,6 +49,10 @@ flowchart TD
     APILayer --> DB
     APILayer -->|Async BackgroundTask| ProcessingLayer
     ProcessingLayer --> DB
+    ProcessingLayer -->|eventos| AutomationLayer
+    AutomationLayer --> WEBHOOKS
+    WEBHOOKS --> AUDIT
+    WEBHOOKS -->|HTTP saliente| EXT["ERP / Zapier / Make / n8n"]
 ```
 
 ---
@@ -67,6 +77,9 @@ El procesamiento inteligente se descompone en servicios modulares sin dependenci
 5. **Motor de Esquemas y Normalización (`SchemaNormalizer`):**
    * Emplea `rapidfuzz` para calcular la similitud difusa entre columnas origen y campos canónicos del esquema mediante asignación óptima voraz.
    * Normaliza tipos de datos: limpieza de monedas (`1.250,50 €` ➔ `1250.5`), fechas a formato ISO (`15/06/2024` ➔ `2024-06-15`), booleanos y sanitización.
+6. **Motor de Reglas de Automatización (`RuleEngine`):** Evalúa reglas de negocio deterministas sobre los resultados de extracción/normalización (`gt`, `lt`, `gte`, `lte`, `eq`, `neq`, `contains`, `is_empty`, `not_empty`) con normalización numérica incluida.
+7. **Dispatcher de Webhooks (`WebhookDispatcher`):** Envía eventos HTTP salientes (extracción/normalización completadas) a ERPs o plataformas de integración, con firma HMAC opcional, timeouts y reintentos.
+8. **Auditoría de Entregas (`WebhookDelivery`):** Registro persistente de cada envío con estado, código HTTP, duración y errores para trazabilidad.
 
 ### 2.3 Frontend Dashboard (`frontend/`)
 * Construido con **Next.js 14+ (App Router), React 18, TypeScript y Tailwind CSS**.
@@ -75,6 +88,8 @@ El procesamiento inteligente se descompone en servicios modulares sin dependenci
 * **Visor de Documentos:** Pestañas por hoja/tabla, buscador en vivo de celdas, cuadrícula de campos normalizados y descarga en CSV/JSON.
 * **Gestor de Esquemas (`/schemas`):** Constructor visual de esquemas con 4 plantillas estándar empresariales precargadas y creador de esquemas personalizados.
 * **Modal de Mapeo Interactivo:** Mapeo asistido con porcentajes de afinidad y preview en tiempo real de la tabla normalizada.
+* **Autenticación (`/login`):** Inicio de sesión con JWT y guard de sesión en toda la aplicación.
+* **Automatización & Seguridad (`/settings`):** Gestión de API Keys, webhooks salientes y reglas de automatización, con test de entrega y evaluación dry-run.
 
 ---
 
@@ -105,12 +120,18 @@ Cada documento transita por el siguiente ciclo de vida:
    │
    ▼
 [OPTIONAL MAPPING] ─> El usuario o workflow aplica SchemaNormalizer para exportación estandarizada
+   │
+   ▼
+[AUTOMATION] ──────> Evalúa AutomationRule (extracción/normalización completadas)
+   │
+   ▼
+[WEBHOOK DELIVERY] ─> Despacho HTTP saliente con HMAC + auditoría en WebhookDelivery
 ```
 
----
+## 4. Autenticación, Multi-tenancy & Seguridad
 
-## 4. Multi-tenancy & Seguridad
-
-1. **Aislamiento en Base de Datos:** Toda entidad (`documents`, `extraction_records`, `schema_definitions`) incluye una clave foránea indexada `organization_id`.
-2. **Aislamiento en Disco:** Rutas estructuradas por organización: `./data/storage/{organization_id}/{document_id}/{filename}` con verificación de path traversal (`os.path.commonpath`).
-3. **Privacidad Total:** 100% de inferencia y extracción ejecutada en el host local sin llamadas a APIs externas.
+0. **Autenticación (JWT + API Keys):** Todo endpoint `/api/v1` (salvo `login`/`register`) exige `Authorization: Bearer <jwt>` (HS256, expiración configurable) o `X-API-Key`. Las contraseñas se almacenan con PBKDF2-SHA256; las API Keys con SHA-256 del valor en claro (prefijo `fm_`).
+1. **RBAC por Organización:** Roles `admin` (gestiona reglas/webhooks/esquemas), `member` (crea documentos, esquemas y API Keys) y `viewer` (solo lectura). El primer usuario de una organización es `admin`.
+2. **Aislamiento en Base de Datos:** Toda entidad (`documents`, `extraction_records`, `schema_definitions`, `api_keys`, `automation_rules`, `webhook_configs`, `webhook_deliveries`) incluye una clave foránea indexada `organization_id`, y las consultas filtran siempre por la organización del contexto.
+3. **Aislamiento en Disco:** Rutas estructuradas por organización: `./data/storage/{organization_id}/{document_id}/{filename}` con verificación de path traversal (`os.path.commonpath`).
+4. **Privacidad Total:** 100% de inferencia y extracción ejecutada en el host local sin llamadas a APIs externas. Los webhooks salientes solo envían datos a URLs configuradas explícitamente por el administrador.
