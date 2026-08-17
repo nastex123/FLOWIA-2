@@ -1,0 +1,12 @@
+# Alembic — FlowMind AI
+
+Entorno de migraciones asíncronas para el backend.
+
+* Configuración: `backend/alembic.ini` y `backend/alembic/env.py`
+* Revisiones: `backend/alembic/versions/`
+* Documentación: `docs/09-database-migrations.md`
+
+```bash
+cd backend
+python -m alembic upgrade head
+```
