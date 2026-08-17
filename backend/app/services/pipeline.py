@@ -13,6 +13,7 @@ from app.services.classifiers.ml_classifier import MLClassifier
 from app.services.classifiers.rule_classifier import RuleClassifier
 from app.services.extractors.pdf_extractor import PDFExtractor
 from app.services.extractors.tabular_extractor import TabularExtractor
+from app.services.extractors.vision_extractor import VisionExtractor
 from app.services.automation.runner import run_automation_rules
 
 
@@ -28,6 +29,7 @@ async def process_document_pipeline(
 
     tabular_extractor = TabularExtractor()
     pdf_extractor = PDFExtractor()
+    vision_extractor = VisionExtractor()
     rule_classifier = RuleClassifier()
     ml_classifier = MLClassifier(auto_train=True)
 
@@ -57,6 +59,12 @@ async def process_document_pipeline(
                 )
             elif ext == "pdf":
                 extraction_result = pdf_extractor.extract(
+                    file_input=file_path,
+                    filename=filename,
+                    document_id=document_id,
+                )
+            elif ext in ("png", "jpg", "jpeg", "tiff", "bmp", "webp"):
+                extraction_result = vision_extractor.extract(
                     file_input=file_path,
                     filename=filename,
                     document_id=document_id,

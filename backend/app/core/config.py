@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     # Document Processing Limits
     MAX_UPLOAD_SIZE_MB: int = 25
     ALLOWED_EXTENSIONS: List[str] = Field(
-        default_factory=lambda: ["xlsx", "xls", "csv", "pdf"]
+        default_factory=lambda: ["xlsx", "xls", "csv", "pdf", "png", "jpg", "jpeg", "tiff", "bmp", "webp"]
     )
 
     # Webhooks

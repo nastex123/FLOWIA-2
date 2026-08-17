@@ -47,6 +47,8 @@ router = APIRouter(prefix="/api/v1", tags=["Documents"])
 storage_service = LocalStorageService()
 tabular_extractor = TabularExtractor()
 pdf_extractor = PDFExtractor()
+from app.services.extractors.vision_extractor import VisionExtractor
+vision_extractor = VisionExtractor()
 schema_normalizer = SchemaNormalizer()
 
 MAX_NORMALIZED_SAMPLE_ROWS = 100
@@ -237,6 +239,8 @@ async def extract_document_direct(
             return tabular_extractor.extract(file_input=content, filename=filename)
         elif ext == "pdf":
             return pdf_extractor.extract(file_input=content, filename=filename)
+        elif ext in ("png", "jpg", "jpeg", "tiff", "bmp", "webp"):
+            return vision_extractor.extract(file_input=content, filename=filename)
         else:
             raise DocumentValidationError(f"No extractor available for .{ext}")
     except ExtractionError as e:

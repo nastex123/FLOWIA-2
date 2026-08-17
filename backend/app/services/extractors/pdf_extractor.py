@@ -85,9 +85,36 @@ class PDFExtractor(BaseExtractor):
                 pass
 
         full_text = "\n".join(raw_text_parts)
+        fields: Dict[str, ExtractedField] = {}
 
-        # 3. Extract fields with rules from full text
-        fields = self.rule_extractor.extract_from_text(full_text)
+        # 3. If PDF has zero text (scanned PDF), trigger Vision/OCR fallback on rendered pages
+        if not full_text.strip() and fitz is not None:
+            try:
+                from app.services.extractors.vision_extractor import VisionExtractor
+                vision_extractor = VisionExtractor(rule_extractor=self.rule_extractor)
+                doc = fitz.open(stream=content_bytes, filetype="pdf")
+                ocr_parts = []
+                for page_num in range(min(len(doc), 5)):
+                    page = doc[page_num]
+                    pix = page.get_pixmap(dpi=150)
+                    img_bytes = pix.tobytes("png")
+                    page_res = vision_extractor.extract(img_bytes, filename=f"page_{page_num}.png")
+                    if page_res.raw_text_summary:
+                        ocr_parts.append(page_res.raw_text_summary)
+                    for k, v in page_res.fields.items():
+                        if k not in fields:
+                            fields[k] = v
+                if ocr_parts:
+                    full_text = "\n".join(ocr_parts)
+                doc.close()
+            except Exception:
+                pass
+
+        # 4. Extract fields with rules from full text
+        extracted_rule_fields = self.rule_extractor.extract_from_text(full_text)
+        for k, v in extracted_rule_fields.items():
+            if k not in fields:
+                fields[k] = v
 
         elapsed_ms = (time.perf_counter() - start_time) * 1000
 

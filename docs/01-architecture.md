@@ -4,55 +4,74 @@ Este documento representa la fuente de verdad técnica sobre la arquitectura de 
 
 ---
 
-## 1. Visión General
+## 1. Visión General: *Local Enterprise Intelligence Engine*
 
-FlowMind AI es una plataforma SaaS multi-tenant que procesa archivos de negocio (Excel, CSV, PDF) y automatiza la extracción estructurada mediante **motores locales de Machine Learning y procesamiento determinista**, garantizando **cero fugas de datos hacia LLMs o APIs en la nube (Zero Cloud Data Leakage)**.
+FlowMind AI es una plataforma de automatización de procesos empresariales e inteligencia operacional que opera bajo el principio estricto de **Zero Cloud Data Leakage (100% Local, Determinista & Private)**.
 
-El sistema funciona de forma **100% autónoma en local** (usando SQLite Asíncrono, almacenamiento en disco y colas en segundo plano de FastAPI) o desplegable con PostgreSQL, Redis y MinIO/S3 en entornos productivos.
+El sistema trasciende el procesamiento documental tradicional mediante una arquitectura de dos planos:
+1. **Document Plane:** Ingesta multicanal, parsers locales, visión artificial offline y OCR.
+2. **Decision & Sentinel Plane:** Grafo de hechos (*Fact Graph* con `NetworkX`), resolución de entidades, validador matemático determinista, detección de fraude (*FlowMind Sentinel*) y flujos de aprobación segregada.
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer ["Capa de Cliente (Next.js 14 + React + Tailwind)"]
-        UI_DASH["Dashboard & Métricas"]
-        UI_STUDIO["Studio de Subida (Drag & Drop)"]
-        UI_VIEWER["Visualizador de Tablas & Campos"]
-        UI_SCHEMAS["Gestor de Esquemas & Mapeador Visual"]
+    subgraph ClientInterfaces ["Interfaces de Usuario"]
+        WEB["Frontend Web SaaS (Next.js 14 App Router)"]
+        DESKTOP["Desktop Suite Nativa (PySide6 / Qt6)"]
+        TRAY["Hot-Folder Tray Agent (watchdog)"]
     end
 
     subgraph APILayer ["Backend API (FastAPI)"]
-        AUTH["Auth & RBAC (JWT / API Keys / X-Organization-Id)"]
+        AUTH["Auth & RBAC (JWT / API Keys / Org Context)"]
         VALIDATOR["File & MIME Security Validator"]
-        ROUTER["REST API Routes (/documents, /schemas, /normalize, /auth, /rules, /webhooks)"]
+        ROUTERS["REST API (/documents, /schemas, /rules, /webhooks, /search, /decision)"]
     end
 
-    subgraph ProcessingLayer ["Motores de Inteligencia Local & Workers"]
-        PARSER["Tabular & PDF Parsers (pandas, openpyxl, pdfplumber, fitz)"]
-        EXTRACT["Regex & Rule Extractors (RuleExtractor)"]
+    subgraph DocumentPlane ["Document Plane (Ingesta & Extracción)"]
+        PARSER["Parsers Tabular & PDF (pandas, openpyxl, pdfplumber, fitz)"]
+        VISION["Computer Vision & OCR (pytesseract, pyzbar, OpenCV)"]
+        EXTRACT["Rule & Regex Extractor (RuleExtractor)"]
         CLASSIFY["ML Classifier (scikit-learn TF-IDF + LogisticRegression)"]
-        MAPPER["Schema Normalizer & Fuzzy Matcher (rapidfuzz)"]
+        MAPPER["Schema Normalizer & RapidFuzz Matcher"]
     end
 
-    subgraph AutomationLayer ["Automatización de Negocio"]
-        RULES["Rule Engine (operadores deterministas)"]
-        WEBHOOKS["Webhook Dispatcher (HMAC + retries)"]
-        AUDIT["WebhookDelivery Auditoría"]
+    subgraph DecisionPlane ["Decision & Sentinel Plane (Inteligencia & Control)"]
+        ER["Entity Resolution Engine (Unificación de Proveedores/Clientes)"]
+        GRAPH["Fact Graph Engine (NetworkX PO ↔ Albarán ↔ Factura ↔ Pago)"]
+        MATH["Mathematical Document Validator (Recálculo de Totales e IVA)"]
+        SENTINEL["FlowMind Sentinel (Cambio de IBAN, Duplicados, Benford)"]
+        TEMPORAL["Temporal Consistency Engine (Vigencia & Plazos)"]
+        VSEARCH["Local Vector Search (ONNX MiniLM + FAISS)"]
+    end
+
+    subgraph AutomationLayer ["Automatización & Salida"]
+        RULES["Deterministic Rule Engine & Decision Fabric"]
+        WORKFLOW["4-Eyes Approval & Segregation of Duties"]
+        WEBHOOKS["Webhook Dispatcher (HMAC-SHA256)"]
+        COMPLIANCE["SII AEAT / Verifactu Hash Chaining"]
+        AUDIT["Continuous Audit & Tamper-Evident Ledger"]
     end
 
     subgraph StorageLayer ["Persistencia Multi-Tenant"]
-        DB[("Base de Datos\n(SQLite Async / PostgreSQL)")]
-        STORAGE[("Almacenamiento Local / S3\n(./data/storage/{org_id}/{doc_id})")]
+        DB[("Base de Datos (SQLite Async / PostgreSQL)")]
+        STORAGE[("Almacenamiento Local / S3 (./data/storage/)")]
+        VECTOR_DB[("Índice FAISS Local")]
     end
 
-    ClientLayer <-->|HTTP / REST JSON| APILayer
+    WEB <-->|REST HTTP| APILayer
+    DESKTOP -->|Integración Nativa / API| DocumentPlane
+    TRAY -->|Watchdog / API Key| APILayer
     APILayer --> VALIDATOR
     VALIDATOR --> STORAGE
     APILayer --> DB
-    APILayer -->|Async BackgroundTask| ProcessingLayer
-    ProcessingLayer --> DB
-    ProcessingLayer -->|eventos| AutomationLayer
+    APILayer -->|Async Worker| DocumentPlane
+    DocumentPlane --> DecisionPlane
+    DecisionPlane --> DB
+    DecisionPlane --> VECTOR_DB
+    DecisionPlane --> AutomationLayer
     AutomationLayer --> WEBHOOKS
-    WEBHOOKS --> AUDIT
-    WEBHOOKS -->|HTTP saliente| EXT["ERP / Zapier / Make / n8n"]
+    AutomationLayer --> COMPLIANCE
+    AutomationLayer --> AUDIT
+    WEBHOOKS -->|HTTP Saliente| EXT["ERP / Zapier / Make / n8n / Odoo"]
 ```
 
 ---
@@ -65,73 +84,69 @@ flowchart TD
 * **ORM & Acceso a Datos:** SQLAlchemy v2 con soporte asíncrono nativo (`aiosqlite` en local y `asyncpg` para PostgreSQL).
 * **Control de Acceso Multi-Tenant:** Aislamiento estricto por `organization_id` en persistencia y almacenamiento.
 
-### 2.2 Motores de Inteligencia Local (`backend/app/services/`)
-El procesamiento inteligente se descompone en servicios modulares sin dependencias de LLMs externos:
+### 2.2 Suite de Escritorio (`desktop/` — PySide6 / Qt6)
+* **`FlowMind Desktop`:** Aplicación nativa independiente con visor gráfico de PDFs acelerado por hardware y tabla virtual `QAbstractTableModel`.
+* **`Hot-Folder Tray Agent`:** Agente en segundo plano en la bandeja del sistema que monitoriza carpetas y procesa archivos desatendidamente.
+* **`Visual Annotation Studio`:** Canvas interactivo (`QGraphicsView`) para definir áreas de extracción geométrica en documentos escaneados o facturas.
+* **`Reconciliation Grid Pro`:** Grid contable de alta velocidad con soporte de diffing y comparación visual de inventarios y pedidos.
 
-1. **Tabular Extractor (`TabularExtractor`):** Procesa archivos `.xlsx`, `.xls` y `.csv` usando `pandas` y `openpyxl`. Detecta delimitadores automáticamente mediante sniffing, extrae múltiples hojas y sanea inyecciones de fórmulas (`=`, `+`, `@`).
-2. **PDF Extractor (`PDFExtractor`):** Usa `PyMuPDF` (`pymupdf`) para lectura de texto plano de alto rendimiento y `pdfplumber` para análisis geométrico de rejillas y extracción de tablas.
-3. **Rule & Regex Extractor (`RuleExtractor`):** Extrae patrones deterministas con límites de palabra (CIF/NIF con o sin guiones, importes monetarios, fechas, emails, números de factura).
-4. **Clasificador ML & Heurístico (`MLClassifier` / `RuleClassifier`):**
-   * *Nivel 1 (Heurístico):* Detección por palabras clave y patrones estructurales.
-   * *Nivel 2 (Machine Learning clásico):* Pipeline supervisado con `TfidfVectorizer` y clasificador `LogisticRegression` de `scikit-learn` que provee explicabilidad de características y puntuaciones de confianza.
-5. **Motor de Esquemas y Normalización (`SchemaNormalizer`):**
-   * Emplea `rapidfuzz` para calcular la similitud difusa entre columnas origen y campos canónicos del esquema mediante asignación óptima voraz.
-   * Normaliza tipos de datos: limpieza de monedas (`1.250,50 €` ➔ `1250.5`), fechas a formato ISO (`15/06/2024` ➔ `2024-06-15`), booleanos y sanitización.
-6. **Motor de Reglas de Automatización (`RuleEngine`):** Evalúa reglas de negocio deterministas sobre los resultados de extracción/normalización (`gt`, `lt`, `gte`, `lte`, `eq`, `neq`, `contains`, `is_empty`, `not_empty`) con normalización numérica incluida.
-7. **Dispatcher de Webhooks (`WebhookDispatcher`):** Envía eventos HTTP salientes (extracción/normalización completadas) a ERPs o plataformas de integración, con firma HMAC opcional, timeouts y reintentos.
-8. **Auditoría de Entregas (`WebhookDelivery`):** Registro persistente de cada envío con estado, código HTTP, duración y errores para trazabilidad.
-
-### 2.3 Frontend Dashboard (`frontend/`)
-* Construido con **Next.js 14+ (App Router), React 18, TypeScript y Tailwind CSS**.
-* **Dashboard Principal:** Métricas en vivo (total de archivos, procesados, en cola, privacidad).
-* **Upload Studio:** Zona interactiva de arrastrar y soltar con validación en cliente.
-* **Visor de Documentos:** Pestañas por hoja/tabla, buscador en vivo de celdas, cuadrícula de campos normalizados y descarga en CSV/JSON.
-* **Gestor de Esquemas (`/schemas`):** Constructor visual de esquemas con 4 plantillas estándar empresariales precargadas y creador de esquemas personalizados.
-* **Modal de Mapeo Interactivo:** Mapeo asistido con porcentajes de afinidad y preview en tiempo real de la tabla normalizada.
-* **Autenticación (`/login`):** Inicio de sesión con JWT y guard de sesión en toda la aplicación.
-* **Automatización & Seguridad (`/settings`):** Gestión de API Keys, webhooks salientes y reglas de automatización, con test de entrega y evaluación dry-run.
+### 2.3 Motores del Document Plane & Decision Plane
+1. **Tabular Extractor (`TabularExtractor`):** Procesa archivos `.xlsx`, `.xls` y `.csv` usando `pandas` y `openpyxl`. Detecta delimitadores automáticamente, extrae múltiples hojas y sanea inyecciones de fórmulas (`=`, `+`, `@`).
+2. **PDF Extractor (`PDFExtractor`):** Usa `PyMuPDF` (`fitz`) para lectura de texto de alto rendimiento y `pdfplumber` para análisis geométrico de rejillas y extracción de tablas.
+3. **Visión Artificial, Barcodes & OCR (`VisionExtractor`):**
+   * Decodificación 1D/2D instantánea con `pyzbar` / `zxing-cpp` (QR fiscales, Code 128).
+   * OCR local con `pytesseract` / `easyocr` y binarización adaptativa para PDFs escaneados y fotos de tickets.
+   * Detección de casillas (*OMR*) con OpenCV para formularios de inspección y checklists.
+4. **Motor de Resolución de Entidades (`EntityResolutionEngine`):** Unifica variantes de proveedores/clientes usando ponderación multidimensional (CIF, nombre difuso, IBAN, dominio de email).
+5. **Grafo de Hechos Empresariales (`FactGraphEngine` con `NetworkX`):** Conecta pedidos, albaranes, facturas, proyectos y pagos en un grafo dirigido para razonamiento relacional.
+6. **Validador Matemático (`MathematicalDocumentValidator`):** Recalcula deterministamente bases imponibles, cuotas de IVA, recargos y retenciones, alertando de inconsistencias aritméticas.
+7. **FlowMind Sentinel (`FlowMindSentinel`):** Motor antifraude especializado (alerta de cambio de IBAN, detección multidimensional de duplicados, patrones de evasión de umbrales y análisis de Benford).
+8. **Búsqueda Semántica Local (`LocalVectorSearch`):** Embeddings cuantizados ONNX `MiniLM` ejecutados en CPU local con índice `FAISS` para búsqueda documental en lenguaje natural.
+9. **Decision Fabric & Aprobación 4-Ojos:** Enrutamiento por puntuación compuesta de confianza y segregación estricta de funciones (*Segregation of Duties*).
+10. **Cumplimiento Fiscal & Hash Chaining (`ComplianceEngine`):** Generador de ficheros XML oficiales para el **SII de la AEAT** y sellado encadenado inmutable de facturas (*Veri\*factu / TicketBAI*).
 
 ---
 
-## 3. Pipeline de Procesamiento de Documentos
-
-Cada documento transita por el siguiente ciclo de vida:
+## 3. Pipeline Integral de Procesamiento y Decisión
 
 ```text
-[UPLOAD]
+[UPLOAD / HOT-FOLDER]
    │
    ▼
-[VALIDATE] ────────> Inspecciona extensión permitida, tamaño (<25MB) y MIME
+[VALIDATE & SANITIZE] ───> Cabeceras binarias (MIME real), tamaño y protección anti-fórmula
    │
    ▼
-[STORE] ───────────> Guarda en disco local o S3 bajo ./data/storage/{org_id}/{doc_id}/
+[STORE] ─────────────────> Almacenamiento local aislado en ./data/storage/{org_id}/{doc_id}/
    │
    ▼
-[ENQUEUE PIPELINE] ─> Encola tarea en segundo plano sin bloquear la respuesta HTTP
+[DECODE QR / OCR] ───────> Lectura de códigos 1D/2D; OCR adaptativo si no hay capa de texto
    │
    ▼
-[PARSE & EXTRACT] ─> Extracción de tablas (pandas/openpyxl/pdfplumber) y entidades (RuleExtractor)
+[PARSE & EXTRACT] ───────> Extracción de tablas y campos deterministas (RuleExtractor)
    │
    ▼
-[CLASSIFY] ────────> Clasificación ML (TF-IDF + LogisticRegression) con score de confianza
+[ENTITY RESOLUTION] ─────> Unificación de proveedor/cliente contra base canónica local
    │
    ▼
-[PERSIST RESULTS] ─> Guarda ExtractionRecord estructurado en la base de datos local
+[FACT GRAPH MAPPING] ────> Vinculación en el grafo de hechos (PO ↔ Albarán ↔ Factura ↔ Contrato)
    │
    ▼
-[OPTIONAL MAPPING] ─> El usuario o workflow aplica SchemaNormalizer para exportación estandarizada
+[MATHEMATICAL VALIDATION]> Recálculo determinista de líneas, bases e impuestos
    │
    ▼
-[AUTOMATION] ──────> Evalúa AutomationRule (extracción/normalización completadas)
+[FLOWMIND SENTINEL] ─────> Verificación de cambio de IBAN, duplicidad y riesgo de fraude
    │
    ▼
-[WEBHOOK DELIVERY] ─> Despacho HTTP saliente con HMAC + auditoría en WebhookDelivery
+[DECISION FABRIC] ───────> Aprobación automática desatendida o enrutamiento a revisión 4-Ojos
+   │
+   ▼
+[DISPATCH & AUDIT] ──────> Envío HTTP saliente (HMAC) + Sellado hash inmutable en ledger local
 ```
 
-## 4. Autenticación, Multi-tenancy & Seguridad
+---
 
-0. **Autenticación (JWT + API Keys):** Todo endpoint `/api/v1` (salvo `login`/`register`) exige `Authorization: Bearer <jwt>` (HS256, expiración configurable) o `X-API-Key`. Las contraseñas se almacenan con PBKDF2-SHA256; las API Keys con SHA-256 del valor en claro (prefijo `fm_`).
-1. **RBAC por Organización:** Roles `admin` (gestiona reglas/webhooks/esquemas), `member` (crea documentos, esquemas y API Keys) y `viewer` (solo lectura). El primer usuario de una organización es `admin`.
-2. **Aislamiento en Base de Datos:** Toda entidad (`documents`, `extraction_records`, `schema_definitions`, `api_keys`, `automation_rules`, `webhook_configs`, `webhook_deliveries`) incluye una clave foránea indexada `organization_id`, y las consultas filtran siempre por la organización del contexto.
-3. **Aislamiento en Disco:** Rutas estructuradas por organización: `./data/storage/{organization_id}/{document_id}/{filename}` con verificación de path traversal (`os.path.commonpath`).
-4. **Privacidad Total:** 100% de inferencia y extracción ejecutada en el host local sin llamadas a APIs externas. Los webhooks salientes solo envían datos a URLs configuradas explícitamente por el administrador.
+## 4. Gobernanza y Seguridad Multi-Tenant
+
+1. **Aislamiento Multi-Tenant Estricto:** Toda entidad en base de datos y toda ruta en disco está aislada por `organization_id`.
+2. **Autenticación Fuerte:** Tokens JWT (HS256) y API Keys (`fm_...`) con almacenamiento exclusivamente hasheado (SHA-256).
+3. **Privacidad Absoluta:** Cero transmisión de datos a APIs externas. Todo cálculo ocurre en el host del usuario.

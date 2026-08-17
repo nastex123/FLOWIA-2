@@ -102,7 +102,9 @@ async def init_db() -> None:
             logger.info("Default organization seeded successfully.")
 
         # Seed default admin user (local development bootstrap)
-        result_user = await session.execute(select(User).limit(1))
+        result_user = await session.execute(
+            select(User).where(User.email == settings.DEFAULT_ADMIN_EMAIL)
+        )
         if not result_user.scalar_one_or_none():
             logger.info("Seeding default admin user for local development...")
             admin = User(
