@@ -4,6 +4,18 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:39] (America/Bogota)
+
+- **[UI / Gothic Sacred Glyphs Catalog]** Creacion de un catalogo de 24 figuras goticas vectoriales y grilla interactiva de sellos de catedral
+  - **Qué:** 
+    - `frontend/src/components/GothicGlyphs.tsx`: catalogo de 24 figuras goticas y de geometria sagrada vectoriales (Cuadrifolio, Trifolio Ojival, Hexagrama Sacro, Octagrama, Cruz Templaria, Roseton Solar de 16 Rayos, Flor de Lis, Portal Ojival, Arco Conopial, Boveda de Cruceria, Oculo Central, Sello Alquimico de Saturno, Compas de Cantero, Dodecagrama, Pinaculo y Aguja, Gargola Guardiana, Hoja de Acanto, Escuadra y Compas, Arbotante, Sello Criptografico, Rueda Solar, Cruz de Espada, Portal de Vesica Piscis y Caliz Sagrado).
+    - `frontend/src/components/GothicGlyphsGrid.tsx`: componente de grilla responsiva que renderiza el catalogo de 24 sellos con interaccion hover y transformaciones en rotacion.
+    - Integracion de la grilla de sellos en `Dashboard` y `LocalExtractionPage`.
+  - **Por qué:** Expandir la densidad artistica con mas de 20 figuras goticas autenticas para ambientar el fondo y paneles de la aplicacion.
+  - **Archivos:** `frontend/src/components/GothicGlyphs.tsx`, `frontend/src/components/GothicGlyphsGrid.tsx`, `frontend/src/app/page.tsx`, `frontend/src/app/local/page.tsx`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:36] (America/Bogota)
 
 - **[UI / Gothic Cathedral Enrichment]** Incorporacion de esquineros de filigrana, divisores sacros, ventanas ojivales y siluetas de catedral

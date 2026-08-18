@@ -7,6 +7,7 @@ import FileUploadModal from '@/components/FileUploadModal';
 import GothicRoseCircle from '@/components/GothicRoseCircle';
 import GothicCornerOrnament from '@/components/GothicCornerOrnament';
 import GothicDivider from '@/components/GothicDivider';
+import GothicGlyphsGrid from '@/components/GothicGlyphsGrid';
 import { Cpu, Upload, FileText, CheckCircle2, Zap } from 'lucide-react';
 
 export default function LocalExtractionPage() {
@@ -186,6 +187,9 @@ export default function LocalExtractionPage() {
               </div>
             </div>
           </div>
+
+          <GothicDivider label="Sellos de Validación Offline" />
+          <GothicGlyphsGrid />
         </main>
       </div>
 

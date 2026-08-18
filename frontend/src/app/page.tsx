@@ -8,9 +8,10 @@ import DocumentTable from '@/components/DocumentTable';
 import FileUploadModal from '@/components/FileUploadModal';
 import GothicDivider from '@/components/GothicDivider';
 import GothicArchWatermark from '@/components/GothicArchWatermark';
+import GothicGlyphsGrid from '@/components/GothicGlyphsGrid';
 import { api } from '@/lib/api';
 import { DocumentItem } from '@/lib/types';
-import { RefreshCw, Sparkles, Shield, Lock } from 'lucide-react';
+import { RefreshCw, Shield } from 'lucide-react';
 
 export default function DashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -118,6 +119,12 @@ export default function DashboardPage() {
           {/* Document Table */}
           <div className="relative z-10">
             <DocumentTable documents={documents} onRefresh={fetchDocuments} />
+          </div>
+
+          {/* Gothic Cathedral Glyphs Grid (24 Figures) */}
+          <GothicDivider label="Santuario de Sellos & Geometría Sagrada" />
+          <div className="relative z-10">
+            <GothicGlyphsGrid />
           </div>
 
           {/* Bottom Cathedral Footer Bar */}
