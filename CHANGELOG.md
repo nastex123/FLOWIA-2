@@ -6,6 +6,15 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+### [2026-08-18 10:35] (America/Bogota)
+
+- **[CI]** Fix de tests de escritorio (PySide6) en GitHub Actions headless
+  - **Qué:** Se configuró el CI para soportar Qt sin pantalla: se añadió `QT_QPA_PLATFORM=offscreen` al entorno del job y un paso que instala las librerías de sistema de Qt (`libegl1`, `libgl1`, `libxkbcommon0`, `libdbus-1-3`) en `.github/workflows/ci.yml`. En `tests/conftest.py` se fija `QT_QPA_PLATFORM=offscreen` por defecto antes de importar Qt, para que los tests de escritorio pasen también en máquinas headless locales.
+  - **Por qué:** `pytest tests/` fallaba en el runner de GitHub Actions con `ImportError: libEGL.so.1` porque PySide6 es dependencia del backend y los tests de escritorio crean un `QApplication` sin librerías gráficas de sistema instaladas.
+  - **Archivos:** `.github/workflows/ci.yml`, `tests/conftest.py`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 10:10] (America/Bogota)
 
 - **[Docs]** Asignación definitiva del equipo a la división de trabajo del Proyecto 4

@@ -1,5 +1,9 @@
 """Pytest configuration and shared fixtures for FlowMind AI."""
 
+import os
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
 import sys
 from pathlib import Path
 import pytest
