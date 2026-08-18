@@ -8,156 +8,235 @@ El sistema opera con **cero dependencia de LLMs externos en la nube**, garantiza
 
 ---
 
-## 🏛️ Arquitectura del Repositorio
+## 📋 Requisitos Previos
 
-```text
-FlowMind-AI-Repository-Development/
-├── AGENTS.md                  # Reglas maestras de desarrollo para agentes IA
-├── GEMINI.md                  # Contexto operativo para el agente
-├── skills/                    # Metodologías especializadas de desarrollo
-├── docs/                      # Fuente de verdad arquitectónica
-│   ├── 00-vision/             # Filosofía de privacidad Zero Cloud Data Leakage
-│   ├── 01-product/            # PRD, Esquemas Canónicos, Roadmap y alineación con tareas
-│   ├── 03-architecture/       # Diseño global (Document & Decision Plane), Decision Engine, Desktop
-│   ├── 04-engineering/        # API Reference, Database/Alembic, Advanced Engines, TDD Proyecto 4
-│   ├── 05-ai/                 # Arquitectura de IA y ML local
-│   ├── 06-security/           # Seguridad, Privacidad, Cumplimiento SII/PII
-│   ├── 08-operations/         # Propuestas de expansión y división de trabajo en equipo
-│   └── 09-decisions/          # ADRs 001-003 (local-first, dos planos, desktop-first)
-├── backend/                   # API REST en FastAPI + Pydantic v2 + SQLite/SQLAlchemy
-│   ├── app/
-│   │   ├── api/routers/       # Endpoints REST (/documents, /schemas, /automation, /decision, /business, /compliance, /auth)
-│   │   ├── core/              # Configuración, excepciones y seguridad
-│   │   ├── domain/            # Modelos de dominio Pydantic y DTOs
-│   │   ├── infrastructure/    # Persistencia DB (SQLite/PostgreSQL) y Presets
-│   │   └── services/          # Extractores, Clasificadores, Decision, Business, Compliance & Sentinel
-├── desktop/                   # Suite de escritorio nativa en PySide6 (Qt6)
-│   ├── controllers/           # Cliente local / API
-│   ├── models/                # VirtualDataTableModel (QAbstractTableModel)
-│   ├── services/              # HotFolderWatcher con watchdog
-│   ├── ui/                    # MainWindow (Dark Theme, Grid Pro, Inspector)
-│   └── main.py                # Lanzador de la app de escritorio
-├── frontend/                  # Interfaz web Next.js 14 (DEPRECATED → cliente PySide6, ver ADR-003)
-├── samples/                   # Documentos reales de prueba (XLSX, CSV, PDF)
-├── scripts/                   # Scripts de utilidades y generador de archivos de muestra
-├── start.py                   # Lanzador unificado multiplataforma (Windows / Linux / macOS)
-├── start.sh                   # Script ejecutable bash para Linux / macOS
-├── start.ps1                  # Script PowerShell para Windows
-└── tests/                     # Suite de pruebas unitarias e integración (73 tests)
-```
+Antes de comenzar, asegúrate de tener instalado en tu sistema:
+
+* **Python 3.11+** ([Descargar Python](https://www.python.org/downloads/))
+* **Node.js 18+ y npm** ([Descargar Node.js](https://nodejs.org/))
+* **Git** ([Descargar Git](https://git-scm.com/))
+* *(Opcional)* **Docker & Docker Compose** (solo si deseas usar PostgreSQL, Redis y MinIO en lugar del modo SQLite local por defecto).
 
 ---
 
-## 🚀 Pila Tecnológica
+## 🚀 Guía de Instalación Rápida (Paso a Paso)
 
-* **Backend & API:** Python 3.11+, FastAPI, Pydantic v2, SQLAlchemy (Asyncio), SQLite (`aiosqlite`) / PostgreSQL.
-* **Escritorio Nativo:** PySide6 (Qt6), `watchdog` (Hot-Folder Tray Agent), `VirtualDataTableModel`.
-* **Inteligencia Local, Grafos & Compliance (Pure Libraries & Local ML):**
-  * *Tabular & Hojas de Cálculo:* `pandas`, `openpyxl`, `csv`, `numpy`
-  * *Documentos & PDF:* `PyMuPDF` (`fitz`), `pdfplumber`
-  * *Visión Artificial & OCR:* `OpenCV`, `zxing-cpp`, `pyzbar`, `pytesseract`
-  * *Extracción & Normalización Difusa:* `rapidfuzz`, `regex`
-  * *Grafos Relacionales de Hechos:* `NetworkX`
-  * *Clasificación ML & Embeddings:* `scikit-learn` (TF-IDF, LogisticRegression, IsolationForest)
-  * *Motores de Negocio:* Conciliación a 3 Vías, Parser Bancario Norma 43 / CSB 43, Desagregador de Nóminas
-  * *Cumplimiento Fiscal & Privacidad:* Generador XML AEAT SII, Hash Chaining Veri*factu (RD 1007/2023), Redactor PII/GDPR
-* **Frontend Web:** Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons.
+Sigue estos pasos para clonar el repositorio, configurar el entorno e iniciar el proyecto desde cero:
 
----
-
-## 🛠️ Inicio Rápido Unificado (Comando Único)
-
-Puedes iniciar **Backend y Frontend simultáneamente** con un único comando multiplataforma:
-
-### En Windows:
-```powershell
-# Opción 1 (Python multiplataforma):
-python start.py
-
-# Opción 2 (PowerShell directo):
-.\start.ps1
-```
-
-### En Linux o macOS:
+### 1. Clonar el repositorio
 ```bash
-# Opción 1 (Bash script ejecutable):
+git clone <URL_DEL_REPOSITORIO>
+cd FLOWIA-2
+```
+
+### 2. Configurar el entorno virtual de Python
+
+#### En Linux / macOS:
+```bash
+# Crear entorno virtual
+python3 -m venv venv
+
+# Activar entorno virtual
+source venv/bin/activate
+
+# Actualizar pip e instalar dependencias del backend y suite de escritorio
+pip install --upgrade pip
+pip install -e "./backend[dev]"
+```
+
+#### En Windows (PowerShell):
+```powershell
+# Crear entorno virtual
+python -m venv venv
+
+# Activar entorno virtual
+.\venv\Scripts\Activate.ps1
+
+# Actualizar pip e instalar dependencias del backend y suite de escritorio
+pip install --upgrade pip
+pip install -e ".\backend[dev]"
+```
+
+### 3. Variables de Entorno (Opcional para modo local)
+
+FlowMind AI funciona **out-of-the-box en modo local** utilizando SQLite asíncrono y almacenamiento en disco local sin requerir configuración extra.
+
+Si deseas personalizar variables o conectar servicios externos (PostgreSQL, Redis, MinIO), copia la plantilla:
+```bash
+# Linux / macOS
+cp .env.example .env
+
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+### 4. Instalar dependencias del Frontend (Web Dashboard)
+
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+*(Nota: Si omites este paso, el script lanzador `start.py` detectará automáticamente que falta `node_modules` y ejecutará `npm install` por ti).*
+
+---
+
+## ⚡ Cómo Iniciar la Aplicación
+
+### Opción 1: Lanzador Unificado (Recomendado)
+
+Inicia **Backend (FastAPI) y Frontend (Next.js) simultáneamente** con un solo comando:
+
+#### En Linux o macOS:
+```bash
+# Asegúrate de tener el entorno virtual activo: source venv/bin/activate
 chmod +x start.sh
 ./start.sh
 
-# Opción 2 (Python directo):
+# O directamente con python:
 python3 start.py
 ```
 
-* **Backend API (FastAPI):** `http://127.0.0.1:8000`
-* **Swagger Docs interactivo:** `http://127.0.0.1:8000/docs`
-* **Web Dashboard (Next.js):** `http://localhost:3000`
-* **Gestor de Esquemas:** `http://localhost:3000/schemas`
-* **Automatización & Seguridad:** `http://localhost:3000/settings`
-
-### Iniciar la Suite de Escritorio Nativa (PySide6)
+#### En Windows (PowerShell):
 ```powershell
+# Asegúrate de tener el entorno virtual activo: .\venv\Scripts\Activate.ps1
+.\start.ps1
+
+# O directamente con python:
+python start.py
+```
+
+---
+
+### Opción 2: Iniciar Servicios de Forma Individual (Terminales Separadas)
+
+Si prefieres ejecutar cada componente por separado en desarrollo:
+
+#### Terminal 1 — Backend API (FastAPI)
+```bash
+# Activa el entorno virtual primero
+uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
+```
+* API disponible en: `http://127.0.0.1:8000`
+* Documentación interactiva Swagger: `http://127.0.0.1:8000/docs`
+
+#### Terminal 2 — Frontend Web (Next.js)
+```bash
+cd frontend
+npm run dev
+```
+* Dashboard Web disponible en: `http://localhost:3000`
+
+#### Terminal 3 — Suite de Escritorio Nativa (PySide6 / Qt6 - Opcional)
+```bash
+# Con el entorno virtual activo:
 python desktop/main.py
 ```
-Permite procesar documentos sin conexión a red, visualizar tablas masivas con aceleración y monitorizar carpetas *Hot-Folder* en segundo plano.
+* Permite procesar documentos sin conexión, monitorear carpetas *Hot-Folder* en segundo plano y visualización de datos de alta velocidad.
 
-### Acceder a la Plataforma
-Al iniciarse, el backend crea automáticamente una organización y un usuario administrador por defecto:
+---
 
-* **Correo:** `admin@flowmind.local`
-* **Contraseña:** `admin123`
-* **Organización:** `default-org`
+### Opción 3: Infraestructura con Docker (PostgreSQL + Redis + MinIO)
 
-Inicia sesión en `http://localhost:3000/login`. Todo el frontend exige autenticación; también puedes integrar vía API con `Authorization: Bearer <jwt>` o una API Key (`fm_...`) creada desde `/settings`.
+Si deseas utilizar la infraestructura completa de grado empresarial en lugar de SQLite:
+
+```bash
+docker compose -f infrastructure/docker-compose.yml up -d
+```
+Esto levantará:
+* **PostgreSQL:** `localhost:5432` (db: `flowmind`, user: `postgres`, pass: `postgres`)
+* **Redis:** `localhost:6379`
+* **MinIO S3:** `http://localhost:9000` (Consola: `http://localhost:9001`, credenciales: `minioadmin`/`minioadmin`)
+
+---
+
+## 🔑 Credenciales y Acceso por Defecto
+
+Al iniciar el sistema por primera vez, el backend inicializa automáticamente la base de datos con un usuario administrador:
+
+| Parámetro | Valor por Defecto |
+| :--- | :--- |
+| **URL Web** | [http://localhost:3000](http://localhost:3000) |
+| **Documentación API** | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) |
+| **Usuario / Email** | `admin@flowmind.local` |
+| **Contraseña** | `admin123` |
+| **Organización** | `default-org` |
+
+> Inicia sesión en [http://localhost:3000/login](http://localhost:3000/login). Todo el frontend exige autenticación; también puedes interactuar vía API mediante `Authorization: Bearer <token>` o generando una API Key (`fm_...`) desde `/settings`.
 
 ---
 
 ## 📄 Generar Documentos de Prueba
 
-Para generar o regenerar documentos de negocio realistas (Facturas Excel, Inventarios CSV, Pedidos y PDFs):
+Para generar un conjunto de documentos empresariales realistas (Facturas XLSX, Inventarios CSV, Pedidos y PDFs con tablas):
 
-```powershell
+```bash
 python scripts/generate_sample_documents.py
 ```
-Los archivos se guardarán automáticamente en `samples/` listos para ser arrastrados a la interfaz web o al cliente de escritorio.
+Los archivos de muestra se generarán en la carpeta `samples/` listos para ser procesados desde la web o la app de escritorio.
 
 ---
 
 ## 🧪 Ejecutar Pruebas Automatizadas
 
-```powershell
-# Ejecutar la suite completa de 73 tests
+```bash
+# Con el entorno virtual activo:
 python -m pytest tests/
 ```
 
 ---
 
-## 📜 Documentación Técnica Completa
+## 🏛️ Estructura del Proyecto
 
-La documentación del proyecto se organiza conforme al estándar de `documentation` skill:
+```text
+FLOWIA-2/
+├── AGENTS.md                  # Reglas de desarrollo para agentes IA
+├── GEMINI.md                  # Contexto operativo para el agente
+├── start.py                   # Lanzador unificado multiplataforma (Backend + Frontend)
+├── start.sh                   # Script de inicio para Linux / macOS
+├── start.ps1                  # Script de inicio para Windows PowerShell
+├── .env.example               # Plantilla de variables de entorno
+├── backend/                   # API REST en FastAPI + Pydantic v2 + SQLite/SQLAlchemy
+│   ├── app/
+│   │   ├── api/routers/       # Endpoints REST (/documents, /schemas, /automation, /decision, /auth)
+│   │   ├── core/              # Configuración, excepciones y seguridad
+│   │   ├── domain/            # Modelos de dominio Pydantic y DTOs
+│   │   ├── infrastructure/    # Persistencia DB y Presets
+│   │   └── services/          # Extractores, Clasificadores, Decision, Business & Sentinel
+│   └── pyproject.toml         # Dependencias y configuración de empaquetado backend
+├── desktop/                   # Suite de escritorio nativa en PySide6 (Qt6)
+│   ├── controllers/           # Cliente local / API
+│   ├── models/                # VirtualDataTableModel
+│   ├── services/              # HotFolderWatcher con watchdog
+│   ├── ui/                    # MainWindow (Dark Theme, Grid Pro, Inspector)
+│   └── main.py                # Punto de entrada de la aplicación de escritorio
+├── frontend/                  # Interfaz web en Next.js 14 + React + Tailwind CSS
+├── infrastructure/            # Definiciones Docker Compose (PostgreSQL, Redis, MinIO)
+├── samples/                   # Documentos reales de prueba (XLSX, CSV, PDF)
+├── scripts/                   # Scripts auxiliares y generador de archivos de muestra
+├── tests/                     # Suite completa de pruebas unitarias e integración
+└── docs/                      # Fuente de verdad arquitectónica y técnica
+```
 
-* **00 — Visión:** [`docs/00-vision/01-vision.md`](docs/00-vision/01-vision.md) — Filosofía de privacidad Zero Cloud Data Leakage y público objetivo.
+---
+
+## 📜 Documentación Técnica
+
+Para profundizar en el diseño y arquitectura del sistema, consulta la documentación en `docs/`:
+
+* **00 — Visión:** [`docs/00-vision/01-vision.md`](docs/00-vision/01-vision.md) — Filosofía de privacidad Zero Cloud Data Leakage.
 * **01 — Producto:**
-  * [`docs/01-product/01-prd.md`](docs/01-product/01-prd.md) — Product Requirements Document (FRs, NFRs y Personas).
-  * [`docs/01-product/02-schemas-and-mapping.md`](docs/01-product/02-schemas-and-mapping.md) — Esquemas canónicos y normalización con RapidFuzz.
-  * [`docs/01-product/03-roadmap.md`](docs/01-product/03-roadmap.md) — Fases de entrega y estado de avance de componentes.
-  * [`docs/01-product/04-proyecto4-alineacion-tarea.md`](docs/01-product/04-proyecto4-alineacion-tarea.md) — Semejanza del proyecto con la tarea asignada (Extractor, Validador y Reconciliador de Facturas) y análisis de brechas.
+  * [`docs/01-product/01-prd.md`](docs/01-product/01-prd.md) — Requisitos del producto (FRs, NFRs y Personas).
+  * [`docs/01-product/02-schemas-and-mapping.md`](docs/01-product/02-schemas-and-mapping.md) — Esquemas canónicos y normalización difusa.
+  * [`docs/01-product/03-roadmap.md`](docs/01-product/03-roadmap.md) — Fases de entrega y roadmap.
 * **03 — Arquitectura:**
-  * [`docs/03-architecture/01-general-architecture.md`](docs/03-architecture/01-general-architecture.md) — Diseño global del sistema (Document Plane & Decision Plane).
-  * [`docs/03-architecture/02-enterprise-decision-engine.md`](docs/03-architecture/02-enterprise-decision-engine.md) — Grafo de Hechos (`NetworkX`), Validador Matemático y FlowMind Sentinel.
-  * [`docs/03-architecture/03-desktop-pyside6.md`](docs/03-architecture/03-desktop-pyside6.md) — Suite de escritorio nativa PySide6 y Tray Agent.
+  * [`docs/03-architecture/01-general-architecture.md`](docs/03-architecture/01-general-architecture.md) — Arquitectura general (Document Plane & Decision Plane).
+  * [`docs/03-architecture/02-enterprise-decision-engine.md`](docs/03-architecture/02-enterprise-decision-engine.md) — Grafo de Hechos (`NetworkX`), Validador Matemático y Sentinel.
+  * [`docs/03-architecture/03-desktop-pyside6.md`](docs/03-architecture/03-desktop-pyside6.md) — Suite de escritorio nativa PySide6.
 * **04 — Ingeniería & APIs:**
-  * [`docs/04-engineering/01-api-reference.md`](docs/04-engineering/01-api-reference.md) — Referencia exhaustiva de endpoints REST.
-  * [`docs/04-engineering/02-database.md`](docs/04-engineering/02-database.md) — Base de datos asíncrona y migraciones con Alembic.
-  * [`docs/04-engineering/03-advanced-engines.md`](docs/04-engineering/03-advanced-engines.md) — Conciliación 3 vías, Norma 43, Barcode/QR, OMR y Nóminas.
-  * [`docs/04-engineering/04-invoice-validation-review.md`](docs/04-engineering/04-invoice-validation-review.md) — TDD del vertical de facturas (dominio, pipeline validado, API de revisión, app PySide6 y hot-folder→backend).
-* **05 — Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Pipeline de ML clásico, TF-IDF y ausencia de LLMs externos.
-* **06 — Seguridad & Cumplimiento:**
-  * [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Directrices de seguridad, RBAC y aislamiento multi-tenant.
-  * [`docs/06-security/02-compliance-and-pii.md`](docs/06-security/02-compliance-and-pii.md) — Cumplimiento fiscal AEAT SII, Veri\*factu y redactor PII/RGPD.
-* **08 — Operaciones & Roadmap:** [`docs/08-operations/01-expansion-proposals.md`](docs/08-operations/01-expansion-proposals.md) — 22 Propuestas estratégicas de expansión futura. · [`docs/08-operations/02-trabajo-equipo-proyecto4.md`](docs/08-operations/02-trabajo-equipo-proyecto4.md) — División de trabajo en 4 personas del Proyecto 4.
-* **09 — Decisiones Arquitectónicas (ADRs):**
-  * [`docs/09-decisions/ADR-001-local-deterministic-engine.md`](docs/09-decisions/ADR-001-local-deterministic-engine.md) — Inferencia 100% local sin LLMs en la nube.
-  * [`docs/09-decisions/ADR-002-two-plane-architecture.md`](docs/09-decisions/ADR-002-two-plane-architecture.md) — Desacoplamiento de Document Plane y Decision Plane.
-  * [`docs/09-decisions/ADR-003-desktop-first-ui.md`](docs/09-decisions/ADR-003-desktop-first-ui.md) — Cliente de interfaz principal en PySide6 (frontend web deprecated).
-
-
+  * [`docs/04-engineering/01-api-reference.md`](docs/04-engineering/01-api-reference.md) — Referencia de endpoints REST.
+  * [`docs/04-engineering/02-database.md`](docs/04-engineering/02-database.md) — Base de datos asíncrona y migraciones.
+  * [`docs/04-engineering/03-advanced-engines.md`](docs/04-engineering/03-advanced-engines.md) — Conciliación a 3 vías, Norma 43, Barcode/QR, OMR y Nóminas.
+* **05 — Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Machine Learning local y TF-IDF sin LLMs externos.
+* **06 — Seguridad & Cumplimiento:** [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Seguridad, RBAC y aislamiento multi-tenant.
