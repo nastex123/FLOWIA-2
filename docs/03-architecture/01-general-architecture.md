@@ -1,4 +1,4 @@
-# 01 — Arquitectura del Sistema FlowMind AI
+# Arquitectura Global del Sistema FlowMind AI
 
 Este documento representa la fuente de verdad técnica sobre la arquitectura de software, flujo de datos y componentes de **FlowMind AI**.
 
@@ -109,6 +109,8 @@ flowchart TD
 
 ## 3. Pipeline Integral de Procesamiento y Decisión
 
+El flujo de procesamiento se ejecuta de manera determinista y por capas desacopladas:
+
 ```text
 [UPLOAD / HOT-FOLDER]
    │
@@ -119,19 +121,19 @@ flowchart TD
 [STORE] ─────────────────> Almacenamiento local aislado en ./data/storage/{org_id}/{doc_id}/
    │
    ▼
-[DECODE QR / OCR] ───────> Lectura de códigos 1D/2D; OCR adaptativo si no hay capa de texto
+[DECODE QR / OCR] ───────> Lectura de códigos 1D/2D (zxing-cpp); OCR adaptativo si no hay capa de texto
    │
    ▼
-[PARSE & EXTRACT] ───────> Extracción de tablas y campos deterministas (RuleExtractor)
+[PARSE & EXTRACT] ───────> Extracción tabular (pandas/pdfplumber) y campos clave (RuleExtractor / MLClassifier)
    │
    ▼
-[ENTITY RESOLUTION] ─────> Unificación de proveedor/cliente contra base canónica local
+[ENTITY RESOLUTION] ─────> Unificación de proveedor/cliente contra base canónica local (EntityResolutionEngine)
    │
    ▼
-[FACT GRAPH MAPPING] ────> Vinculación en el grafo de hechos (PO ↔ Albarán ↔ Factura ↔ Contrato)
+[FACT GRAPH MAPPING] ────> Vinculación en el grafo de hechos (PO ↔ Albarán ↔ Factura ↔ Pago)
    │
    ▼
-[MATHEMATICAL VALIDATION]> Recálculo determinista de líneas, bases e impuestos
+[MATHEMATICAL VALIDATION]> Recálculo determinista de líneas, bases e impuestos (MathematicalDocumentValidator)
    │
    ▼
 [FLOWMIND SENTINEL] ─────> Verificación de cambio de IBAN, duplicidad y riesgo de fraude
@@ -140,7 +142,7 @@ flowchart TD
 [DECISION FABRIC] ───────> Aprobación automática desatendida o enrutamiento a revisión 4-Ojos
    │
    ▼
-[DISPATCH & AUDIT] ──────> Envío HTTP saliente (HMAC) + Sellado hash inmutable en ledger local
+[DISPATCH & AUDIT] ──────> Envío HTTP saliente (HMAC) + Sellado hash inmutable en ledger local (Verifactu)
 ```
 
 ---

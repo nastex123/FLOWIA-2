@@ -1,4 +1,4 @@
-# 11 — Directrices de Seguridad y Privacidad
+# Directrices de Seguridad, Privacidad y Gobernanza Multi-Tenant
 
 Este documento define la política de seguridad, mitigación de riesgos y privacidad de datos de **FlowMind AI**.
 
@@ -62,7 +62,4 @@ Al exportar o procesar archivos tabulares, cualquier celda que comience con `=`,
 
 * **Variables de Entorno:** Toda clave secreta (`SECRET_KEY`, credenciales de DB, Redis) se obtiene mediante `Pydantic Settings` desde variables de entorno.
 * **Cero Secretos en Repositorio:** El archivo `.gitignore` excluye `.env`, certificados y archivos de credenciales.
-* **Sanitización de Logs:** Los logs nunca deben imprimir:
-  * Contraseñas o hashes.
-  * Tokens JWT o cabeceras de autorización.
-  * Datos personales identificables (PII) o contenido íntegro de documentos empresariales.
+* **Sanitización de Logs:** Los logs nunca deben imprimir contraseñas, tokens JWT, datos personales identificables (PII) o contenido íntegro de documentos empresariales.

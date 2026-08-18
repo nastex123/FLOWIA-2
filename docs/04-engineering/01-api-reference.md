@@ -1,6 +1,6 @@
-# 04 — Referencia de la API REST de FlowMind AI
+# Especificación y Referencia de la API REST de FlowMind AI
 
-La API REST de **FlowMind AI** expone endpoints para ingesta de documentos, consulta de extracciones, gestión de esquemas canónicos, normalización asistida, autenticación, reglas de automatización y webhooks salientes.
+La API REST de **FlowMind AI** expone endpoints para ingesta de documentos, consulta de extracciones, gestión de esquemas canónicos, normalización asistida, autenticación, reglas de automatización, webhooks salientes, motor de decisión y cumplimiento fiscal.
 
 * **Base URL en desarrollo:** `http://127.0.0.1:8000`
 * **Swagger UI interactivo:** `http://127.0.0.1:8000/docs`
@@ -144,7 +144,7 @@ Obtiene el estado de procesamiento y los datos extraídos (campos normalizados y
           "sheet_or_page": "Factura F-2024-0982",
           "headers": ["Referencia", "Descripción de Producto", "Cantidad", "Precio Unitario (€)", "Importe (€)"],
           "rows_count": 5,
-          "records": [...]
+          "records": []
         }
       ],
       "processing_time_ms": 42.5
@@ -244,27 +244,6 @@ Aplica el mapeo confirmado y genera la tabla normalizada con tipos de datos conv
   }
   ```
 
-* **Respuesta 200 OK:**
-  ```json
-  {
-    "schema_id": "preset-inventory-std",
-    "schema_name": "Control de Inventario y Stock",
-    "total_records": 8,
-    "headers": ["sku", "product_name", "stock_units", "unit_cost"],
-    "records": [
-      {
-        "sku": "HW-SRV-01",
-        "product_name": "Servidor ProLiant DL380 Gen10",
-        "stock_units": 14,
-        "unit_cost": 2100.50
-      }
-    ],
-    "validation_errors": []
-  }
-  ```
-
-*Nota:* al completar la normalización se evalúan automáticamente las reglas de automatización activas del evento `normalization_completed` y se disparan los webhooks que coincidan.
-
 ---
 
 ## 6. Reglas de Automatización (CRUD) *(admin)*
@@ -289,32 +268,22 @@ Crea una regla. Se evalúa de forma determinista al completar extracción o norm
     "enabled": true
   }
   ```
-* **Operadores:** `gt`, `lt`, `gte`, `lte`, `eq`, `neq`, `contains`, `is_empty`, `not_empty`.
-* **Eventos:** `extraction_completed`, `normalization_completed`.
 
 ### `GET /api/v1/rules/{rule_id}`
 Obtiene una regla por id.
 
 ### `PUT /api/v1/rules/{rule_id}`
-Actualiza una regla (mismos campos que la creación).
+Actualiza una regla.
 
 ### `DELETE /api/v1/rules/{rule_id}`
 Elimina una regla.
-
-### `POST /api/v1/rules/{rule_id}/evaluate?document_id={id}`
-Evalúa la regla (dry-run) contra un documento ya procesado sin disparar webhooks.
-
-* **Respuesta 200 OK:**
-  ```json
-  { "matched": true, "matched_value": 5240.5, "matched_rows": 1 }
-  ```
 
 ---
 
 ## 7. Webhooks Salientes (CRUD) *(admin)*
 
 ### `GET /api/v1/webhooks`
-Lista los webhooks configurados (sin secretos, solo `has_secret`).
+Lista los webhooks configurados.
 
 ### `POST /api/v1/webhooks`
 Registra un endpoint saliente.
@@ -329,29 +298,54 @@ Registra un endpoint saliente.
     "active": true
   }
   ```
-  Si se indica `secret`, cada envío incluye la cabecera `X-Webhook-Signature: sha256=<hmac-hex>` del cuerpo.
 
 ### `GET /api/v1/webhooks/{webhook_id}`
 Obtiene un webhook por id.
-
-### `PUT /api/v1/webhooks/{webhook_id}`
-Actualiza un webhook (mismos campos que la creación).
 
 ### `DELETE /api/v1/webhooks/{webhook_id}`
 Elimina un webhook.
 
 ### `POST /api/v1/webhooks/{webhook_id}/test`
-Envía un ping de prueba (`event: "webhook.test"`) y persiste la entrega en el registro de auditoría.
-
-* **Respuesta 200 OK:**
-  ```json
-  { "status": "success", "http_status": 200, "duration_ms": 312 }
-  ```
+Envía un ping de prueba (`event: "webhook.test"`).
 
 ### `GET /api/v1/webhooks/deliveries`
 Lista el registro de auditoría de entregas de la organización.
 
-### `GET /api/v1/webhooks/{webhook_id}/deliveries`
-Lista las entregas de un webhook concreto.
+---
 
-* **Campos por entrega:** `webhook_id`, `rule_id`, `document_id`, `event`, `url`, `status` (`success`/`failed`), `http_status`, `error_message`, `duration_ms`, `created_at`.
+## 8. Motor de Decisión Empresarial & Sentinel (`/api/v1/decision`)
+
+### `POST /api/v1/decision/validate-math`
+Recalcula deterministamente los importes de un documento (base imponible por línea, suma de bases, IVA por tramos, recargos, retenciones y gastos de envío).
+
+### `POST /api/v1/decision/entities/resolve`
+Unifica variantes de nombres de clientes o proveedores contra la base histórica usando puntuación ponderada multidimensional.
+
+### `POST /api/v1/decision/sentinel-audit`
+Ejecuta la batería de auditoría continua antifraude de FlowMind Sentinel (cambio de IBAN no autorizado, duplicados multidimensionales y Ley de Benford).
+
+---
+
+## 9. Motores Especializados de Negocio (`/api/v1/business`)
+
+### `POST /api/v1/business/three-way-match`
+Reconcilia líneas de Pedido de Compra (PO), Albarán de Entrega (GR) y Factura de Proveedor (INV).
+
+### `POST /api/v1/business/norma43/parse`
+Parsea un fichero bancario estándar español **Norma 43 / CSB 43** extrayendo saldos y movimientos.
+
+### `POST /api/v1/business/payroll/split`
+Desagrega un PDF consolidado de nóminas masivas en ficheros PDF individuales por empleado.
+
+---
+
+## 10. Cumplimiento Fiscal & Anonimización PII (`/api/v1/compliance`)
+
+### `POST /api/v1/compliance/sii/generate-xml`
+Genera el payload XML oficial para el **Suministro Inmediato de Información (SII)** de la AEAT.
+
+### `POST /api/v1/compliance/verifactu/chain-hash`
+Calcula el hash SHA-256 encadenado inmutable y la cadena de payload para código QR conforme a **Veri\*factu / TicketBAI**.
+
+### `POST /api/v1/compliance/pii/redact`
+Detecta y anonimiza información sensible (DNI/NIE, IBANs, correos, teléfonos).

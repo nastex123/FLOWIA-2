@@ -134,13 +134,28 @@ python -m pytest tests/
 
 ## 📜 Documentación Técnica Completa
 
-* [`AGENTS.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/AGENTS.md) — Reglas maestras de desarrollo y calidad
-* [`docs/01-architecture.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/01-architecture.md) — Arquitectura global del sistema (Document Plane & Decision Plane)
-* [`docs/02-mvp-roadmap.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/02-mvp-roadmap.md) — Fases de entrega y roadmap de expansión (Fases 1 a 12)
-* [`docs/03-schemas-and-mapping.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/03-schemas-and-mapping.md) — Motor de esquemas canónicos y normalización con RapidFuzz
-* [`docs/04-api-reference.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/04-api-reference.md) — Referencia exhaustiva de endpoints REST
-* [`docs/05-desktop-pyside6.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/05-desktop-pyside6.md) — Suite de escritorio nativa PySide6 y Tray Agent
-* [`docs/06-advanced-engines.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/06-advanced-engines.md) — Conciliación 3 vías, Norma 43, Barcode/QR, OMR y Nóminas
-* [`docs/07-local-search-and-compliance.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/07-local-search-and-compliance.md) — Búsqueda semántica FAISS, SII AEAT y Verifactu
-* [`docs/08-enterprise-decision-engine.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/08-enterprise-decision-engine.md) — Grafo de Hechos (`NetworkX`), Validador Matemático y FlowMind Sentinel
-* [`docs/11-security.md`](file:///C:/Users/Usuario/Documents/GitHub/FlowMind-AI-Repository-Development/docs/11-security.md) — Directrices de seguridad, RBAC y Zero Cloud Data Leakage
+La documentación del proyecto se organiza conforme al estándar de `documentation` skill:
+
+* **00 — Visión:** [`docs/00-vision/01-vision.md`](docs/00-vision/01-vision.md) — Filosofía de privacidad Zero Cloud Data Leakage y público objetivo.
+* **01 — Producto:**
+  * [`docs/01-product/01-prd.md`](docs/01-product/01-prd.md) — Product Requirements Document (FRs, NFRs y Personas).
+  * [`docs/01-product/02-schemas-and-mapping.md`](docs/01-product/02-schemas-and-mapping.md) — Esquemas canónicos y normalización con RapidFuzz.
+  * [`docs/01-product/03-roadmap.md`](docs/01-product/03-roadmap.md) — Fases de entrega y estado de avance de componentes.
+* **03 — Arquitectura:**
+  * [`docs/03-architecture/01-general-architecture.md`](docs/03-architecture/01-general-architecture.md) — Diseño global del sistema (Document Plane & Decision Plane).
+  * [`docs/03-architecture/02-enterprise-decision-engine.md`](docs/03-architecture/02-enterprise-decision-engine.md) — Grafo de Hechos (`NetworkX`), Validador Matemático y FlowMind Sentinel.
+  * [`docs/03-architecture/03-desktop-pyside6.md`](docs/03-architecture/03-desktop-pyside6.md) — Suite de escritorio nativa PySide6 y Tray Agent.
+* **04 — Ingeniería & APIs:**
+  * [`docs/04-engineering/01-api-reference.md`](docs/04-engineering/01-api-reference.md) — Referencia exhaustiva de endpoints REST.
+  * [`docs/04-engineering/02-database.md`](docs/04-engineering/02-database.md) — Base de datos asíncrona y migraciones con Alembic.
+  * [`docs/04-engineering/03-advanced-engines.md`](docs/04-engineering/03-advanced-engines.md) — Conciliación 3 vías, Norma 43, Barcode/QR, OMR y Nóminas.
+* **05 — Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Pipeline de ML clásico, TF-IDF y ausencia de LLMs externos.
+* **06 — Seguridad & Cumplimiento:**
+  * [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Directrices de seguridad, RBAC y aislamiento multi-tenant.
+  * [`docs/06-security/02-compliance-and-pii.md`](docs/06-security/02-compliance-and-pii.md) — Cumplimiento fiscal AEAT SII, Veri\*factu y redactor PII/RGPD.
+* **08 — Operaciones & Roadmap:** [`docs/08-operations/01-expansion-proposals.md`](docs/08-operations/01-expansion-proposals.md) — 22 Propuestas estratégicas de expansión futura.
+* **09 — Decisiones Arquitectónicas (ADRs):**
+  * [`docs/09-decisions/ADR-001-local-deterministic-engine.md`](docs/09-decisions/ADR-001-local-deterministic-engine.md) — Inferencia 100% local sin LLMs en la nube.
+  * [`docs/09-decisions/ADR-002-two-plane-architecture.md`](docs/09-decisions/ADR-002-two-plane-architecture.md) — Desacoplamiento de Document Plane y Decision Plane.
+
+

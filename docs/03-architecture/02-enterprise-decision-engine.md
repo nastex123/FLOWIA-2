@@ -1,4 +1,4 @@
-# 08 — Motor de Decisión, Grafo de Hechos & FlowMind Sentinel
+# Motor de Decisión Empresarial, Grafo de Hechos & Sentinel
 
 Este documento define la arquitectura técnica del **Motor de Decisión Empresarial**, el **Grafo de Hechos Locales (*Fact Graph*)**, el **Validador Matemático** y el sistema antifraude **FlowMind Sentinel**, transformando FlowMind AI de un procesador documental a una plataforma de inteligencia operacional privada y determinista.
 

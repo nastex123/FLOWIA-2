@@ -1,4 +1,4 @@
-# 05 — Arquitectura de Escritorio con PySide6 (Qt para Python)
+# Arquitectura de la Suite de Escritorio PySide6 (Qt para Python)
 
 Este documento define la arquitectura técnica, diseño de interfaz y ciclo de vida de la suite de escritorio nativa de **FlowMind AI** construida con **PySide6 (Qt 6)**.
 
