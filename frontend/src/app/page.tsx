@@ -6,9 +6,11 @@ import Header from '@/components/Header';
 import KpiCard from '@/components/KpiCard';
 import DocumentTable from '@/components/DocumentTable';
 import FileUploadModal from '@/components/FileUploadModal';
+import GothicDivider from '@/components/GothicDivider';
+import GothicArchWatermark from '@/components/GothicArchWatermark';
 import { api } from '@/lib/api';
 import { DocumentItem } from '@/lib/types';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Sparkles, Shield, Lock } from 'lucide-react';
 
 export default function DashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -54,10 +56,18 @@ export default function DashboardPage() {
       >
         <Header onOpenUpload={() => setUploadOpen(true)} />
 
-        <main className="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+        <main className="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6 relative">
+          {/* Subtle Arch Watermark in Background */}
+          <GothicArchWatermark className="w-80 h-[520px] -right-10 top-20 opacity-10 text-crimson-600 hidden xl:block" />
+
           {/* Header Title Section */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
             <div>
+              <div className="flex items-center gap-2 text-xs font-serif tracking-widest text-crimson-400 uppercase mb-1">
+                <span>✠</span>
+                <span>Catedral de Inteligencia Financiera</span>
+                <span>✠</span>
+              </div>
               <h1 className="font-serif text-2xl md:text-3xl font-bold text-crimson-200">
                 Libro Mayor & Auditoría de Comprobantes
               </h1>
@@ -67,7 +77,7 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={fetchDocuments}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-obsidian-900/80 hover:bg-crimson-950/40 text-slate-300 border border-crimson-900/30 text-xs font-semibold transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-obsidian-900/90 hover:bg-crimson-950/50 text-slate-300 border border-crimson-900/40 text-xs font-serif font-semibold shadow-sm transition-all"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span>Actualizar Registros</span>
@@ -75,7 +85,7 @@ export default function DashboardPage() {
           </div>
 
           {/* 4 Gothic KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
             <KpiCard
               title="Total Comprobantes"
               value={total}
@@ -102,8 +112,22 @@ export default function DashboardPage() {
             />
           </div>
 
+          {/* Gothic Cathedral Divider */}
+          <GothicDivider label="Registro Tabular & Auditoría" />
+
           {/* Document Table */}
-          <DocumentTable documents={documents} onRefresh={fetchDocuments} />
+          <div className="relative z-10">
+            <DocumentTable documents={documents} onRefresh={fetchDocuments} />
+          </div>
+
+          {/* Bottom Cathedral Footer Bar */}
+          <div className="p-4 rounded-xl bg-obsidian-900/60 border border-crimson-900/20 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-serif">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-crimson-400" />
+              <span>Protección Activa de Privacidad: 100% de la inferencia ejecutada en procesador local.</span>
+            </div>
+            <span className="text-crimson-800 font-bold mt-2 sm:mt-0">✦ Cero Filtración de Datos a la Nube ✦</span>
+          </div>
         </main>
       </div>
 

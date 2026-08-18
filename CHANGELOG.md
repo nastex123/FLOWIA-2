@@ -4,6 +4,20 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:36] (America/Bogota)
+
+- **[UI / Gothic Cathedral Enrichment]** Incorporacion de esquineros de filigrana, divisores sacros, ventanas ojivales y siluetas de catedral
+  - **Qué:** 
+    - `frontend/src/components/GothicCornerOrnament.tsx`: esquineros de forja gotica con trifolios y rosetas en esquinas de tarjetas y contenedores.
+    - `frontend/src/components/GothicDivider.tsx`: divisores con cruz gotica radiante, filigrana ahusada y etiquetas de santuario.
+    - `frontend/src/components/GothicArchWatermark.tsx`: ventanal ojival de catedral en marca de agua vectorial para rellenar espacios libres.
+    - `frontend/src/components/GothicBackdrop.tsx`: integracion de siluetas de arco apuntado, constelaciones y 55 brasas con filigrana conectiva.
+    - Integracion de todos los ornamentos en `Dashboard`, `InvoiceReviewPage`, `SettingsPage` y `LocalExtractionPage`.
+  - **Por qué:** Enriquecer la ambientacion visual de catedral gotica y erradicar espacios vacios o planos en la aplicacion.
+  - **Archivos:** `frontend/src/components/GothicCornerOrnament.tsx`, `frontend/src/components/GothicDivider.tsx`, `frontend/src/components/GothicArchWatermark.tsx`, `frontend/src/components/GothicBackdrop.tsx`, `frontend/src/components/KpiCard.tsx`, `frontend/src/app/page.tsx`, `frontend/src/app/review/[id]/page.tsx`, `frontend/src/app/settings/page.tsx`, `frontend/src/app/local/page.tsx`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:31] (America/Bogota)
 
 - **[Frontend / Missing Routes]** Creacion de las paginas de Configuracion y Extraccion Local en Next.js

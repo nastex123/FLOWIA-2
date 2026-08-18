@@ -35,16 +35,16 @@ export default function GothicBackdrop() {
 
     window.addEventListener('resize', handleResize);
 
-    // Initialize Embers
-    const numEmbers = 45;
+    // Initialize 60 embers
+    const numEmbers = 55;
     const embers: Ember[] = Array.from({ length: numEmbers }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      radius: Math.random() * 2.2 + 1.0,
-      vx: (Math.random() - 0.5) * 0.6,
-      vy: -(Math.random() * 0.6 + 0.4),
+      radius: Math.random() * 2.4 + 1.0,
+      vx: (Math.random() - 0.5) * 0.65,
+      vy: -(Math.random() * 0.7 + 0.4),
       type: Math.random() > 0.4 ? 0 : Math.random() > 0.2 ? 1 : 2,
-      alpha: Math.random() * 0.5 + 0.3,
+      alpha: Math.random() * 0.5 + 0.35,
       phase: Math.random() * Math.PI * 2,
       speed: Math.random() * 0.04 + 0.02,
     }));
@@ -63,7 +63,7 @@ export default function GothicBackdrop() {
       ctx.rotate(angle);
 
       // Concentric rings
-      ctx.strokeStyle = `rgba(225, 29, 72, ${alpha * 0.8})`;
+      ctx.strokeStyle = `rgba(225, 29, 72, ${alpha * 0.9})`;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.arc(0, 0, radius, 0, Math.PI * 2);
@@ -76,7 +76,7 @@ export default function GothicBackdrop() {
       // 12 Petals
       const numPetals = 12;
       const petalR = radius * 0.28;
-      ctx.strokeStyle = `rgba(245, 158, 11, ${alpha * 0.6})`;
+      ctx.strokeStyle = `rgba(245, 158, 11, ${alpha * 0.7})`;
       for (let i = 0; i < numPetals; i++) {
         const a = ((Math.PI * 2) / numPetals) * i;
         const px = Math.cos(a) * (radius * 0.68);
@@ -86,37 +86,76 @@ export default function GothicBackdrop() {
         ctx.arc(px, py, petalR, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Radial Spokes
         ctx.beginPath();
         ctx.moveTo(Math.cos(a) * (radius * 0.16), Math.sin(a) * (radius * 0.16));
         ctx.lineTo(Math.cos(a) * radius, Math.sin(a) * radius);
         ctx.stroke();
       }
 
+      // Inscribed Gothic Cross
+      ctx.strokeStyle = `rgba(225, 29, 72, ${alpha * 0.8})`;
+      ctx.lineWidth = 1.0;
+      ctx.beginPath();
+      ctx.moveTo(0, -radius * 0.94);
+      ctx.lineTo(0, radius * 0.94);
+      ctx.moveTo(-radius * 0.94, 0);
+      ctx.lineTo(radius * 0.94, 0);
+      ctx.stroke();
+
+      ctx.restore();
+    };
+
+    const drawCathedralArchSilhouette = (
+      cx: number,
+      cy: number,
+      w: number,
+      h: number,
+      alpha: number
+    ) => {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.strokeStyle = `rgba(136, 19, 55, ${alpha})`;
+      ctx.lineWidth = 1.0;
+
+      // Outer arch
+      ctx.beginPath();
+      ctx.moveTo(-w / 2, h / 2);
+      ctx.lineTo(-w / 2, -h / 4);
+      ctx.quadraticCurveTo(-w / 2, -h / 2, 0, -h / 2);
+      ctx.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 4);
+      ctx.lineTo(w / 2, h / 2);
+      ctx.stroke();
+
+      // Central rosette inside arch
+      ctx.beginPath();
+      ctx.arc(0, -h / 4, w / 4, 0, Math.PI * 2);
+      ctx.stroke();
+
       ctx.restore();
     };
 
     const render = () => {
-      // Background base
+      // Obsidian base
       ctx.fillStyle = '#030408';
       ctx.fillRect(0, 0, width, height);
 
-      roseAngle += 0.0015;
+      roseAngle += 0.0014;
 
-      // Draw Gothic Rose Windows
-      drawRoseWindow(width * 0.75, height * 0.45, 280, roseAngle, 0.18);
-      drawRoseWindow(width * 0.18, height * 0.82, 180, -roseAngle * 1.2, 0.12);
+      // Draw Cathedral Background Watermarks
+      drawRoseWindow(width * 0.78, height * 0.42, 300, roseAngle, 0.22);
+      drawRoseWindow(width * 0.16, height * 0.84, 200, -roseAngle * 1.2, 0.16);
+      drawCathedralArchSilhouette(width * 0.5, height * 0.5, 340, 520, 0.08);
 
-      // Connect near embers
+      // Connect near embers with filigree lines
       ctx.lineWidth = 0.8;
       for (let i = 0; i < numEmbers; i++) {
         for (let j = i + 1; j < numEmbers; j++) {
           const dx = embers[i].x - embers[j].x;
           const dy = embers[i].y - embers[j].y;
           const dist = Math.hypot(dx, dy);
-          if (dist < 110) {
-            const factor = 1 - dist / 110;
-            ctx.strokeStyle = `rgba(190, 18, 60, ${factor * 0.25})`;
+          if (dist < 120) {
+            const factor = 1 - dist / 120;
+            ctx.strokeStyle = `rgba(190, 18, 60, ${factor * 0.3})`;
             ctx.beginPath();
             ctx.moveTo(embers[i].x, embers[i].y);
             ctx.lineTo(embers[j].x, embers[j].y);
@@ -127,7 +166,7 @@ export default function GothicBackdrop() {
 
       // Update & Draw Embers
       for (const e of embers) {
-        e.x += e.vx + Math.sin(e.phase) * 0.2;
+        e.x += e.vx + Math.sin(e.phase) * 0.25;
         e.y += e.vy;
         e.phase += e.speed;
 
@@ -139,24 +178,24 @@ export default function GothicBackdrop() {
         else if (e.x > width) e.x = 0;
 
         const currentAlpha = Math.max(
-          0.1,
-          Math.min(0.9, e.alpha + Math.sin(e.phase * 1.5) * 0.25)
+          0.12,
+          Math.min(0.95, e.alpha + Math.sin(e.phase * 1.5) * 0.28)
         );
 
         let color = `rgba(251, 113, 133, ${currentAlpha})`;
-        let halo = `rgba(225, 29, 72, ${currentAlpha * 0.3})`;
+        let halo = `rgba(225, 29, 72, ${currentAlpha * 0.32})`;
         if (e.type === 1) {
           color = `rgba(216, 180, 254, ${currentAlpha})`;
-          halo = `rgba(147, 51, 234, ${currentAlpha * 0.25})`;
+          halo = `rgba(147, 51, 234, ${currentAlpha * 0.26})`;
         } else if (e.type === 2) {
           color = `rgba(253, 230, 138, ${currentAlpha})`;
-          halo = `rgba(217, 119, 6, ${currentAlpha * 0.3})`;
+          halo = `rgba(217, 119, 6, ${currentAlpha * 0.34})`;
         }
 
         // Halo
         ctx.fillStyle = halo;
         ctx.beginPath();
-        ctx.arc(e.x, e.y, e.radius * 2.4, 0, Math.PI * 2);
+        ctx.arc(e.x, e.y, e.radius * 2.5, 0, Math.PI * 2);
         ctx.fill();
 
         // Core

@@ -5,6 +5,8 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import FileUploadModal from '@/components/FileUploadModal';
 import GothicRoseCircle from '@/components/GothicRoseCircle';
+import GothicCornerOrnament from '@/components/GothicCornerOrnament';
+import GothicDivider from '@/components/GothicDivider';
 import { Cpu, Upload, FileText, CheckCircle2, Zap } from 'lucide-react';
 
 export default function LocalExtractionPage() {
@@ -65,6 +67,10 @@ export default function LocalExtractionPage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
+              <div className="flex items-center gap-2 text-xs font-serif tracking-widest text-crimson-400 uppercase mb-1">
+                <span>✠</span>
+                <span>Inferencia Determinista Offline</span>
+              </div>
               <h1 className="font-serif text-2xl md:text-3xl font-bold text-crimson-200">
                 Extracción en Cripta Local (Pure Libraries)
               </h1>
@@ -73,7 +79,7 @@ export default function LocalExtractionPage() {
               </p>
             </div>
 
-            <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-crimson-900 to-crimson-700 hover:from-crimson-800 hover:to-crimson-600 text-white font-serif font-bold text-xs shadow-md cursor-pointer transition-all">
+            <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-crimson-900 to-crimson-700 hover:from-crimson-800 hover:to-crimson-600 text-white font-serif font-bold text-xs shadow-lg cursor-pointer transition-all">
               <Upload className="w-4 h-4" />
               <span>{processing ? 'Extrayendo...' : 'Procesar Archivo Local'}</span>
               <input
@@ -87,9 +93,10 @@ export default function LocalExtractionPage() {
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-obsidian-900/80 border border-crimson-900/30 flex items-center gap-3">
-              <FileText className="w-5 h-5 text-crimson-400" />
-              <div>
+            <div className="relative overflow-hidden p-5 rounded-xl bg-obsidian-900/85 backdrop-blur-xl border border-crimson-900/35 flex items-center gap-3 shadow-md group">
+              <GothicCornerOrnament size={20} />
+              <FileText className="w-5 h-5 text-crimson-400 shrink-0" />
+              <div className="relative z-10">
                 <span className="text-xs text-slate-400 font-serif">Tipo Identificado</span>
                 <p className="text-sm font-bold text-slate-100 uppercase font-serif">
                   {extractedData.document_type} ({(extractedData.confidence * 100).toFixed(0)}%)
@@ -97,9 +104,10 @@ export default function LocalExtractionPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-obsidian-900/80 border border-crimson-900/30 flex items-center gap-3">
-              <Zap className="w-5 h-5 text-amber-400" />
-              <div>
+            <div className="relative overflow-hidden p-5 rounded-xl bg-obsidian-900/85 backdrop-blur-xl border border-crimson-900/35 flex items-center gap-3 shadow-md group">
+              <GothicCornerOrnament size={20} />
+              <Zap className="w-5 h-5 text-amber-400 shrink-0" />
+              <div className="relative z-10">
                 <span className="text-xs text-slate-400 font-serif">Tiempo de Inferencia</span>
                 <p className="text-sm font-bold text-amber-300 font-mono">
                   {extractedData.inference_time_ms} ms (100% Local)
@@ -107,9 +115,10 @@ export default function LocalExtractionPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-obsidian-900/80 border border-crimson-900/30 flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <div>
+            <div className="relative overflow-hidden p-5 rounded-xl bg-obsidian-900/85 backdrop-blur-xl border border-crimson-900/35 flex items-center gap-3 shadow-md group">
+              <GothicCornerOrnament size={20} />
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div className="relative z-10">
                 <span className="text-xs text-slate-400 font-serif">Privacidad Garantizada</span>
                 <p className="text-sm font-bold text-emerald-300">
                   Zero Cloud Data Leakage
@@ -118,10 +127,13 @@ export default function LocalExtractionPage() {
             </div>
           </div>
 
+          <GothicDivider label="Estructuración de Manuscritos" />
+
           {/* 2-Column Splitter Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left: Campos Extraídos */}
-            <div className="lg:col-span-5 relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 group space-y-4">
+            <div className="lg:col-span-5 relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/35 group space-y-4 shadow-xl">
+              <GothicCornerOrnament />
               <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-15 group-hover:opacity-35 text-crimson-500" />
               <h3 className="font-serif font-bold text-crimson-300 text-sm">
                 Campos Clave Extraídos & Metadatos
@@ -141,7 +153,8 @@ export default function LocalExtractionPage() {
             </div>
 
             {/* Right: Tabular Grid */}
-            <div className="lg:col-span-7 relative overflow-hidden rounded-xl bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 group">
+            <div className="lg:col-span-7 relative overflow-hidden rounded-xl bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/35 group shadow-xl">
+              <GothicCornerOrnament />
               <GothicRoseCircle className="w-56 h-56 -right-12 -bottom-12 opacity-15 group-hover:opacity-30 text-crimson-500" reverse />
               <div className="p-5 border-b border-crimson-900/25">
                 <h3 className="font-serif font-bold text-crimson-300 text-sm">

@@ -5,6 +5,8 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import FileUploadModal from '@/components/FileUploadModal';
 import GothicRoseCircle from '@/components/GothicRoseCircle';
+import GothicCornerOrnament from '@/components/GothicCornerOrnament';
+import GothicDivider from '@/components/GothicDivider';
 import { Settings, Shield, FolderOpen, Key, Save, Check } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -37,6 +39,10 @@ export default function SettingsPage() {
         <main className="p-6 md:p-8 max-w-5xl mx-auto w-full space-y-6">
           {/* Header */}
           <div>
+            <div className="flex items-center gap-2 text-xs font-serif tracking-widest text-crimson-400 uppercase mb-1">
+              <span>✠</span>
+              <span>Cripta & Gobernanza Local</span>
+            </div>
             <h1 className="font-serif text-2xl md:text-3xl font-bold text-crimson-200">
               Configuración de la Cripta
             </h1>
@@ -45,10 +51,13 @@ export default function SettingsPage() {
             </p>
           </div>
 
+          <GothicDivider label="Políticas & Parámetros" />
+
           <form onSubmit={handleSave} className="space-y-5">
             {/* Card 1: Motor Sentinel */}
-            <div className="relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 group space-y-4">
-              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-20 group-hover:opacity-35 text-crimson-500" />
+            <div className="relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/35 group space-y-4 shadow-xl">
+              <GothicCornerOrnament />
+              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-20 group-hover:opacity-40 text-crimson-500" />
               <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm">
                 <Shield className="w-4 h-4" />
                 <span>POLÍTICAS DE AUDITORÍA SENTINEL</span>
@@ -84,8 +93,9 @@ export default function SettingsPage() {
             </div>
 
             {/* Card 2: Hot-Folder */}
-            <div className="relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 group space-y-4">
-              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-20 group-hover:opacity-35 text-crimson-500" reverse />
+            <div className="relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/35 group space-y-4 shadow-xl">
+              <GothicCornerOrnament />
+              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-20 group-hover:opacity-40 text-crimson-500" reverse />
               <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm">
                 <FolderOpen className="w-4 h-4" />
                 <span>MONITOREO DE CARPETAS (HOT-FOLDER AGENT)</span>
@@ -119,8 +129,9 @@ export default function SettingsPage() {
             </div>
 
             {/* Card 3: Claves API */}
-            <div className="relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 group space-y-4">
-              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-20 group-hover:opacity-35 text-crimson-500" />
+            <div className="relative overflow-hidden rounded-xl p-6 bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/35 group space-y-4 shadow-xl">
+              <GothicCornerOrnament />
+              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-20 group-hover:opacity-40 text-crimson-500" />
               <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm">
                 <Key className="w-4 h-4" />
                 <span>CLAVES DE INTEGRACIÓN API (ORGANIZACIÓN ACTIVA)</span>
