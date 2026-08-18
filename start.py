@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-platform unified launcher for FlowMind AI (Backend + Frontend).
+"""Cross-platform unified launcher for FlowMind AI (Backend + Desktop UI + Optional Web).
 
 Works natively on Windows, Linux, and macOS with a single command:
     python start.py
@@ -7,6 +7,7 @@ Works natively on Windows, Linux, and macOS with a single command:
 
 import os
 import signal
+import socket
 import subprocess
 import sys
 import time
@@ -15,6 +16,7 @@ from pathlib import Path
 # Paths
 ROOT_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT_DIR / "backend"
+DESKTOP_DIR = ROOT_DIR / "desktop"
 FRONTEND_DIR = ROOT_DIR / "frontend"
 
 # ANSI Colors
@@ -27,38 +29,57 @@ RESET = "\033[0m"
 
 
 def print_banner():
-    print(f"{CYAN}{BOLD}{'=' * 65}{RESET}")
-    print(f"{CYAN}{BOLD}   🧠 FlowMind AI — Unified Application Launcher{RESET}")
-    print(f"{CYAN}{'=' * 65}{RESET}")
+    print(f"{CYAN}{BOLD}{'=' * 68}{RESET}")
+    print(f"{CYAN}{BOLD}   🧠 FlowMind AI — Unified Suite & Application Launcher{RESET}")
+    print(f"{CYAN}{'=' * 68}{RESET}")
     print(f"   {GREEN}▶ Backend API:{RESET}       http://127.0.0.1:8000")
     print(f"   {GREEN}▶ Swagger Docs:{RESET}      http://127.0.0.1:8000/docs")
-    print(f"   {GREEN}▶ Web Dashboard:{RESET}     http://localhost:3000")
+    print(f"   {GREEN}▶ Desktop Suite (UI):{RESET} PySide6 Native Client (Qt6)")
     print(f"   {GREEN}▶ Default Admin:{RESET}     admin@flowmind.local / admin123")
     print(f"   {GREEN}▶ Environment:{RESET}       100% Local & Privacy-First (Zero Cloud)")
-    print(f"{CYAN}{'=' * 65}{RESET}\n")
+    print(f"{CYAN}{'=' * 68}{RESET}\n")
 
 
 def check_prerequisites():
-    """Checks that Python and npm are accessible."""
+    """Checks that core directories and dependencies exist."""
     if not BACKEND_DIR.exists():
         print(f"{RED}[ERROR] Backend directory not found at {BACKEND_DIR}{RESET}")
         sys.exit(1)
 
-    if not FRONTEND_DIR.exists():
-        print(f"{RED}[ERROR] Frontend directory not found at {FRONTEND_DIR}{RESET}")
-        sys.exit(1)
+    try:
+        import uvicorn  # noqa
+    except ImportError:
+        print(f"{RED}[ERROR] 'uvicorn' no está instalado. Instalándolo...{RESET}")
+        subprocess.run([sys.executable, "-m", "pip", "install", "--user", "uvicorn", "--break-system-packages"], check=True)
 
-    # Check node_modules
-    node_modules = FRONTEND_DIR / "node_modules"
-    if not node_modules.exists():
-        print(f"{YELLOW}[WARN] 'node_modules' not found in frontend. Running 'npm install'...{RESET}")
+
+def is_port_open(host: str, port: int, timeout: float = 1.0) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def find_free_port(start_port: int = 8000, max_attempts: int = 50) -> int:
+    """Finds the first free TCP port starting from start_port."""
+    for p in range(start_port, start_port + max_attempts):
         try:
-            npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
-            subprocess.run([npm_cmd, "install"], cwd=str(FRONTEND_DIR), check=True)
-            print(f"{GREEN}[OK] Frontend dependencies installed successfully.{RESET}\n")
-        except Exception as e:
-            print(f"{RED}[ERROR] Failed to run 'npm install': {e}{RESET}")
-            sys.exit(1)
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(("127.0.0.1", p))
+                return p
+        except OSError:
+            continue
+    return start_port
+
+
+def wait_for_backend(host: str = "127.0.0.1", port: int = 8000, max_wait: float = 8.0) -> bool:
+    start_time = time.time()
+    while time.time() - start_time < max_wait:
+        if is_port_open(host, port):
+            return True
+        time.sleep(0.3)
+    return False
 
 
 def main():
@@ -66,13 +87,19 @@ def main():
     check_prerequisites()
 
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(BACKEND_DIR) + (os.pathsep + env.get("PYTHONPATH", ""))
+    env["PYTHONPATH"] = str(BACKEND_DIR) + (os.pathsep + str(ROOT_DIR)) + (os.pathsep + env.get("PYTHONPATH", ""))
 
     processes = []
+    launch_web = "--web" in sys.argv
+    no_ui = "--no-ui" in sys.argv
+
+    # Determine free port for backend
+    port = find_free_port(start_port=8000)
+    api_url = f"http://127.0.0.1:{port}"
 
     try:
         # 1. Start Backend Process (Uvicorn)
-        print(f"{CYAN}[1/2] Starting FastAPI Backend on port 8000...{RESET}")
+        print(f"{CYAN}[1/2] Iniciando FastAPI Backend en {api_url}...{RESET}")
         backend_cmd = [
             sys.executable,
             "-m",
@@ -83,7 +110,7 @@ def main():
             "--host",
             "127.0.0.1",
             "--port",
-            "8000",
+            str(port),
             "--reload",
         ]
         backend_proc = subprocess.Popen(
@@ -93,40 +120,56 @@ def main():
         )
         processes.append(backend_proc)
 
-        # Brief pause to let backend bind port
-        time.sleep(1.5)
+        # Wait for backend to be ready
+        print(f"{YELLOW}Esperando a que el backend esté listo en puerto {port}...{RESET}")
+        backend_ready = wait_for_backend("127.0.0.1", port)
+        if backend_ready:
+            print(f"{GREEN}[OK] Backend activo y listo para conexiones.{RESET}\n")
+        else:
+            print(f"{YELLOW}[WARN] Backend demoró en responder, iniciando UI de todas formas...{RESET}\n")
 
-        # 2. Start Frontend Process (Next.js)
-        print(f"{CYAN}[2/2] Starting Next.js Frontend on port 3000...{RESET}")
-        npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
-        frontend_proc = subprocess.Popen(
-            [npm_cmd, "run", "dev"],
-            cwd=str(FRONTEND_DIR),
-            env=os.environ.copy(),
-            shell=(sys.platform == "win32"),
-        )
-        processes.append(frontend_proc)
+        # 2. Start Desktop PySide6 UI
+        if not no_ui:
+            print(f"{CYAN}[2/2] Iniciando Suite de Escritorio PySide6 (UI)...{RESET}")
+            desktop_cmd = [sys.executable, str(DESKTOP_DIR / "main.py"), f"--api-url={api_url}"]
+            desktop_proc = subprocess.Popen(
+                desktop_cmd,
+                cwd=str(ROOT_DIR),
+                env=env,
+            )
+            processes.append(desktop_proc)
 
-        print(f"\n{GREEN}{BOLD}[READY] Both services are running!{RESET}")
-        print(f"{YELLOW}Press Ctrl+C to stop both servers gracefully.{RESET}\n")
+        # 3. Optional Frontend Process (Next.js)
+        if launch_web and FRONTEND_DIR.exists():
+            print(f"{CYAN}[+Web] Iniciando Frontend Web en puerto 3000...{RESET}")
+            npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
+            frontend_proc = subprocess.Popen(
+                [npm_cmd, "run", "dev"],
+                cwd=str(FRONTEND_DIR),
+                env=os.environ.copy(),
+                shell=(sys.platform == "win32"),
+            )
+            processes.append(frontend_proc)
+
+        print(f"\n{GREEN}{BOLD}[LISTO] ¡FlowMind AI está en ejecución!{RESET}")
+        print(f"{YELLOW}Cierra la ventana de la aplicación o pulsa Ctrl+C para detener todo.{RESET}\n")
 
         # Keep parent alive and monitor child processes
         while True:
             for p in processes:
                 poll = p.poll()
                 if poll is not None:
-                    print(f"\n{YELLOW}[NOTICE] Process (PID {p.pid}) exited with code {poll}. Stopping remaining services...{RESET}")
+                    print(f"\n{YELLOW}[AVISO] Proceso (PID {p.pid}) finalizó (código {poll}). Deteniendo servicios...{RESET}")
                     return
-            time.sleep(1)
+            time.sleep(0.5)
 
     except KeyboardInterrupt:
-        print(f"\n\n{YELLOW}[SHUTDOWN] Received Ctrl+C. Gracefully stopping FlowMind AI...{RESET}")
+        print(f"\n\n{YELLOW}[SHUTDOWN] Deteniendo FlowMind AI de forma segura...{RESET}")
     finally:
         for p in processes:
             if p.poll() is None:
                 try:
                     if sys.platform == "win32":
-                        # Terminate process tree on Windows
                         subprocess.run(
                             ["taskkill", "/F", "/T", "/PID", str(p.pid)],
                             capture_output=True,
@@ -139,7 +182,7 @@ def main():
                         p.kill()
                     except Exception:
                         pass
-        print(f"{GREEN}[OK] All FlowMind AI services stopped cleanly.{RESET}")
+        print(f"{GREEN}[OK] Todos los servicios de FlowMind AI se detuvieron limpiamente.{RESET}")
 
 
 if __name__ == "__main__":

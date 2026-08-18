@@ -2,6 +2,15 @@
 
 from typing import Any, Dict, List, Optional
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
+from PySide6.QtGui import QColor
+
+_SEVERITY_COLORS = {
+    "ok": QColor("#22c55e"),
+    "warning": QColor("#f59e0b"),
+    "critical": QColor("#ef4444"),
+    "info": QColor("#3b82f6"),
+    "unknown": QColor("#94a3b8"),
+}
 
 
 class VirtualDataTableModel(QAbstractTableModel):
@@ -11,12 +20,17 @@ class VirtualDataTableModel(QAbstractTableModel):
         super().__init__()
         self._headers = headers or []
         self._records = records or []
+        self._severity_column: Optional[int] = None
 
     def set_data(self, headers: List[str], records: List[Dict[str, Any]]) -> None:
         self.beginResetModel()
         self._headers = headers
         self._records = records
         self.endResetModel()
+
+    def set_severity_column(self, column: Optional[int]) -> None:
+        """Marks a column to be colored by severity value (ok/warning/critical/info)."""
+        self._severity_column = column
 
     def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
         if parent.isValid():
@@ -42,10 +56,11 @@ class VirtualDataTableModel(QAbstractTableModel):
             if role == Qt.ItemDataRole.DisplayRole:
                 return str(value) if value is not None else ""
             elif role == Qt.ItemDataRole.TextAlignmentRole:
-                # Right align numbers
                 if isinstance(value, (int, float)) or (isinstance(value, str) and value.replace(".", "", 1).replace(",", "", 1).isdigit()):
                     return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
                 return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            elif role == Qt.ItemDataRole.ForegroundRole and col == self._severity_column:
+                return _SEVERITY_COLORS.get(str(value).lower(), _SEVERITY_COLORS["unknown"])
 
         return None
 

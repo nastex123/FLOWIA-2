@@ -4,6 +4,46 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 13:35] (America/Bogota)
+
+- **[Docs / Config]** Actualización integral del `README.md` y guía de instalación clara paso a paso
+  - **Qué:** 
+    - `README.md`: reestructuración y formateo exhaustivo de la documentación de inicio rápido, agregando bloques de código explícitos con sintaxis para Windows PowerShell, Windows CMD y Linux/macOS Bash, guía completa y matriz comparativa de variables de entorno para Windows vs Linux (rutas, SQLite vs PostgreSQL, Redis, S3), ejemplos de definición temporal en terminal (`$env:VAR`, `set VAR`, `export VAR`), tabla de credenciales por defecto, opciones de ejecución unificada (`start.py`, `start.ps1`, `start.sh`), banderas CLI (`--web`, `--no-ui`), ejecución de pruebas con `pytest` y generación de datos de prueba (`samples/`).
+    - `.env.example`: enriquecido con secciones separadas, comentarios explicativos para Windows y Linux, y valores por defecto para SQLite local y PostgreSQL/Docker.
+    - `.env`: configurado por defecto para SQLite asíncrono en modo local, permitiendo ejecución y tests inmediatos sin dependencia forzosa de Docker/PostgreSQL.
+  - **Por qué:** Asegurar que cualquier desarrollador en Windows o Linux configure correctamente sus variables de entorno, rutas relativas/absolutas y dependencias sin errores de conexión o formato.
+  - **Archivos:** `README.md`, `.env.example`, `.env`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 11:48] (America/Bogota)
+
+- **[Desktop / Launcher]** Integración de UI en `start.py`, asignación dinámica de puertos libres, modernización visual del diseño y auto-login fluido
+  - **Qué:** 
+    - `start.py`: actualizado para detectar puertos ocupados (evitando `[Errno 98] Address already in use`), encontrar automáticamente el primer puerto libre (ej. `8001`), iniciar Uvicorn y lanzar la suite de escritorio PySide6 (`desktop/main.py --api-url=http://127.0.0.1:<puerto>`), con apagado coordinado (*graceful shutdown*).
+    - `desktop/main.py`: soporte de argumento `--api-url` y variable de entorno `FLOWMIND_API_URL` para enlace dinámico y transparente con el backend.
+    - `desktop/ui/styles.py`: nuevo sistema de diseño y temas visuales Dark Theme moderno (paleta Slate, bordes sutiles, micro-contrastes y componentes consistentes).
+    - `desktop/ui/login_dialog.py`: rediseño visual con botón de acceso directo a "Modo Demo Offline", auto-login al pulsar Enter/Aceptar y detección de backend no disponible.
+    - `desktop/ui/documents_view.py`: añadidas tarjetas de métricas KPIs (Total, Críticas, Advertencias, Revisadas) y barra de búsqueda en tiempo real.
+    - `desktop/ui/invoice_review_view.py`: rediseño en layout de 2 columnas fluidas con divisor `QSplitter`, tarjetas de cabecera y panel de auditoría destacado.
+  - **Por qué:** Permitir al usuario ejecutar la aplicación completa con un solo comando (`python3 start.py`) y ofrecer una experiencia de usuario atractiva, moderna y sin fricciones de inicio de sesión o colisiones de puertos.
+  - **Archivos:** `start.py`, `desktop/main.py`, `desktop/ui/styles.py`, `desktop/ui/login_dialog.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 11:22] (America/Bogota)
+
+- **[Desktop / Frontend]** Implementación completa de la UI de Gestión Financiera en PySide6 (P3 — Brandon)
+  - **Qué:** Se finalizó y validó la interfaz de escritorio de revisión financiera:
+    - `desktop/controllers/api_client.py`: métodos completos del contrato (`login`, `me`, `list_documents`, `get_document`, `list_checks`, `review_document`, `upload_file`).
+    - `desktop/ui/login_dialog.py`: diálogo de autenticación JWT (con selector de organización) y soporte para modo API Key.
+    - `desktop/ui/main_window.py`: arquitectura de navegación `QStackedWidget` con Facturas, Detalle, Configuración (carga perezosa de `SettingsView` de P4) y Modo Local.
+    - `desktop/ui/documents_view.py`: vista de comprobantes con badges coloreados de severidad de anomalías (`critical`, `warning`, `info`, `ok`) y doble clic a detalle.
+    - `desktop/ui/invoice_review_view.py`: detalle de factura estructurada (cabecera, tabla de ítems, resumen de impuestos y totales), panel de hallazgos (`document_checks`) y acción "Marcar como revisada".
+    - `tests/test_desktop_invoice_review.py`: 13 pruebas automatizadas cubriendo el contrato simulado TDD §5 y la integración directa con el backend FastAPI.
+  - **Por qué:** Cumplir con los entregables de la persona 3 (Brandon) definidos en `docs/08-operations/02-trabajo-equipo-proyecto4.md` y `docs/04-engineering/04-invoice-validation-review.md`.
+  - **Archivos:** `desktop/controllers/api_client.py`, `desktop/controllers/mock_backend.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/login_dialog.py`, `tests/test_desktop_invoice_review.py`, `CHANGELOG.md`.
+
 ---
 
 ### [2026-08-18 10:35] (America/Bogota)
