@@ -142,15 +142,15 @@ class MainWindow(QMainWindow):
         sidebar_top.addWidget(self.toggle_btn)
         sidebar_layout.addLayout(sidebar_top)
 
-        # Navigation List
+        # Navigation List with Gothic Roman Glyphs for compact mode
         self.sidebar = QListWidget()
         self.sidebar.setObjectName("sidebar")
 
         self.nav_items_data = [
-            ("Libro Mayor & Auditoria", "LIB"),
-            ("Inspeccion de Factura", "INSP"),
-            ("Configuracion", "CONF"),
-            ("Cripta de Extraccion", "CRIP"),
+            ("Libro Mayor & Auditoria", "I"),
+            ("Inspeccion de Factura", "II"),
+            ("Configuracion", "III"),
+            ("Cripta de Extraccion", "IV"),
         ]
 
         for full_text, _ in self.nav_items_data:
@@ -224,15 +224,17 @@ class MainWindow(QMainWindow):
                 item = self.sidebar.item(i)
                 if item:
                     item.setText(full_text)
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
                     item.setToolTip("")
         else:
             self.sidebar_title.hide()
             self.sidebar_footer.hide()
             self.toggle_btn.setText("▶")
-            for i, (full_text, icon_only) in enumerate(self.nav_items_data):
+            for i, (full_text, roman_glyph) in enumerate(self.nav_items_data):
                 item = self.sidebar.item(i)
                 if item:
-                    item.setText(icon_only)
+                    item.setText(f"[ {roman_glyph} ]")
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                     item.setToolTip(full_text)
 
     def _build_local_view(self) -> QWidget:

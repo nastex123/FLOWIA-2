@@ -117,7 +117,7 @@ class DocumentsView(QWidget):
 
         layout.addWidget(filter_frame)
 
-        # 4. Pro Table View (Crypt Theme)
+        # 4. Pro Table View (Crypt Theme with dark headers)
         table_frame = QFrame()
         table_frame.setObjectName("glassPanel")
         table_layout = QVBoxLayout(table_frame)
@@ -127,7 +127,8 @@ class DocumentsView(QWidget):
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.table.verticalHeader().setDefaultSectionSize(44)  # 44px Row Height
+        self.table.verticalHeader().setDefaultSectionSize(44)
+        self.table.setCornerButtonEnabled(False)
         self.table.doubleClicked.connect(self._on_double_clicked)
         self.model = VirtualDataTableModel()
         self.table.setModel(self.model)

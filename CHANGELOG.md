@@ -4,6 +4,19 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:00] (America/Bogota)
+
+- **[UI / Gothic Geometry & Visual Fixes]** Incorporacion de Roseton Gotico animado, circulos alquimicos, correccion de sidebar contraido y eliminacion definitiva del recuadro blanco en tablas
+  - **Qué:** 
+    - `desktop/ui/components/particle_backdrop.py`: implementacion de renderizado vectorial de un Roseton de Catedral Gotica de 12 petalos y circulos de compas alquimico con rotacion lenta continua combinados con las brasas carmesí ascendentes.
+    - `desktop/ui/styles.py`: eliminacion definitiva del recuadro blanco en `QTableView` mediante la estilizacion explicita de `QTableCornerButton::section`, `QHeaderView::section:vertical` (cabeceras verticales con borde carmesí) y fondo oscuro continuo en el viewport.
+    - `desktop/ui/main_window.py`: correccion del modo compacto del sidebar (68px) usando insignias romanas `[ I ]`, `[ II ]`, `[ III ]`, `[ IV ]` centradas sin recorte de texto.
+    - `desktop/ui/documents_view.py`: desactivacion del corner button nativo y unificacion de cabeceras oscuras.
+  - **Por qué:** Eliminar artefactos visuales nativos del sistema operativo y enriquecer la direccion artistica gotica con geometria sagrada de catedral.
+  - **Archivos:** `desktop/ui/components/particle_backdrop.py`, `desktop/ui/styles.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 14:53] (America/Bogota)
 
 - **[UI / Gothic Theme Overhaul]** Rediseño estetico integral con temática Gotica Obsidian, Crimson y Amethyst
