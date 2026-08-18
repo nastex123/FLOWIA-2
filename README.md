@@ -19,9 +19,9 @@ Antes de comenzar, asegúrate de tener instalado en tu sistema:
 
 ---
 
-## 🚀 Guía de Instalación Paso a Paso
+## 🚀 Guía de Instalación
 
-Sigue estos pasos para clonar el repositorio, configurar el entorno virtual e instalar todas las dependencias:
+Puedes instalar todas las dependencias del proyecto de forma **automática (Recomendado)** con un solo script, o siguiendo el flujo **manual paso a paso**.
 
 ### 1. Clonar el repositorio
 
@@ -32,35 +32,60 @@ cd FLOWIA-2
 
 ---
 
-### 2. Configurar el Entorno Virtual de Python
+### Opción A: Instalación Automática Unificada con `install.py` (Recomendada)
 
-#### En Windows (PowerShell):
+El proyecto incluye el script `install.py` que detecta automáticamente tu sistema operativo, crea el entorno virtual `venv`, instala las dependencias de Python (backend + desktop), inicializa `.env` en modo SQLite local, instala dependencias de frontend (`npm install`) y realiza un *Smoke Test* de verificación:
+
+#### En Windows (PowerShell / CMD):
 ```powershell
-# 1. Crear entorno virtual
+python install.py
+# O forzando el modo Windows:
+python install.py --os windows
+```
+
+#### En Linux / macOS (Bash / Zsh):
+```bash
+python3 install.py
+# O forzando el modo Linux:
+python3 install.py --os linux
+```
+
+> **Banderas adicionales de `install.py`:**
+> * `--backend-only` : Configura únicamente Python (`venv` + backend + desktop) omitiendo `npm`.
+> * `--frontend-only` : Ejecuta únicamente `npm install` en el directorio `frontend/`.
+> * `--skip-smoke-test` : Omite la verificación final de importaciones.
+
+---
+
+### Opción B: Instalación Manual Paso a Paso
+
+Si prefieres configurar cada paso manualmente:
+
+#### 1. Configurar el Entorno Virtual de Python
+
+**En Windows (PowerShell):**
+```powershell
+# Crear entorno virtual
 python -m venv venv
 
-# 2. Activar entorno virtual
+# Activar entorno virtual
 .\venv\Scripts\Activate.ps1
 
-# 3. Actualizar pip
+# Actualizar pip e instalar dependencias
 python -m pip install --upgrade pip
-
-# 4. Instalar backend, suite de escritorio y paquetes de desarrollo en modo editable
 pip install -e ".\backend[dev]"
 ```
 
-#### En Linux / macOS:
+**En Linux / macOS:**
 ```bash
-# 1. Crear entorno virtual
+# Crear entorno virtual
 python3 -m venv venv
 
-# 2. Activar entorno virtual
+# Activar entorno virtual
 source venv/bin/activate
 
-# 3. Actualizar pip
+# Actualizar pip e instalar dependencias
 pip install --upgrade pip
-
-# 4. Instalar backend, suite de escritorio y paquetes de desarrollo en modo editable
 pip install -e "./backend[dev]"
 ```
 
@@ -274,6 +299,7 @@ pytest tests/
 FLOWIA-2/
 ├── AGENTS.md                  # Reglas de desarrollo para agentes IA
 ├── GEMINI.md                  # Contexto operativo para el agente
+├── install.py                 # Instalador automatizado multiplataforma (Windows / Linux)
 ├── start.py                   # Lanzador unificado multiplataforma (Backend + Desktop + Web)
 ├── start.sh                   # Script de inicio para Linux / macOS
 ├── start.ps1                  # Script de inicio para Windows PowerShell

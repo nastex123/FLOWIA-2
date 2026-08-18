@@ -4,6 +4,17 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 13:49] (America/Bogota)
+
+- **[Tooling / Scripts]** Creación del instalador automatizado multiplataforma `install.py` y actualización del `README.md`
+  - **Qué:** 
+    - `install.py`: nuevo script de configuración automática y multiplataforma (Windows, Linux y macOS) sin dependencias externas. Detecta el sistema operativo, valida Python 3.11+, Git y Node.js/npm, crea el entorno virtual `venv`, actualiza `pip`, instala el paquete backend en modo editable con extras `[dev]` (`pip install -e "./backend[dev]"`), copia y configura `.env` para SQLite local out-of-the-box, ejecuta `npm install` en el frontend, y realiza un *Smoke Test* de 9 módulos críticos (`fastapi`, `pydantic v2`, `sqlalchemy`, `pandas`, `pymupdf`, `sklearn`, `opencv`, `pyside6`, `networkx`). Incluye soporte para banderas `--os windows`, `--os linux`, `--backend-only`, `--frontend-only` y `--skip-smoke-test`.
+    - `README.md`: actualizado para presentar `python install.py` como la opción recomendada de instalación rápida con un solo comando.
+  - **Por qué:** Eliminar fricciones de instalación y garantizar que cualquier desarrollador configure y verifique el entorno de desarrollo completo de forma determinista y reproducible con un solo comando.
+  - **Archivos:** `install.py`, `README.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 13:35] (America/Bogota)
 
 - **[Docs / Config]** Actualización integral del `README.md` y guía de instalación clara paso a paso
