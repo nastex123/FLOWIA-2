@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-platform unified launcher for FlowMind AI (Backend + PySide6 Desktop UI).
+"""Cross-platform unified launcher for FlowMind AI (FastAPI Backend + Next.js Web UI / Desktop UI).
 
 Works natively on Windows, Linux, and macOS with a single command:
     python start.py
@@ -26,6 +26,7 @@ if sys.platform == "win32":
 # Paths
 ROOT_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT_DIR / "backend"
+FRONTEND_DIR = ROOT_DIR / "frontend"
 DESKTOP_DIR = ROOT_DIR / "desktop"
 
 # ANSI Colors
@@ -43,7 +44,7 @@ def print_banner():
     print(f"{CYAN}{'=' * 68}{RESET}")
     print(f"   {GREEN}* Backend API:{RESET}       http://127.0.0.1:8000")
     print(f"   {GREEN}* Swagger Docs:{RESET}      http://127.0.0.1:8000/docs")
-    print(f"   {GREEN}* Desktop Suite (UI):{RESET} PySide6 Native Client (Qt6)")
+    print(f"   {GREEN}* Web Frontend:{RESET}      http://localhost:3000 (Next.js)")
     print(f"   {GREEN}* Default Admin:{RESET}     admin@flowmind.local / admin123")
     print(f"   {GREEN}* Environment:{RESET}       100% Local & Privacy-First (Zero Cloud)")
     print(f"{CYAN}{'=' * 68}{RESET}\n")
@@ -99,9 +100,9 @@ def main():
     env["PYTHONPATH"] = str(BACKEND_DIR) + (os.pathsep + str(ROOT_DIR)) + (os.pathsep + env.get("PYTHONPATH", ""))
 
     processes = []
+    use_desktop = "--desktop" in sys.argv
     no_ui = "--no-ui" in sys.argv
 
-    # Determine free port for backend
     port = find_free_port(start_port=8000)
     api_url = f"http://127.0.0.1:{port}"
 
@@ -134,28 +135,30 @@ def main():
         if backend_ready:
             print(f"{GREEN}[OK] Backend activo y listo para conexiones.{RESET}\n")
         else:
-            print(f"{YELLOW}[WARN] Backend demoró en responder, iniciando UI de todas formas...{RESET}\n")
+            print(f"{YELLOW}[WARN] Backend demoró en responder, continuando...{RESET}\n")
 
-        # 2. Start Desktop PySide6 UI
+        # 2. Start Frontend UI
         if not no_ui:
-            print(f"{CYAN}[2/2] Iniciando Suite de Escritorio PySide6 (UI)...{RESET}")
-            desktop_cmd = [sys.executable, str(DESKTOP_DIR / "main.py"), f"--api-url={api_url}"]
-            desktop_proc = subprocess.Popen(
-                desktop_cmd,
-                cwd=str(ROOT_DIR),
-                env=env,
-            )
-            processes.append(desktop_proc)
+            if use_desktop:
+                print(f"{CYAN}[2/2] Iniciando Suite de Escritorio PySide6...{RESET}")
+                desktop_cmd = [sys.executable, str(DESKTOP_DIR / "main.py"), f"--api-url={api_url}"]
+                desktop_proc = subprocess.Popen(desktop_cmd, cwd=str(ROOT_DIR), env=env)
+                processes.append(desktop_proc)
+            elif FRONTEND_DIR.exists():
+                print(f"{CYAN}[2/2] Iniciando Next.js Web Frontend en http://localhost:3000...{RESET}")
+                npm_cmd = "npm.cmd" if sys.platform == "win32" else "npm"
+                frontend_proc = subprocess.Popen([npm_cmd, "run", "dev"], cwd=str(FRONTEND_DIR), env=env)
+                processes.append(frontend_proc)
 
         print(f"\n{GREEN}{BOLD}[LISTO] FlowMind AI está en ejecución.{RESET}")
-        print(f"{YELLOW}Cierra la ventana de la aplicación o pulsa Ctrl+C para detener todo.{RESET}\n")
+        print(f"{YELLOW}Pulsa Ctrl+C en cualquier momento para detener todos los servicios.{RESET}\n")
 
-        # Keep parent alive and monitor child processes
+        # Monitor child processes
         while True:
             for p in processes:
                 poll = p.poll()
                 if poll is not None:
-                    print(f"\n{YELLOW}[AVISO] Proceso (PID {p.pid}) finalizó (código {poll}). Deteniendo servicios...{RESET}")
+                    print(f"\n{YELLOW}[AVISO] Proceso finalizó (código {poll}). Deteniendo servicios...{RESET}")
                     return
             time.sleep(0.5)
 
@@ -166,10 +169,7 @@ def main():
             if p.poll() is None:
                 try:
                     if sys.platform == "win32":
-                        subprocess.run(
-                            ["taskkill", "/F", "/T", "/PID", str(p.pid)],
-                            capture_output=True,
-                        )
+                        subprocess.run(["taskkill", "/F", "/T", "/PID", str(p.pid)], capture_output=True)
                     else:
                         p.terminate()
                         p.wait(timeout=3)

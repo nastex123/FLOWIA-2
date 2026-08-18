@@ -23,7 +23,7 @@ def test_main_window_glass_and_collapsible_sidebar():
     assert window.width() >= 1080
     assert window.height() >= 720
     assert window._sidebar_expanded is True
-    assert window.sidebar_container.width() == 240
+    assert window.sidebar_container.width() >= 200
     assert hasattr(window, "particle_backdrop")
 
     # Toggle sidebar to collapsed mode

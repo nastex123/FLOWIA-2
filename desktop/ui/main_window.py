@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
         # 3. Gothic Sidebar Container
         self.sidebar_container = QWidget()
         self.sidebar_container.setObjectName("sidebarContainer")
-        self.sidebar_container.setFixedWidth(240)
+        self.sidebar_container.setFixedWidth(250)
         self.sidebar_animator = SidebarAnimator(self.sidebar_container, duration_ms=240, parent=self)
 
         sidebar_layout = QVBoxLayout(self.sidebar_container)
@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
     def _toggle_sidebar(self) -> None:
         """Smoothly animates sidebar between expanded (240px) and collapsed (68px)."""
         self._sidebar_expanded = not self._sidebar_expanded
-        target_w = 240 if self._sidebar_expanded else 68
+        target_w = 240 if self._sidebar_expanded else 88
         self.sidebar_animator.animate_to(target_w)
 
         if self._sidebar_expanded:

@@ -4,6 +4,24 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:20] (America/Bogota)
+
+- **[Frontend / Next.js Migration]** Creacion y despliegue del frontend web moderno en Next.js (App Router, TypeScript, Tailwind CSS, HTML5 Canvas y Lucide Icons)
+  - **Qué:** 
+    - `frontend/`: nueva suite web modular con Next.js 14+ y Tailwind CSS con tema Gotico Obsidian, Crimson y Amethyst.
+    - `frontend/src/components/GothicBackdrop.tsx`: canvas HTML5 en segundo plano que renderiza a 60 FPS un Roseton de Catedral Gotica de 12 petalos rotatorio y brasas carmesí ascendentes.
+    - `frontend/src/components/Sidebar.tsx`: barra lateral con transicion fluida en CSS puro (`transition-all duration-300`) entre 256px y 80px sin desbordamientos de texto.
+    - `frontend/src/components/Header.tsx`: cabecera con selector de organizacion multi-tenant, estado del santuario y boton de subida rapida.
+    - `frontend/src/components/KpiCard.tsx` y `DocumentTable.tsx`: tarjetas KPI con bordes iluminados y tabla de comprobantes con busqueda, badges de severidad y chips de filtrado.
+    - `frontend/src/components/FileUploadModal.tsx`: modal con Drag & Drop para ingesta documental.
+    - `frontend/src/app/review/[id]/page.tsx`: workspace de revision estructurada por pestañas (Cabecera, Items, Auditoria Sentinel, Validador Matematico y JSON) con barra flotante de aprobacion.
+    - `frontend/src/app/login/page.tsx`: camara de autenticacion con soporte directo para Modo Cripta Offline.
+    - `start.py` y `scripts/start_frontend.ps1`: lanzador unificado actualizado para orquestar FastAPI backend en puerto 8000 y Next.js web frontend en puerto 3000.
+  - **Por qué:** Proporcionar una experiencia de usuario moderna, fluida y sin restricciones de frameworks de escritorio nativos.
+  - **Archivos:** `frontend/`, `scripts/start_frontend.ps1`, `start.py`, `tests/test_desktop_gui_redesign.py`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:00] (America/Bogota)
 
 - **[UI / Gothic Geometry & Visual Fixes]** Incorporacion de Roseton Gotico animado, circulos alquimicos, correccion de sidebar contraido y eliminacion definitiva del recuadro blanco en tablas
