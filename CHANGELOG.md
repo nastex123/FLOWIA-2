@@ -6,6 +6,15 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+### [2026-08-18 10:10] (America/Bogota)
+
+- **[Docs]** Asignación definitiva del equipo a la división de trabajo del Proyecto 4
+  - **Qué:** Se asignaron los integrantes del equipo a cada tarea en `docs/08-operations/02-trabajo-equipo-proyecto4.md`: **Brandon** (P3 — Frontend / App de Escritorio PySide6, a cargo de la UI), **Luis** (P1 + P2 — Backend total: Backend Core y API de Revisión), **Beatriz** (P4 — Automatización Hot-Folder / agente de bandeja) y **Hector** (P4 — Integración final y coordinación / orquestador). La tarea P4 quedó dividida en dos responsables con pasos y criterios de finalización propios. Se actualizaron el mapa de personas, encabezados, contratos de interfaz, secuencia/dependencias y criterios de finalización con los nombres.
+  - **Por qué:** El equipo definió los integrantes reales; Brandon queda a cargo del frontend y Luis a cargo de todo el backend, repartiéndose la automatización e integración Beatriz y Hector.
+  - **Archivos:** `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 08:27] (America/Bogota)
 
 - **[Docs]** Ajuste de la división de trabajo del Proyecto 4 de 3 a 4 personas
