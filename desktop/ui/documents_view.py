@@ -23,7 +23,7 @@ from desktop.ui.styles import get_badge_qss
 COLUMNS = [
     "Filename",
     "Estado",
-    "Revisión",
+    "Revision",
     "Severidad",
     "OK",
     "Warning",
@@ -54,13 +54,13 @@ class DocumentsView(QWidget):
         header = QHBoxLayout()
         title_box = QVBoxLayout()
         title = QLabel("<h1 style='margin: 0; font-size: 24px; color: #f8fafc;'>Facturas & Comprobantes</h1>")
-        subtitle = QLabel("<span style='color: #94a3b8; font-size: 14px;'>Gestión automatizada de comprobantes, detección de anomalías y auditoría de fraudes</span>")
+        subtitle = QLabel("<span style='color: #94a3b8; font-size: 14px;'>Gestion automatizada de comprobantes, deteccion de anomalias y auditoria de fraudes</span>")
         title_box.addWidget(title)
         title_box.addWidget(subtitle)
         header.addLayout(title_box)
         header.addStretch()
 
-        self.refresh_btn = QPushButton("⟳ Actualizar Lista")
+        self.refresh_btn = QPushButton("Actualizar Lista")
         self.refresh_btn.setObjectName("secondaryButton")
         self.refresh_btn.clicked.connect(self.refresh)
         header.addWidget(self.refresh_btn)
@@ -70,10 +70,10 @@ class DocumentsView(QWidget):
         kpi_layout = QHBoxLayout()
         kpi_layout.setSpacing(14)
 
-        self.total_card = self._create_kpi_card("📁 TOTAL COMPROBANTES", "0", "#38bdf8", "border-top: 3px solid #38bdf8;")
-        self.critical_card = self._create_kpi_card("🚨 ANOMALÍAS CRÍTICAS", "0", "#f87171", "border-top: 3px solid #ef4444;")
-        self.warning_card = self._create_kpi_card("⚠️ ADVERTENCIAS FISCALES", "0", "#fbbf24", "border-top: 3px solid #f59e0b;")
-        self.reviewed_card = self._create_kpi_card("✅ REVISADAS & AUDITADAS", "0", "#34d399", "border-top: 3px solid #10b981;")
+        self.total_card = self._create_kpi_card("TOTAL COMPROBANTES", "0", "#38bdf8", "border-top: 3px solid #38bdf8;")
+        self.critical_card = self._create_kpi_card("ANOMALIAS CRITICAS", "0", "#f87171", "border-top: 3px solid #ef4444;")
+        self.warning_card = self._create_kpi_card("ADVERTENCIAS FISCALES", "0", "#fbbf24", "border-top: 3px solid #f59e0b;")
+        self.reviewed_card = self._create_kpi_card("REVISADAS & AUDITADAS", "0", "#34d399", "border-top: 3px solid #10b981;")
 
         kpi_layout.addWidget(self.total_card)
         kpi_layout.addWidget(self.critical_card)
@@ -89,7 +89,7 @@ class DocumentsView(QWidget):
         filter_layout.setSpacing(10)
 
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("🔍 Buscar por nombre de archivo, proveedor, NIF o estado...")
+        self.search_edit.setPlaceholderText("Buscar por nombre de archivo, proveedor, NIF o estado...")
         self.search_edit.textChanged.connect(self._apply_filter)
         filter_layout.addWidget(self.search_edit, stretch=2)
 
@@ -99,15 +99,15 @@ class DocumentsView(QWidget):
         self.chip_all.setProperty("active", "true")
         self.chip_all.clicked.connect(lambda: self._set_chip_filter("all"))
 
-        self.chip_critical = QPushButton("🚨 Críticos")
+        self.chip_critical = QPushButton("Criticos")
         self.chip_critical.setObjectName("chipFilter")
         self.chip_critical.clicked.connect(lambda: self._set_chip_filter("critical"))
 
-        self.chip_warning = QPushButton("⚠️ Advertencias")
+        self.chip_warning = QPushButton("Advertencias")
         self.chip_warning.setObjectName("chipFilter")
         self.chip_warning.clicked.connect(lambda: self._set_chip_filter("warning"))
 
-        self.chip_reviewed = QPushButton("✅ Revisados")
+        self.chip_reviewed = QPushButton("Revisados")
         self.chip_reviewed.setObjectName("chipFilter")
         self.chip_reviewed.clicked.connect(lambda: self._set_chip_filter("reviewed"))
 
@@ -151,7 +151,6 @@ class DocumentsView(QWidget):
         vbox.addWidget(t_lbl)
         vbox.addWidget(v_lbl)
 
-        # Store label reference for easy updates
         card._val_label = v_lbl
         card._color_hex = color_hex
         return card
@@ -197,10 +196,9 @@ class DocumentsView(QWidget):
 
     def _apply_filter(self) -> None:
         query = self.search_edit.text().strip().lower() if hasattr(self, "search_edit") else ""
-        
+
         filtered = []
         for d in self._documents:
-            # Text search match
             text_match = not query or (
                 query in d.get("filename", "").lower()
                 or query in d.get("status", "").lower()
@@ -209,7 +207,6 @@ class DocumentsView(QWidget):
             if not text_match:
                 continue
 
-            # Chip filter match
             summary = d.get("check_summary") or {}
             if self._active_filter == "critical" and int(summary.get("critical", 0)) == 0:
                 continue
@@ -236,7 +233,7 @@ class DocumentsView(QWidget):
         return {
             "Filename": document.get("filename", ""),
             "Estado": document.get("status", "").upper(),
-            "Revisión": (document.get("review_status") or "PENDIENTE").upper(),
+            "Revision": (document.get("review_status") or "PENDIENTE").upper(),
             "Severidad": severity,
             "OK": ok,
             "Warning": warning,

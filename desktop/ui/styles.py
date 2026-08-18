@@ -1,13 +1,21 @@
-"""Modern Glassmorphism Cyber-Dark Design System and Stylesheet for FlowMind AI Desktop."""
+"""Glassmorphism Cyber-Dark Design System and Stylesheet for FlowMind AI Desktop."""
 
 DARK_THEME_QSS = """
 /* ============================================================================
-   1. GLOBAL WINDOW & TYPOGRAPHY HIERARCHY (14px Base Scale)
+   1. GLOBAL WINDOW, DIALOGS & TYPOGRAPHY HIERARCHY
    ============================================================================ */
 QMainWindow {
     background-color: #070a12;
     color: #f8fafc;
     font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+QDialog {
+    background-color: #090e1a;
+    color: #f8fafc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 12px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 }
 
 QWidget {
@@ -51,7 +59,7 @@ QFrame#glassPanel {
 }
 
 QFrame#actionBar {
-    background-color: rgba(15, 23, 42, 0.90);
+    background-color: rgba(15, 23, 42, 0.92);
     border-top: 1px solid rgba(56, 189, 248, 0.25);
     padding: 12px 20px;
     border-bottom-left-radius: 12px;
@@ -101,7 +109,7 @@ QPushButton#sidebarToggle {
     color: #94a3b8;
     border: 1px solid rgba(148, 163, 184, 0.20);
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     padding: 6px 10px;
     min-width: 36px;
@@ -159,9 +167,9 @@ QPushButton#successButton {
     background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #059669, stop:1 #0d9488);
     color: #ffffff;
     border: 1px solid rgba(52, 211, 153, 0.40);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-    padding: 12px 24px;
+    padding: 11px 22px;
 }
 
 QPushButton#successButton:hover {
@@ -243,7 +251,7 @@ QComboBox QAbstractItemView {
 }
 
 /* ============================================================================
-   6. PRO DATA TABLE VIEW (44px Rows)
+   6. PRO DATA TABLE VIEW
    ============================================================================ */
 QTableView {
     background-color: rgba(11, 17, 32, 0.85);
@@ -272,7 +280,7 @@ QTableView::item:selected {
 }
 
 QHeaderView::section {
-    background-color: rgba(7, 10, 18, 0.95);
+    background-color: #080c16;
     color: #94a3b8;
     font-weight: 700;
     font-size: 13px;
@@ -322,8 +330,30 @@ QTabBar::tab:selected {
 }
 
 /* ============================================================================
-   8. STATUS BAR & SCROLLBARS
+   8. STATUS BAR, TOOLBAR & SCROLLBARS
    ============================================================================ */
+QToolBar {
+    background-color: rgba(10, 15, 29, 0.95);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    padding: 8px 14px;
+    spacing: 10px;
+}
+
+QToolButton {
+    background-color: rgba(30, 41, 59, 0.60);
+    color: #f1f5f9;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+QToolButton:hover {
+    background-color: rgba(51, 65, 85, 0.80);
+    border-color: rgba(56, 189, 248, 0.45);
+}
+
 QStatusBar {
     background-color: rgba(7, 10, 18, 0.95);
     color: #64748b;
@@ -376,7 +406,6 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
     width: 0px;
 }
 
-/* Splitter */
 QSplitter::handle {
     background-color: rgba(148, 163, 184, 0.15);
     width: 3px;
@@ -389,7 +418,7 @@ QSplitter::handle:hover {
 
 
 def get_badge_qss(severity: str) -> str:
-    """Returns CSS style string for colored glassmorphism severity pills."""
+    """Returns CSS style string for colored glassmorphism severity pills without emojis."""
     sev = severity.lower()
     if sev in ("critical", "block", "high", "error"):
         return """

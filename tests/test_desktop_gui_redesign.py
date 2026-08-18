@@ -18,24 +18,23 @@ app = QApplication.instance() or QApplication([])
 def test_main_window_glass_and_collapsible_sidebar():
     client = build_simulated_client()
     window = MainWindow(client=client)
-    
+
     # Check scale
     assert window.width() >= 1080
     assert window.height() >= 720
     assert window._sidebar_expanded is True
     assert window.sidebar_container.width() == 240
+    assert hasattr(window, "particle_backdrop")
 
     # Toggle sidebar to collapsed mode
     window._toggle_sidebar()
     assert window._sidebar_expanded is False
-    assert window.sidebar_container.width() == 68
     assert window.toggle_btn.text() == "▶"
 
     # Toggle back to expanded mode
     window._toggle_sidebar()
     assert window._sidebar_expanded is True
-    assert window.sidebar_container.width() == 240
-    assert window.toggle_btn.text() == "☰"
+    assert window.toggle_btn.text() == "≡"
 
 
 def test_documents_view_kpis_and_chip_filters():
@@ -63,11 +62,11 @@ def test_invoice_review_tabbed_workspace():
 
     # Check tab structure
     assert review_view.tabs.count() == 5
-    assert review_view.tabs.tabText(0) == "📄 Resumen & Cabecera"
-    assert review_view.tabs.tabText(1) == "📦 Líneas de Ítems"
-    assert review_view.tabs.tabText(2) == "🛡️ Auditoría Sentinel"
-    assert review_view.tabs.tabText(3) == "🧮 Validador Matemático"
-    assert review_view.tabs.tabText(4) == "🔍 Evidencia & JSON"
+    assert review_view.tabs.tabText(0) == "Resumen & Cabecera"
+    assert review_view.tabs.tabText(1) == "Lineas de Items"
+    assert review_view.tabs.tabText(2) == "Auditoria Sentinel"
+    assert review_view.tabs.tabText(3) == "Validador Matematico"
+    assert review_view.tabs.tabText(4) == "Evidencia & JSON"
 
     # Verify structured invoice data
     assert review_view.vendor_name_lbl.text() == "Suministros Industriales S.L."

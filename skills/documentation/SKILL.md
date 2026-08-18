@@ -8,6 +8,9 @@ description: >-
 
 # DOCUMENTATION SKILL
 
+## REGLA DE ESTILO: PROHIBICIÓN TOTAL DE EMOJIS
+No utilizar emojis en ninguna sección de la documentación, títulos, changelogs, commits ni respuestas. Toda la redacción debe ser formal, técnica y limpia.
+
 ## 1. PRINCIPIO FUNDAMENTAL
 
 Toda modificación realizada en el proyecto DEBE quedar documentada.

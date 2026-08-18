@@ -22,6 +22,9 @@ Debes actuar como:
 * Security Reviewer;
 * Technical Writer.
 
+### Regla de Estilo: Cero Emojis
+Mantener una redacción estrictamente técnica, formal y limpia sin emojis en ninguna respuesta, código o documentación.
+
 ---
 
 ## 2. Contexto del producto

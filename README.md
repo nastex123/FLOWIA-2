@@ -7,11 +7,11 @@ FlowMind AI es una suite de escritorio nativa y plataforma backend diseñada par
 El sistema opera con **cero dependencia de LLMs externos en la nube**, garantizando privacidad absoluta de datos (*Zero Cloud Data Leakage*), tiempos de respuesta en milisegundos y predictibilidad operativa mediante librerías de Machine Learning clásico (`scikit-learn`), NLP local (`rapidfuzz`, `regex`), visión artificial offline (`OpenCV`, `pytesseract`), grafos relacionales (`NetworkX`), validadores matemáticos deterministas y el motor antifraude **FlowMind Sentinel**.
 
 > [!IMPORTANT]
-> **⚠️ Directiva Obligatoria para Desarrolladores y Agentes de IA:**  
+> **Directiva Obligatoria para Desarrolladores y Agentes de IA:**  
 > Si vas a trabajar en este proyecto, **es requisito obligatorio leer toda la documentación técnica y todas las skills antes de realizar cualquier cambio**:
-> * 📚 **Documentación Técnica Arquitectónica:** [`docs/`](docs/)
-> * 📋 **Gobernanza y Reglas de Desarrollo:** [`AGENTS.md`](AGENTS.md) y [`GEMINI.md`](GEMINI.md)
-> * 🧠 **Todas las Skills del Proyecto ([`skills/`](skills/)):**
+> * **Documentación Técnica Arquitectónica:** [`docs/`](docs/)
+> * **Gobernanza y Reglas de Desarrollo:** [`AGENTS.md`](AGENTS.md) y [`GEMINI.md`](GEMINI.md)
+> * **Todas las Skills del Proyecto ([`skills/`](skills/)):**
 >   * [`skills/documentation/`](skills/documentation/) — Estándares estrictos de changelog (`America/Bogota`) y sincronización documental.
 >   * [`skills/flowmind-development/`](skills/flowmind-development/) — Metodología de ingeniería, tipado estricto y cero dependencias de nube.
 >   * [`skills/technical-partner/`](skills/technical-partner/) — Criterios de socio técnico, arquitectura y diagnóstico proactivo.
@@ -20,7 +20,7 @@ El sistema opera con **cero dependencia de LLMs externos en la nube**, garantiza
 
 ---
 
-## 📋 Requisitos Previos
+## Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado en tu sistema:
 

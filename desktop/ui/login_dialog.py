@@ -26,22 +26,23 @@ class LoginDialog(QDialog):
     def __init__(self, client: DesktopFlowMindClient, parent=None):
         super().__init__(parent)
         self.client = client
-        self.setWindowTitle("Iniciar Sesión — FlowMind AI")
-        self.setMinimumWidth(480)
+        self.setWindowTitle("Iniciar Sesion — FlowMind AI")
+        self.setMinimumWidth(560)
+        self.setMinimumHeight(480)
         self._build_ui()
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
-        layout.setSpacing(18)
-        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(16)
+        layout.setContentsMargins(28, 28, 28, 28)
 
         # Header Logo & Subtitle
         header_frame = QFrame()
         header_frame.setObjectName("glassCard")
         h_layout = QVBoxLayout(header_frame)
-        h_layout.setContentsMargins(14, 12, 14, 12)
+        h_layout.setContentsMargins(16, 14, 16, 14)
 
-        header_label = QLabel("<h2 style='margin: 0; color: #38bdf8; font-size: 20px;'>🧠 FlowMind AI</h2><p style='margin: 4px 0 0 0; color: #94a3b8; font-size: 13px;'>Suite de Gestión Financiera, Extracción & Auditoría Local</p>")
+        header_label = QLabel("<h2 style='margin: 0; color: #38bdf8; font-size: 22px;'>FlowMind AI</h2><p style='margin: 4px 0 0 0; color: #94a3b8; font-size: 13px;'>Suite de Gestion Financiera, Extraccion & Auditoria Local</p>")
         header_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         h_layout.addWidget(header_label)
         layout.addWidget(header_frame)
@@ -53,54 +54,61 @@ class LoginDialog(QDialog):
         # TAB 1: JWT Login & Demo
         jwt_tab = QWidget()
         jwt_form = QFormLayout(jwt_tab)
-        jwt_form.setSpacing(12)
-        jwt_form.setContentsMargins(12, 16, 12, 16)
+        jwt_form.setSpacing(14)
+        jwt_form.setContentsMargins(14, 18, 14, 18)
 
         self.email_edit = QLineEdit()
         self.email_edit.setPlaceholderText("admin@flowmind.local")
         self.email_edit.setText("admin@flowmind.local")
+        self.email_edit.setMinimumHeight(38)
 
         self.password_edit = QLineEdit()
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_edit.setPlaceholderText("admin123")
         self.password_edit.setText("admin123")
+        self.password_edit.setMinimumHeight(38)
 
         btn_row = QHBoxLayout()
-        btn_row.setSpacing(10)
+        btn_row.setSpacing(12)
 
         self.login_btn = QPushButton("Conectar al Servidor")
+        self.login_btn.setMinimumHeight(40)
         self.login_btn.clicked.connect(self._on_login)
 
-        self.demo_btn = QPushButton("✨ Modo Demo Offline")
+        self.demo_btn = QPushButton("Modo Demo Offline")
         self.demo_btn.setObjectName("successButton")
+        self.demo_btn.setMinimumHeight(40)
         self.demo_btn.clicked.connect(self._on_demo_mode)
 
-        btn_row.addWidget(self.login_btn)
-        btn_row.addWidget(self.demo_btn)
+        btn_row.addWidget(self.login_btn, stretch=1)
+        btn_row.addWidget(self.demo_btn, stretch=1)
 
         self.org_combo = QComboBox()
+        self.org_combo.setMinimumHeight(38)
         self.org_combo.setEnabled(False)
 
         jwt_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Usuario / Email:</span>", self.email_edit)
-        jwt_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Contraseña:</span>", self.password_edit)
+        jwt_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Contrasena:</span>", self.password_edit)
         jwt_form.addRow("", btn_row)
-        jwt_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Organización:</span>", self.org_combo)
+        jwt_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Organizacion:</span>", self.org_combo)
         tabs.addTab(jwt_tab, "Usuario (JWT / Demo)")
 
         # TAB 2: API Key Mode
         api_tab = QWidget()
         api_form = QFormLayout(api_tab)
-        api_form.setSpacing(12)
-        api_form.setContentsMargins(12, 16, 12, 16)
+        api_form.setSpacing(14)
+        api_form.setContentsMargins(14, 18, 14, 18)
 
         self.api_key_edit = QLineEdit()
         self.api_key_edit.setPlaceholderText("fm_...")
+        self.api_key_edit.setMinimumHeight(38)
 
         self.api_org_edit = QLineEdit()
         self.api_org_edit.setPlaceholderText("default-org (opcional)")
+        self.api_org_edit.setMinimumHeight(38)
 
         api_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>API Key:</span>", self.api_key_edit)
-        api_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Organización:</span>", self.api_org_edit)
+        api_form.addRow("<span style='color: #cbd5e1; font-weight: 600;'>Organizacion:</span>", self.api_org_edit)
         tabs.addTab(api_tab, "API Key")
 
         layout.addWidget(tabs)
@@ -128,7 +136,7 @@ class LoginDialog(QDialog):
             self.client.login(self.email_edit.text().strip(), self.password_edit.text())
             self.client.me()
         except FlowMindApiError as e:
-            QMessageBox.critical(self, "Error de autenticación", e.detail)
+            QMessageBox.critical(self, "Error de autenticacion", e.detail)
             return
 
         self.org_combo.clear()
@@ -179,6 +187,6 @@ class LoginDialog(QDialog):
         else:
             QMessageBox.warning(
                 self,
-                "Configuración incompleta",
-                "Inicia sesión con usuario, activa el Modo Demo o introduce una API Key.",
+                "Configuracion incompleta",
+                "Inicia sesion con usuario, activa el Modo Demo o introduce una API Key.",
             )

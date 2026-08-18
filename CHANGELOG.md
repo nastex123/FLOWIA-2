@@ -4,6 +4,20 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 14:41] (America/Bogota)
+
+- **[UI / Particles & Animations]** Incorporacion de fondo animado de particulas vivas, animaciones fluidas con QPropertyAnimation, correccion de proporciones y regla estricta de cero emojis
+  - **Qué:** 
+    - `desktop/ui/components/particle_backdrop.py`: nuevo widget canvas de particulas interconectadas con halo de brillo neón cian y calculo de proximidad en tiempo real acelerado por QPainter.
+    - `desktop/ui/components/animations.py`: utilidades `SidebarAnimator` para apertura/cierre fluido con curva cubica y `PageTransitioner` para desvanecimiento suave de opacidad entre vistas.
+    - `desktop/ui/login_dialog.py`: redimensionado a 560px de ancho para eliminar cualquier recorte en los botones de autenticacion ("Conectar al Servidor", "Modo Demo Offline") y fondo oscuro forzado en QDialog.
+    - `desktop/ui/styles.py`: eliminacion de artefactos blancos en dialogos, configuracion explicita de QDialog y paleta Obsidian/Cyan.
+    - `skills/`, `AGENTS.md`, `GEMINI.md`, `README.md`: incorporacion de la directiva estricta de cero emojis para mantener estilo sobrio, tecnico y formal en todo el proyecto.
+  - **Por qué:** Resolver los recortes visuales identificados en capturas de pantalla, dar una atmosfera de alta gama y consolidar la regla de comunicacion formal.
+  - **Archivos:** `desktop/ui/components/particle_backdrop.py`, `desktop/ui/components/animations.py`, `desktop/ui/components/__init__.py`, `desktop/ui/login_dialog.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/styles.py`, `skills/flowmind-development/SKILL.md`, `skills/documentation/SKILL.md`, `skills/technical-partner/SKILL.md`, `AGENTS.md`, `GEMINI.md`, `README.md`, `tests/test_desktop_gui_redesign.py`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 14:20] (America/Bogota)
 
 - **[UI / Desktop Redesign]** Rediseño visual integral de la Suite de Escritorio PySide6 con escala ampliada, estética Glassmorphism Cyber-Dark y workspace por pestañas

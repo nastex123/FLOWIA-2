@@ -72,6 +72,15 @@ El código debe:
 * evitar duplicación innecesaria;
 * tener funciones pequeñas y enfocadas.
 
+### 2.5 Estilo y Comunicación (Cero Emojis)
+
+El agente debe comunicarse de forma sobria, técnica y formal:
+
+* No utilizar emojis en respuestas, planes de ejecución, explicaciones ni mensajes.
+* No utilizar emojis en nombres de variables, funciones, clases, archivos o tests.
+* No utilizar emojis en mensajes de commit ni entradas de CHANGELOG.md.
+* No utilizar emojis en etiquetas o botones de interfaces de usuario.
+
 ---
 
 ## 3. Arquitectura

@@ -28,7 +28,7 @@ from desktop.controllers.api_client import DesktopFlowMindClient, FlowMindApiErr
 from desktop.models.table_model import VirtualDataTableModel
 from desktop.ui.styles import get_badge_qss
 
-ITEM_COLUMNS = ["Descripción del Producto / Servicio", "Cantidad", "Precio Unitario", "% IVA", "Importe Total"]
+ITEM_COLUMNS = ["Descripcion del Producto / Servicio", "Cantidad", "Precio Unitario", "% IVA", "Importe Total"]
 
 
 class InvoiceReviewView(QWidget):
@@ -52,15 +52,15 @@ class InvoiceReviewView(QWidget):
 
         # 1. Top Header Bar
         top_bar = QHBoxLayout()
-        self.back_btn = QPushButton("← Volver a Facturas")
+        self.back_btn = QPushButton("Volver a Facturas")
         self.back_btn.setObjectName("secondaryButton")
         self.back_btn.clicked.connect(self.back_requested.emit)
         top_bar.addWidget(self.back_btn)
 
-        self.doc_title_label = QLabel("<b style='font-size: 18px; color: #f8fafc;'>Revisión de Comprobante</b>")
+        self.doc_title_label = QLabel("<b style='font-size: 18px; color: #f8fafc;'>Revision de Comprobante</b>")
         top_bar.addWidget(self.doc_title_label)
 
-        self.severity_pill = QLabel("● ESTADO: PENDIENTE")
+        self.severity_pill = QLabel("ESTADO: PENDIENTE")
         self.severity_pill.setStyleSheet(get_badge_qss("warning"))
         top_bar.addWidget(self.severity_pill)
 
@@ -73,23 +73,23 @@ class InvoiceReviewView(QWidget):
 
         # TAB 1: Cabecera & Resumen
         self.tab_header = self._build_header_tab()
-        self.tabs.addTab(self.tab_header, "📄 Resumen & Cabecera")
+        self.tabs.addTab(self.tab_header, "Resumen & Cabecera")
 
-        # TAB 2: Líneas de Ítems
+        # TAB 2: Lineas de Items
         self.tab_items = self._build_items_tab()
-        self.tabs.addTab(self.tab_items, "📦 Líneas de Ítems")
+        self.tabs.addTab(self.tab_items, "Lineas de Items")
 
-        # TAB 3: Auditoría Sentinel (Antifraude)
+        # TAB 3: Auditoria Sentinel (Antifraude)
         self.tab_sentinel = self._build_sentinel_tab()
-        self.tabs.addTab(self.tab_sentinel, "🛡️ Auditoría Sentinel")
+        self.tabs.addTab(self.tab_sentinel, "Auditoria Sentinel")
 
-        # TAB 4: Validador Matemático
+        # TAB 4: Validador Matematico
         self.tab_math = self._build_math_tab()
-        self.tabs.addTab(self.tab_math, "🧮 Validador Matemático")
+        self.tabs.addTab(self.tab_math, "Validador Matematico")
 
         # TAB 5: JSON & Evidencia
         self.tab_json = self._build_json_tab()
-        self.tabs.addTab(self.tab_json, "🔍 Evidencia & JSON")
+        self.tabs.addTab(self.tab_json, "Evidencia & JSON")
 
         layout.addWidget(self.tabs, stretch=1)
 
@@ -103,7 +103,7 @@ class InvoiceReviewView(QWidget):
         action_layout.addWidget(self.action_status_label)
         action_layout.addStretch()
 
-        self.review_btn = QPushButton("✓ Aprobar y Marcar como Revisada")
+        self.review_btn = QPushButton("Aprobar y Marcar como Revisada")
         self.review_btn.setObjectName("successButton")
         self.review_btn.clicked.connect(self._on_review)
         self.review_btn.setEnabled(False)
@@ -126,7 +126,7 @@ class InvoiceReviewView(QWidget):
 
         # Row 1: Emisor & Receptor Cards
         row1 = QHBoxLayout()
-        
+
         # Vendor Card
         vendor_card = QFrame()
         vendor_card.setObjectName("glassCard")
@@ -137,13 +137,13 @@ class InvoiceReviewView(QWidget):
         self.vendor_tax_id_lbl = QLabel("—")
         self.vendor_iban_lbl = QLabel("—")
         self.vendor_address_lbl = QLabel("—")
-        v_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Razón Social:</span>"), 0, 0)
+        v_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Razon Social:</span>"), 0, 0)
         v_grid.addWidget(self.vendor_name_lbl, 0, 1)
         v_grid.addWidget(QLabel("<span style='color:#94a3b8;'>NIF / CIF:</span>"), 1, 0)
         v_grid.addWidget(self.vendor_tax_id_lbl, 1, 1)
         v_grid.addWidget(QLabel("<span style='color:#94a3b8;'>IBAN Bancario:</span>"), 2, 0)
         v_grid.addWidget(self.vendor_iban_lbl, 2, 1)
-        v_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Dirección:</span>"), 3, 0)
+        v_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Direccion:</span>"), 3, 0)
         v_grid.addWidget(self.vendor_address_lbl, 3, 1)
         v_layout.addLayout(v_grid)
         row1.addWidget(vendor_card)
@@ -157,11 +157,11 @@ class InvoiceReviewView(QWidget):
         self.customer_name_lbl = QLabel("—")
         self.customer_tax_id_lbl = QLabel("—")
         self.customer_address_lbl = QLabel("—")
-        c_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Razón Social:</span>"), 0, 0)
+        c_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Razon Social:</span>"), 0, 0)
         c_grid.addWidget(self.customer_name_lbl, 0, 1)
         c_grid.addWidget(QLabel("<span style='color:#94a3b8;'>NIF / CIF:</span>"), 1, 0)
         c_grid.addWidget(self.customer_tax_id_lbl, 1, 1)
-        c_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Dirección:</span>"), 2, 0)
+        c_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Direccion:</span>"), 2, 0)
         c_grid.addWidget(self.customer_address_lbl, 2, 1)
         c_layout.addLayout(c_grid)
         row1.addWidget(customer_card)
@@ -179,7 +179,7 @@ class InvoiceReviewView(QWidget):
         self.currency_lbl = QLabel("EUR")
         m_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Nº Factura:</span>"), 0, 0)
         m_grid.addWidget(self.inv_number_lbl, 0, 1)
-        m_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Fecha Emisión:</span>"), 0, 2)
+        m_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Fecha Emision:</span>"), 0, 2)
         m_grid.addWidget(self.issue_date_lbl, 0, 3)
         m_grid.addWidget(QLabel("<span style='color:#94a3b8;'>Vencimiento:</span>"), 1, 0)
         m_grid.addWidget(self.due_date_lbl, 1, 1)
@@ -195,11 +195,11 @@ class InvoiceReviewView(QWidget):
         t_layout = QHBoxLayout(totals_card)
         t_layout.setContentsMargins(20, 16, 20, 16)
 
-        self.subtotal_val = QLabel("0.00 €")
+        self.subtotal_val = QLabel("0.00 EUR")
         self.subtotal_val.setStyleSheet("font-size: 20px; font-weight: bold; color: #f8fafc;")
-        self.tax_val = QLabel("0.00 €")
+        self.tax_val = QLabel("0.00 EUR")
         self.tax_val.setStyleSheet("font-size: 20px; font-weight: bold; color: #fbbf24;")
-        self.total_val = QLabel("0.00 €")
+        self.total_val = QLabel("0.00 EUR")
         self.total_val.setStyleSheet("font-size: 28px; font-weight: bold; color: #34d399;")
 
         t_layout.addWidget(QLabel("<span style='color:#94a3b8;'>Subtotal Neto:<br></span>"))
@@ -234,7 +234,7 @@ class InvoiceReviewView(QWidget):
         layout = QVBoxLayout(widget)
         layout.setSpacing(12)
 
-        info_box = QLabel("<p style='color: #94a3b8; font-size: 13px;'>FlowMind Sentinel evalúa riesgos de fraude: integridad de IBAN bancario, duplicidad documental cruzada y conformidad estadística.</p>")
+        info_box = QLabel("<p style='color: #94a3b8; font-size: 13px;'>FlowMind Sentinel evalua riesgos de fraude: integridad de IBAN bancario, duplicidad documental cruzada y conformidad estadistica.</p>")
         layout.addWidget(info_box)
 
         self.sentinel_list = QListWidget()
@@ -250,9 +250,9 @@ class InvoiceReviewView(QWidget):
         card = QFrame()
         card.setObjectName("glassCard")
         c_layout = QVBoxLayout(card)
-        c_layout.addWidget(QLabel("<b style='color: #38bdf8; font-size: 15px;'>VALIDACIÓN ARITMÉTICA DETERMINISTA</b>"))
+        c_layout.addWidget(QLabel("<b style='color: #38bdf8; font-size: 15px;'>VALIDACION ARITMETICA DETERMINISTA</b>"))
 
-        self.math_summary_lbl = QLabel("<p style='color: #94a3b8;'>Recálculo automático de bases imponibles y cuotas de impuestos.</p>")
+        self.math_summary_lbl = QLabel("<p style='color: #94a3b8;'>Recalculo automatico de bases imponibles y cuotas de impuestos.</p>")
         c_layout.addWidget(self.math_summary_lbl)
 
         self.math_diff_lbl = QLabel("<b>Estado:</b> —")
@@ -289,7 +289,7 @@ class InvoiceReviewView(QWidget):
 
     def _render(self, invoice: Dict[str, Any], checks: List[Dict[str, Any]], raw_doc: Dict[str, Any]) -> None:
         filename = raw_doc.get("filename", "Comprobante")
-        self.doc_title_label.setText(f"<b style='font-size: 18px; color: #f8fafc;'>Revisión: {filename}</b>")
+        self.doc_title_label.setText(f"<b style='font-size: 18px; color: #f8fafc;'>Revision: {filename}</b>")
 
         # Vendor Data
         self.vendor_name_lbl.setText(str(invoice.get("vendor_name") or "—"))
@@ -321,7 +321,7 @@ class InvoiceReviewView(QWidget):
         items = invoice.get("items") or []
         records = [
             {
-                "Descripción del Producto / Servicio": item.get("description", ""),
+                "Descripcion del Producto / Servicio": item.get("description", ""),
                 "Cantidad": item.get("quantity", ""),
                 "Precio Unitario": fmt(item.get("unit_price")),
                 "% IVA": f"{item.get('tax_rate_pct', '')}%",
@@ -340,7 +340,7 @@ class InvoiceReviewView(QWidget):
 
         for check in checks:
             severity = str(check.get("severity") or "info").lower()
-            title = str(check.get("title") or check.get("check_type") or "Comprobación")
+            title = str(check.get("title") or check.get("check_type") or "Comprobacion")
             msg = str(check.get("message") or "")
             ctype = str(check.get("check_type") or "").lower()
 
@@ -349,7 +349,7 @@ class InvoiceReviewView(QWidget):
             elif severity == "warning":
                 has_warning = True
 
-            item_text = f"[{severity.upper()}] {title}\n  → {msg}"
+            item_text = f"[{severity.upper()}] {title}\n  - {msg}"
             list_item = QListWidgetItem(item_text)
 
             if "sentinel" in ctype or "iban" in ctype or "duplicate" in ctype:
@@ -358,23 +358,23 @@ class InvoiceReviewView(QWidget):
                 self.math_checks_list.addItem(list_item)
 
         if self.sentinel_list.count() == 0:
-            self.sentinel_list.addItem(QListWidgetItem("[OK] No se detectaron anomalías ni riesgos de fraude en Sentinel."))
+            self.sentinel_list.addItem(QListWidgetItem("[OK] No se detectaron anomalias ni riesgos de fraude en Sentinel."))
 
         if self.math_checks_list.count() == 0:
-            self.math_checks_list.addItem(QListWidgetItem("[OK] Los cálculos aritméticos coinciden con exactitud matemática."))
+            self.math_checks_list.addItem(QListWidgetItem("[OK] Los calculos aritmeticos coinciden con exactitud matematica."))
 
         # Severity Pill on Top Bar
         if self._reviewed:
-            self.severity_pill.setText("● REVISADA & APROBADA")
+            self.severity_pill.setText("REVISADA & APROBADA")
             self.severity_pill.setStyleSheet(get_badge_qss("ok"))
         elif has_critical:
-            self.severity_pill.setText("● ANOMALÍA CRÍTICA")
+            self.severity_pill.setText("ANOMALIA CRITICA")
             self.severity_pill.setStyleSheet(get_badge_qss("critical"))
         elif has_warning:
-            self.severity_pill.setText("● ADVERTENCIA")
+            self.severity_pill.setText("ADVERTENCIA")
             self.severity_pill.setStyleSheet(get_badge_qss("warning"))
         else:
-            self.severity_pill.setText("● VERIFICACIÓN OK")
+            self.severity_pill.setText("VERIFICACION OK")
             self.severity_pill.setStyleSheet(get_badge_qss("ok"))
 
         # Raw JSON
@@ -383,21 +383,21 @@ class InvoiceReviewView(QWidget):
         # Review Button State
         self.review_btn.setEnabled(bool(self._document_id) and not self._reviewed)
         if self._reviewed:
-            self.review_btn.setText("Comprobante Aprobado ✓")
+            self.review_btn.setText("Comprobante Aprobado")
             self.action_status_label.setText("<span style='color: #34d399;'>Este comprobante ya fue auditado y marcado como revisado.</span>")
         else:
-            self.review_btn.setText("✓ Aprobar y Marcar como Revisada")
-            self.action_status_label.setText("<span style='color: #94a3b8;'>Haz clic en Aprobar para guardar la auditoría en la base de datos.</span>")
+            self.review_btn.setText("Aprobar y Marcar como Revisada")
+            self.action_status_label.setText("<span style='color: #94a3b8;'>Haz clic en Aprobar para guardar la auditoria en la base de datos.</span>")
 
     def _on_review(self) -> None:
         if not self._document_id:
             return
-        note, ok = QInputDialog.getText(self, "Aprobar y Marcar como Revisada", "Nota o referencia de auditoría (opcional):")
+        note, ok = QInputDialog.getText(self, "Aprobar y Marcar como Revisada", "Nota o referencia de auditoria (opcional):")
         if not ok:
             return
         confirm = QMessageBox.question(
             self,
-            "Confirmar Aprobación",
+            "Confirmar Aprobacion",
             "¿Confirmas que has revisado los importes e impuestos de este comprobante?",
         )
         if confirm != QMessageBox.StandardButton.Yes:
@@ -405,13 +405,13 @@ class InvoiceReviewView(QWidget):
         try:
             self.client.review_document(self._document_id, note)
         except FlowMindApiError as e:
-            QMessageBox.critical(self, "Error de revisión", e.detail)
+            QMessageBox.critical(self, "Error de revision", e.detail)
             return
 
         self._reviewed = True
-        self.review_btn.setText("Comprobante Aprobado ✓")
+        self.review_btn.setText("Comprobante Aprobado")
         self.review_btn.setEnabled(False)
-        self.severity_pill.setText("● REVISADA & APROBADA")
+        self.severity_pill.setText("REVISADA & APROBADA")
         self.severity_pill.setStyleSheet(get_badge_qss("ok"))
-        QMessageBox.information(self, "Revisión Exitosa", "El comprobante fue aprobado y marcado como revisado.")
+        QMessageBox.information(self, "Revision Exitosa", "El comprobante fue aprobado y marcado como revisado.")
         self.review_completed.emit(self._document_id)
