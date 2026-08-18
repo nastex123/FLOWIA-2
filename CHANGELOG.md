@@ -4,6 +4,16 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 13:35] (America/Bogota)
+
+- **[Docs / Config]** Actualización integral del `README.md` y guía de instalación clara paso a paso
+  - **Qué:** 
+    - `README.md`: reestructuración y formateo exhaustivo de la documentación de inicio rápido, agregando bloques de código explícitos con sintaxis para Windows PowerShell, Windows CMD y Linux/macOS Bash, guía completa y matriz comparativa de variables de entorno para Windows vs Linux (rutas, SQLite vs PostgreSQL, Redis, S3), ejemplos de definición temporal en terminal (`$env:VAR`, `set VAR`, `export VAR`), tabla de credenciales por defecto, opciones de ejecución unificada (`start.py`, `start.ps1`, `start.sh`), banderas CLI (`--web`, `--no-ui`), ejecución de pruebas con `pytest` y generación de datos de prueba (`samples/`).
+    - `.env.example`: enriquecido con secciones separadas, comentarios explicativos para Windows y Linux, y valores por defecto para SQLite local y PostgreSQL/Docker.
+    - `.env`: configurado por defecto para SQLite asíncrono en modo local, permitiendo ejecución y tests inmediatos sin dependencia forzosa de Docker/PostgreSQL.
+  - **Por qué:** Asegurar que cualquier desarrollador en Windows o Linux configure correctamente sus variables de entorno, rutas relativas/absolutas y dependencias sin errores de conexión o formato.
+  - **Archivos:** `README.md`, `.env.example`, `.env`, `CHANGELOG.md`.
+
 ---
 
 ### [2026-08-18 11:48] (America/Bogota)
