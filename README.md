@@ -87,7 +87,13 @@ copy .env.example .env
 cp .env.example .env
 ```
 
----
+Sigue estos pasos para clonar el repositorio, configurar el entorno e iniciar el proyecto desde cero:
+
+### 1. Clonar el repositorio
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd FLOWIA-2
+```
 
 ## ⚙️ Guía de Variables de Entorno (Windows vs Linux)
 
