@@ -101,13 +101,13 @@ regex
 spacy (opcional para tokenización y entidades)
 ```
 
-### Desktop Client (UI)
+### Frontend Web (UI)
 
 ```text
-PySide6 (Qt6)
-VirtualDataTableModel
-Dark Theme UI
-Hot-Folder Tray Agent (watchdog)
+Next.js 14+ (App Router, React 18, TypeScript)
+Tailwind CSS (Gothic Obsidian, Crimson & Amethyst Glassmorphism)
+Lucide Icons & GPU Accelerated HTML5 Canvas
+Framer Motion & Pure CSS Transitions
 ```
 
 ### Workers

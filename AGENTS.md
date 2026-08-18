@@ -88,7 +88,7 @@ El agente debe comunicarse de forma sobria, técnica y formal:
 La arquitectura contempla la siguiente separación:
 
 ```text
-desktop/
+frontend/
 backend/
 workers/
 infrastructure/
@@ -120,14 +120,14 @@ Responsables de operaciones potencialmente largas y asíncronas:
 * clasificación y ejecución de modelos de Machine Learning tradicionales;
 * tareas en segundo plano.
 
-### Desktop Suite (UI)
+### Frontend Web Suite (UI)
 
 Responsable de:
 
-* interfaz de usuario nativa y de alta velocidad (PySide6 / Qt6);
-* interacción fluida con usuarios y visualización en tiempo real;
+* interfaz de usuario web moderna, reactiva y de alta velocidad (Next.js 14+ / React / TypeScript / Tailwind CSS);
+* interacción fluida con usuarios y visualización en tiempo real en navegador (`http://localhost:3000`);
 * revisión estructurada de facturas y auditoría de anomalías;
-* agente de bandeja (*Hot-Folder Agent*) para monitoreo de carpetas locales;
+* monitor y visualización de ingestas y estado de la cripta local;
 * configuración de conexiones y selector de organizaciones.
 
 ---
@@ -154,11 +154,12 @@ El stack objetivo se basa en tecnologías sólidas, escalables y de ejecución l
 * **Machine Learning Clásico & Clasificación:** `scikit-learn` (TF-IDF, Naive Bayes, Logistic Regression, Random Forest)
 * **OCR & Visión Offline:** `pytesseract`, `OpenCV` (`cv2`)
 
-### Desktop Client (UI)
+### Frontend Web (UI)
 
-* PySide6 (Qt6)
-* QTableView + VirtualDataTableModel para renderizado de alta velocidad
-* watchdog (Hot-Folder Agent)
+* Next.js 14+ (App Router, React 18, TypeScript)
+* Tailwind CSS (Tema Gótico Obsidian, Crimson y Amethyst)
+* Lucide Icons & HTML5 Canvas acelerado por GPU (Rosetones y Partículas)
+* Framer Motion & CSS transitions puras (Sidebar colapsable de 256px a 80px)
 
 ### Infraestructura
 

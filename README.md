@@ -2,9 +2,13 @@
 
 > **Intelligent Business Process Automation & Enterprise Decision Platform (100% Local & Privacy-First)**
 
-FlowMind AI es una suite de escritorio nativa y plataforma backend diseñada para automatizar flujos de trabajo empresariales y toma de decisiones operacionales transformando documentos semi-estructurados y desestructurados (Excel, CSV, PDF, imágenes) en hechos verificados, grafos relacionales y acciones automatizadas con evidencia trazable.
+FlowMind AI es una plataforma moderna con **Frontend Web (Next.js 14+ / React / Tailwind CSS / Canvas)** y Backend de alto rendimiento (FastAPI) diseñada para automatizar flujos de trabajo empresariales y toma de decisiones operacionales transformando documentos semi-estructurados y desestructurados (Excel, CSV, PDF, imágenes) en hechos verificados, grafos relacionales y acciones automatizadas con evidencia trazable.
 
 El sistema opera con **cero dependencia de LLMs externos en la nube**, garantizando privacidad absoluta de datos (*Zero Cloud Data Leakage*), tiempos de respuesta en milisegundos y predictibilidad operativa mediante librerías de Machine Learning clásico (`scikit-learn`), NLP local (`rapidfuzz`, `regex`), visión artificial offline (`OpenCV`, `pytesseract`), grafos relacionales (`NetworkX`), validadores matemáticos deterministas y el motor antifraude **FlowMind Sentinel**.
+
+> [!IMPORTANT]
+> **Interfaz de Usuario Web Moderna (Next.js 14+):**  
+> La suite de FlowMind AI opera como una aplicación web moderna servida en `http://localhost:3000` con estética Gótica Glassmorphism, renderizado acelerado por GPU en HTML5 Canvas y animaciones fluidas, eliminando las limitaciones de ventanas de escritorio nativas.
 
 > [!IMPORTANT]
 > **Directiva Obligatoria para Desarrolladores y Agentes de IA:**  
@@ -25,6 +29,7 @@ El sistema opera con **cero dependencia de LLMs externos en la nube**, garantiza
 Antes de comenzar, asegúrate de tener instalado en tu sistema:
 
 * **Python 3.11+** ([Descargar Python](https://www.python.org/downloads/))
+* **Node.js 18+ & npm** ([Descargar Node.js](https://nodejs.org/))
 * **Git** ([Descargar Git](https://git-scm.com/))
 * *(Opcional)* **Docker & Docker Compose** (solo si deseas usar PostgreSQL, Redis y MinIO en lugar del modo SQLite local por defecto).
 
@@ -32,7 +37,7 @@ Antes de comenzar, asegúrate de tener instalado en tu sistema:
 
 ## 🚀 Guía de Instalación
 
-Puedes instalar todas las dependencias del proyecto de forma **automática (Recomendado)** con un solo comando, o configurando el entorno virtual manualmente.
+Puedes instalar todas las dependencias del proyecto de forma **automática (Recomendado)** con un solo comando:
 
 ### 1. Clonar el repositorio
 
@@ -45,20 +50,16 @@ cd FLOWIA-2
 
 ### Opción A: Instalación Automática Unificada con `install.py` (Recomendada)
 
-El proyecto incluye el script `install.py` que detecta automáticamente tu sistema operativo, crea el entorno virtual `venv`, instala las dependencias de Python (backend + suite de escritorio PySide6), inicializa `.env` en modo SQLite local y realiza un *Smoke Test* de verificación:
+El instalador `install.py` detecta tu sistema operativo, crea el entorno virtual `venv`, instala las dependencias de Python (FastAPI backend + ML local), instala las dependencias del Frontend Web (`npm install` en `frontend/`), inicializa `.env` y realiza un *Smoke Test* completo:
 
 #### En Windows (PowerShell / CMD):
 ```powershell
 python install.py
-# O forzando el modo Windows:
-python install.py --os windows
 ```
 
 #### En Linux / macOS (Bash / Zsh):
 ```bash
 python3 install.py
-# O forzando el modo Linux:
-python3 install.py --os linux
 ```
 
 > **Banderas adicionales de `install.py`:**
@@ -182,29 +183,24 @@ export FLOWMIND_API_URL="http://127.0.0.1:8000"
 
 ### Opción 1: Lanzador Unificado (Recomendado)
 
-Inicia automáticamente el Backend (FastAPI con autodetección de puertos libres) y la Suite de Escritorio PySide6 con un solo comando:
+Inicia automáticamente el Backend (FastAPI con autodetección de puertos libres) y el Frontend Web en Next.js con un solo comando:
 
 **En Windows (PowerShell):**
 ```powershell
-# Asegúrate de tener el entorno virtual activo: .\venv\Scripts\Activate.ps1
-.\start.ps1
-
-# O directamente con python:
 python start.py
 ```
 
 **En Linux o macOS:**
 ```bash
-# Asegúrate de tener el entorno virtual activo: source venv/bin/activate
-chmod +x start.sh
-./start.sh
-
-# O directamente con python:
 python3 start.py
 ```
 
+* **Frontend Web:** `http://localhost:3000`
+* **Backend API:** `http://127.0.0.1:8000`
+* **Swagger Docs:** `http://127.0.0.1:8000/docs`
+
 *Banderas adicionales para `start.py`:*
-* `python start.py --no-ui` : Inicia únicamente el Backend FastAPI sin abrir la interfaz de escritorio.
+* `python start.py --no-ui` : Inicia únicamente el Backend FastAPI en modo servidor.
 
 ---
 
@@ -220,12 +216,12 @@ uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
 * **API disponible en:** `http://127.0.0.1:8000`
 * **Swagger Docs:** `http://127.0.0.1:8000/docs`
 
-#### Terminal 2 — Suite de Escritorio Nativa (PySide6 / Qt6)
+#### Terminal 2 — Frontend Web (Next.js 14+)
 ```bash
-# Con el entorno virtual activo:
-python desktop/main.py
+cd frontend
+npm run dev
 ```
-* Permite procesar documentos sin conexión, inspeccionar anomalías, validar facturas y monitorear carpetas *Hot-Folder* en segundo plano.
+* **Aplicación Web:** `http://localhost:3000`
 
 ---
 
@@ -250,12 +246,13 @@ Al iniciar el backend por primera vez en modo local, se inicializa automáticame
 
 | Parámetro | Valor por Defecto |
 | :--- | :--- |
+| **Frontend Web** | `http://localhost:3000` |
 | **Documentación API (Swagger)** | `http://127.0.0.1:8000/docs` |
 | **Usuario / Email** | `admin@flowmind.local` |
 | **Contraseña** | `admin123` |
 | **Organización** | `default-org` |
 
-> 🔒 *Puedes iniciar sesión en la Suite de Escritorio PySide6 con estas credenciales o utilizar el botón "Modo Demo Offline" para pruebas directas.*
+> 🔒 *Puedes iniciar sesión en la aplicación web con estas credenciales o utilizar el botón "Ingresar en Modo Cripta Offline" para pruebas directas.*
 
 ---
 
@@ -267,7 +264,7 @@ Para generar un conjunto de documentos empresariales realistas (Facturas XLSX, I
 python scripts/generate_sample_documents.py
 ```
 
-Los archivos de muestra se generarán en la carpeta `samples/` listos para ser procesados desde la suite de escritorio.
+Los archivos de muestra se generarán en la carpeta `samples/` listos para ser procesados desde el frontend web.
 
 ---
 
@@ -286,11 +283,16 @@ pytest tests/
 FLOWIA-2/
 ├── AGENTS.md                  # Reglas de desarrollo para agentes IA
 ├── GEMINI.md                  # Contexto operativo para el agente
-├── install.py                 # Instalador automatizado multiplataforma (Windows / Linux)
-├── start.py                   # Lanzador unificado multiplataforma (Backend + Desktop PySide6)
-├── start.sh                   # Script de inicio para Linux / macOS
-├── start.ps1                  # Script de inicio para Windows PowerShell
+├── install.py                 # Instalador automatizado (Python + Next.js npm)
+├── start.py                   # Lanzador unificado multiplataforma (FastAPI + Next.js)
 ├── .env.example               # Plantilla de variables de entorno
+├── frontend/                  # Aplicación Web Moderna en Next.js 14+ (App Router + Tailwind)
+│   ├── src/
+│   │   ├── app/               # Rutas: Dashboard (/), Review (/review/[id]), Settings (/settings), Local (/local), Login (/login)
+│   │   ├── components/        # GothicBackdrop, GothicGlyphs, GothicCornerOrnament, Sidebar, Header, DocumentTable
+│   │   └── lib/               # Cliente API TypeScript, tipos y mock data
+│   ├── package.json           # Dependencias React 18, Next.js 14, Tailwind CSS, Lucide
+│   └── tailwind.config.ts     # Paleta Gótica Obsidian, Crimson y Amethyst
 ├── backend/                   # API REST en FastAPI + Pydantic v2 + SQLite/SQLAlchemy
 │   ├── app/
 │   │   ├── api/routers/       # Endpoints REST (/documents, /schemas, /automation, /decision, /auth)
@@ -299,12 +301,6 @@ FLOWIA-2/
 │   │   ├── infrastructure/    # Persistencia DB y Presets
 │   │   └── services/          # Extractores, Clasificadores, Decision, Business & Sentinel
 │   └── pyproject.toml         # Dependencias y configuración de empaquetado backend
-├── desktop/                   # Suite de escritorio nativa en PySide6 (Qt6)
-│   ├── controllers/           # Cliente local / API
-│   ├── models/                # VirtualDataTableModel
-│   ├── services/              # HotFolderWatcher con watchdog
-│   ├── ui/                    # MainWindow (Dark Theme, Grid Pro, Inspector, Review)
-│   └── main.py                # Punto de entrada de la aplicación de escritorio
 ├── infrastructure/            # Definiciones Docker Compose (PostgreSQL, Redis, MinIO)
 ├── samples/                   # Documentos reales de prueba (XLSX, CSV, PDF)
 ├── scripts/                   # Scripts auxiliares y generador de archivos de muestra

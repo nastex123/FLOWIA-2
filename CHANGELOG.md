@@ -4,6 +4,19 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:49] (America/Bogota)
+
+- **[Docs & Tooling / Web Frontend Architecture Transition]** Actualizacion del instalador automatico y sincronizacion de toda la documentacion enfatizando la arquitectura Web Frontend (Next.js 14+)
+  - **Qué:** 
+    - `install.py`: actualizacion del instalador unificado para verificar Node.js/npm, instalar automaticamente dependencias en `frontend/` (`npm install`) y presentar resumen de acceso a `http://localhost:3000`.
+    - `README.md`: actualizacion integral de la descripcion, stack y guias de inicio rapido indicando que la suite opera como aplicacion web moderna servida en navegador (`http://localhost:3000`), sustituyendo las ventanas nativas de escritorio.
+    - `AGENTS.md` y `GEMINI.md`: actualizacion de las directivas y definicion del stack oficial a Frontend Web (Next.js 14+ / React / Tailwind CSS / Lucide / Canvas GPU).
+    - `docs/03-architecture/01-general-architecture.md` y `docs/03-architecture/03-web-frontend.md`: nuevo documento arquitectonico del frontend web y actualizacion de diagramas Mermaid.
+  - **Por qué:** Reflejar de forma precisa y unificada la transicion oficial hacia la arquitectura web moderna en todo el repositorio.
+  - **Archivos:** `install.py`, `README.md`, `AGENTS.md`, `GEMINI.md`, `docs/03-architecture/01-general-architecture.md`, `docs/03-architecture/03-web-frontend.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:39] (America/Bogota)
 
 - **[UI / Gothic Sacred Glyphs Catalog]** Creacion de un catalogo de 24 figuras goticas vectoriales y grilla interactiva de sellos de catedral

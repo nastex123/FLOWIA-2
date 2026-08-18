@@ -14,9 +14,9 @@ El sistema trasciende el procesamiento documental tradicional mediante una arqui
 
 ```mermaid
 flowchart TD
-    subgraph ClientInterfaces ["Interfaces de Usuario (100% Python Native)"]
-        DESKTOP["Desktop Suite Nativa (PySide6 / Qt6)"]
-        TRAY["Hot-Folder Tray Agent (watchdog)"]
+    subgraph ClientInterfaces ["Interfaces de Usuario (Web Frontend & Hot-Folder)"]
+        WEB["Next.js 14+ Web Frontend (React / Tailwind / HTML5 Canvas / Lucide)"]
+        TRAY["Hot-Folder Watcher Agent (watchdog)"]
     end
 
     subgraph APILayer ["Backend API (FastAPI)"]
