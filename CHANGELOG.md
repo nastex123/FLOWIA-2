@@ -4,6 +4,21 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 14:20] (America/Bogota)
+
+- **[UI / Desktop Redesign]** Rediseño visual integral de la Suite de Escritorio PySide6 con escala ampliada, estética Glassmorphism Cyber-Dark y workspace por pestañas
+  - **Qué:** 
+    - `desktop/ui/styles.py`: nuevo sistema de diseño con escala base de 14px, tarjetas translúcidas multicapa (`rgba(15, 23, 42, 0.75)`), bordes de cristal cian sutiles con iluminación al foco/hover, badges de severidad en píldora brillante y scrollbars estilizadas.
+    - `desktop/ui/main_window.py`: resolución base ampliada a 1440x900 (mínimo 1080x720), sidebar translúcido colapsable/desplegable con botón `☰` (alterna entre 240px con texto y 68px con iconos) y barra de estado con indicador de conexión en vivo.
+    - `desktop/ui/documents_view.py`: 4 tarjetas KPI flotantes de gran escala con métricas numéricas de 32px y bordes de color superior, barra de búsqueda con chips de filtrado interactivo (`Todos`, `Críticos`, `Advertencias`, `Revisados`) y tabla de 44px de alto por fila.
+    - `desktop/ui/invoice_review_view.py`: rediseñada como un workspace de pantalla completa con pestañas translúcidas (`QTabWidget` con Cabecera & Resumen, Líneas de Ítems, Auditoría Sentinel, Validador Matemático y Evidencia JSON) y barra de acción flotante inferior con botón destacado `✓ Aprobar y Marcar como Revisada`.
+    - `desktop/ui/login_dialog.py`: diálogo centrado con efecto Glassmorphism y botón destacado para "Modo Demo Offline".
+    - `tests/test_desktop_gui_redesign.py`: nueva suite de pruebas unitarias verificando el sidebar colapsable, tarjetas KPI, chips de filtrado y el workspace por pestañas (17/17 tests en verde).
+  - **Por qué:** Mejorar drásticamente la experiencia de usuario, legibilidad, ergonomía visual y velocidad de auditoría documental conforme a las directivas del proceso `/grill-me`.
+  - **Archivos:** `desktop/ui/styles.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/login_dialog.py`, `tests/test_desktop_gui_redesign.py`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 14:10] (America/Bogota)
 
 - **[Docs / Governance]** Inclusión de directiva obligatoria y advertencia al inicio del `README.md`

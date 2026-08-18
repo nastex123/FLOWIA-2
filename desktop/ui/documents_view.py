@@ -1,10 +1,11 @@
-"""Documents list view with anomaly badges for the FlowMind desktop app."""
+"""Documents list view with large KPI cards, glassmorphism styling and anomaly badges."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QFrame,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -17,6 +18,7 @@ from PySide6.QtWidgets import (
 
 from desktop.controllers.api_client import DesktopFlowMindClient, FlowMindApiError
 from desktop.models.table_model import VirtualDataTableModel
+from desktop.ui.styles import get_badge_qss
 
 COLUMNS = [
     "Filename",
@@ -32,7 +34,7 @@ COLUMNS = [
 
 
 class DocumentsView(QWidget):
-    """Financial documents list with severity badges and double-click to detail."""
+    """Financial documents list with large KPI glass cards and interactive filters."""
 
     document_activated = Signal(str)
 
@@ -40,88 +42,184 @@ class DocumentsView(QWidget):
         super().__init__(parent)
         self.client = client
         self._documents: List[Dict[str, Any]] = []
+        self._active_filter: str = "all"
         self._build_ui()
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(16)
 
+        # 1. Header Section
         header = QHBoxLayout()
         title_box = QVBoxLayout()
-        title = QLabel("<h2>Facturas & Comprobantes</h2>")
-        subtitle = QLabel("<span style='color: #94a3b8;'>Gestión de documentos procesados y auditoría de anomalías</span>")
+        title = QLabel("<h1 style='margin: 0; font-size: 24px; color: #f8fafc;'>Facturas & Comprobantes</h1>")
+        subtitle = QLabel("<span style='color: #94a3b8; font-size: 14px;'>Gestión automatizada de comprobantes, detección de anomalías y auditoría de fraudes</span>")
         title_box.addWidget(title)
         title_box.addWidget(subtitle)
         header.addLayout(title_box)
         header.addStretch()
-        
-        refresh_btn = QPushButton("⟳ Actualizar Lista")
-        refresh_btn.clicked.connect(self.refresh)
-        header.addWidget(refresh_btn)
+
+        self.refresh_btn = QPushButton("⟳ Actualizar Lista")
+        self.refresh_btn.setObjectName("secondaryButton")
+        self.refresh_btn.clicked.connect(self.refresh)
+        header.addWidget(self.refresh_btn)
         layout.addLayout(header)
 
-        # KPI Summary Row
+        # 2. Large Scale Glass KPI Summary Cards
         kpi_layout = QHBoxLayout()
-        self.total_kpi = QLabel("<b>0</b><br><span style='color: #94a3b8; font-size: 11px;'>Total Documentos</span>")
-        self.critical_kpi = QLabel("<b>0</b><br><span style='color: #ef4444; font-size: 11px;'>Anomalías Críticas</span>")
-        self.warning_kpi = QLabel("<b>0</b><br><span style='color: #f59e0b; font-size: 11px;'>Advertencias</span>")
-        self.reviewed_kpi = QLabel("<b>0</b><br><span style='color: #10b981; font-size: 11px;'>Revisadas</span>")
-        for kpi in (self.total_kpi, self.critical_kpi, self.warning_kpi, self.reviewed_kpi):
-            kpi.setObjectName("kpiCard")
-            kpi.setStyleSheet("background-color: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 10px; font-size: 14px;")
-            kpi_layout.addWidget(kpi)
+        kpi_layout.setSpacing(14)
+
+        self.total_card = self._create_kpi_card("📁 TOTAL COMPROBANTES", "0", "#38bdf8", "border-top: 3px solid #38bdf8;")
+        self.critical_card = self._create_kpi_card("🚨 ANOMALÍAS CRÍTICAS", "0", "#f87171", "border-top: 3px solid #ef4444;")
+        self.warning_card = self._create_kpi_card("⚠️ ADVERTENCIAS FISCALES", "0", "#fbbf24", "border-top: 3px solid #f59e0b;")
+        self.reviewed_card = self._create_kpi_card("✅ REVISADAS & AUDITADAS", "0", "#34d399", "border-top: 3px solid #10b981;")
+
+        kpi_layout.addWidget(self.total_card)
+        kpi_layout.addWidget(self.critical_card)
+        kpi_layout.addWidget(self.warning_card)
+        kpi_layout.addWidget(self.reviewed_card)
         layout.addLayout(kpi_layout)
 
-        # Filter bar
-        filter_bar = QHBoxLayout()
+        # 3. Search & Filter Bar (Glass Frame)
+        filter_frame = QFrame()
+        filter_frame.setObjectName("glassCard")
+        filter_layout = QHBoxLayout(filter_frame)
+        filter_layout.setContentsMargins(12, 10, 12, 10)
+        filter_layout.setSpacing(10)
+
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("🔍 Buscar por nombre de archivo o estado...")
+        self.search_edit.setPlaceholderText("🔍 Buscar por nombre de archivo, proveedor, NIF o estado...")
         self.search_edit.textChanged.connect(self._apply_filter)
-        filter_bar.addWidget(self.search_edit)
-        layout.addLayout(filter_bar)
+        filter_layout.addWidget(self.search_edit, stretch=2)
+
+        # Chip Filters
+        self.chip_all = QPushButton("Todos")
+        self.chip_all.setObjectName("chipFilter")
+        self.chip_all.setProperty("active", "true")
+        self.chip_all.clicked.connect(lambda: self._set_chip_filter("all"))
+
+        self.chip_critical = QPushButton("🚨 Críticos")
+        self.chip_critical.setObjectName("chipFilter")
+        self.chip_critical.clicked.connect(lambda: self._set_chip_filter("critical"))
+
+        self.chip_warning = QPushButton("⚠️ Advertencias")
+        self.chip_warning.setObjectName("chipFilter")
+        self.chip_warning.clicked.connect(lambda: self._set_chip_filter("warning"))
+
+        self.chip_reviewed = QPushButton("✅ Revisados")
+        self.chip_reviewed.setObjectName("chipFilter")
+        self.chip_reviewed.clicked.connect(lambda: self._set_chip_filter("reviewed"))
+
+        self.chips = [self.chip_all, self.chip_critical, self.chip_warning, self.chip_reviewed]
+        for chip in self.chips:
+            filter_layout.addWidget(chip)
+
+        layout.addWidget(filter_frame)
+
+        # 4. Pro Table View
+        table_frame = QFrame()
+        table_frame.setObjectName("glassPanel")
+        table_layout = QVBoxLayout(table_frame)
+        table_layout.setContentsMargins(4, 4, 4, 4)
 
         self.table = QTableView()
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.verticalHeader().setDefaultSectionSize(44)  # 44px Row Height
         self.table.doubleClicked.connect(self._on_double_clicked)
         self.model = VirtualDataTableModel()
         self.table.setModel(self.model)
-        layout.addWidget(self.table)
+        table_layout.addWidget(self.table)
+        layout.addWidget(table_frame)
 
-        self.status_label = QLabel("")
+        # 5. Bottom Status
+        self.status_label = QLabel("<span style='color: #64748b; font-size: 13px;'>Cargando documentos...</span>")
         layout.addWidget(self.status_label)
+
+    def _create_kpi_card(self, title: str, initial_value: str, color_hex: str, extra_border: str) -> QFrame:
+        card = QFrame()
+        card.setObjectName("kpiCard")
+        card.setStyleSheet(f"QFrame#kpiCard {{ {extra_border} }}")
+        vbox = QVBoxLayout(card)
+        vbox.setContentsMargins(14, 12, 14, 12)
+        vbox.setSpacing(4)
+
+        t_lbl = QLabel(f"<span style='color: #94a3b8; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;'>{title}</span>")
+        v_lbl = QLabel(f"<b style='font-size: 32px; color: {color_hex}; line-height: 1.1;'>{initial_value}</b>")
+        vbox.addWidget(t_lbl)
+        vbox.addWidget(v_lbl)
+
+        # Store label reference for easy updates
+        card._val_label = v_lbl
+        card._color_hex = color_hex
+        return card
+
+    def _set_chip_filter(self, filter_type: str) -> None:
+        self._active_filter = filter_type
+        for chip in self.chips:
+            is_active = (
+                (chip == self.chip_all and filter_type == "all")
+                or (chip == self.chip_critical and filter_type == "critical")
+                or (chip == self.chip_warning and filter_type == "warning")
+                or (chip == self.chip_reviewed and filter_type == "reviewed")
+            )
+            chip.setProperty("active", "true" if is_active else "false")
+            chip.style().unpolish(chip)
+            chip.style().polish(chip)
+        self._apply_filter()
 
     def refresh(self) -> None:
         try:
             documents = self.client.list_documents()
         except FlowMindApiError as e:
-            self.status_label.setText(f"Error cargando documentos: {e.detail}")
+            self.status_label.setText(f"<span style='color: #ef4444;'>Error cargando documentos: {e.detail}</span>")
             return
         self.set_documents(documents)
-        self.status_label.setText(f"{len(documents)} documentos")
 
     def set_documents(self, documents: List[Dict[str, Any]]) -> None:
         self._documents = documents
-        
+
         # Update KPIs
         total = len(documents)
         critical = sum(1 for d in documents if (d.get("check_summary") or {}).get("critical", 0) > 0)
         warning = sum(1 for d in documents if (d.get("check_summary") or {}).get("warning", 0) > 0)
         reviewed = sum(1 for d in documents if (d.get("review_status") or "") == "reviewed")
-        
-        self.total_kpi.setText(f"<b>{total}</b><br><span style='color: #94a3b8; font-size: 11px;'>Total Documentos</span>")
-        self.critical_kpi.setText(f"<b>{critical}</b><br><span style='color: #ef4444; font-size: 11px;'>Anomalías Críticas</span>")
-        self.warning_kpi.setText(f"<b>{warning}</b><br><span style='color: #f59e0b; font-size: 11px;'>Advertencias</span>")
-        self.reviewed_kpi.setText(f"<b>{reviewed}</b><br><span style='color: #10b981; font-size: 11px;'>Revisadas</span>")
-        
+
+        self.total_card._val_label.setText(f"<b style='font-size: 32px; color: {self.total_card._color_hex};'>{total}</b>")
+        self.critical_card._val_label.setText(f"<b style='font-size: 32px; color: {self.critical_card._color_hex};'>{critical}</b>")
+        self.warning_card._val_label.setText(f"<b style='font-size: 32px; color: {self.warning_card._color_hex};'>{warning}</b>")
+        self.reviewed_card._val_label.setText(f"<b style='font-size: 32px; color: {self.reviewed_card._color_hex};'>{reviewed}</b>")
+
+        self.status_label.setText(f"<span style='color: #94a3b8;'>Mostrando {total} comprobantes procesados en el sistema</span>")
         self._apply_filter()
 
     def _apply_filter(self) -> None:
         query = self.search_edit.text().strip().lower() if hasattr(self, "search_edit") else ""
-        filtered = [
-            d for d in self._documents
-            if not query or query in d.get("filename", "").lower() or query in d.get("status", "").lower()
-        ]
+        
+        filtered = []
+        for d in self._documents:
+            # Text search match
+            text_match = not query or (
+                query in d.get("filename", "").lower()
+                or query in d.get("status", "").lower()
+                or query in str(d.get("metadata", {})).lower()
+            )
+            if not text_match:
+                continue
+
+            # Chip filter match
+            summary = d.get("check_summary") or {}
+            if self._active_filter == "critical" and int(summary.get("critical", 0)) == 0:
+                continue
+            if self._active_filter == "warning" and int(summary.get("warning", 0)) == 0:
+                continue
+            if self._active_filter == "reviewed" and (d.get("review_status") or "") != "reviewed":
+                continue
+
+            filtered.append(d)
+
         records = [self._to_record(d) for d in filtered]
         self.model.set_data(COLUMNS, records)
         self.model.set_severity_column(COLUMNS.index("Severidad"))
@@ -134,11 +232,11 @@ class DocumentsView(QWidget):
         critical = int(summary.get("critical", 0))
         info = int(summary.get("info", 0))
         severity = "critical" if critical else ("warning" if warning else ("info" if info else "ok"))
-        created = (document.get("created_at") or "")[:19]
+        created = (document.get("created_at") or "")[:19].replace("T", " ")
         return {
             "Filename": document.get("filename", ""),
-            "Estado": document.get("status", ""),
-            "Revisión": document.get("review_status", ""),
+            "Estado": document.get("status", "").upper(),
+            "Revisión": (document.get("review_status") or "PENDIENTE").upper(),
             "Severidad": severity,
             "OK": ok,
             "Warning": warning,
