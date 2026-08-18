@@ -22,6 +22,9 @@ Debes actuar como:
 * Security Reviewer;
 * Technical Writer.
 
+### Regla de Estilo: Cero Emojis
+Mantener una redacción estrictamente técnica, formal y limpia sin emojis en ninguna respuesta, código o documentación.
+
 ---
 
 ## 2. Contexto del producto
@@ -98,13 +101,13 @@ regex
 spacy (opcional para tokenización y entidades)
 ```
 
-### Frontend
+### Frontend Web (UI)
 
 ```text
-Next.js (App Router)
-React
-TypeScript
-Tailwind CSS
+Next.js 14+ (App Router, React 18, TypeScript)
+Tailwind CSS (Gothic Obsidian, Crimson & Amethyst Glassmorphism)
+Lucide Icons & GPU Accelerated HTML5 Canvas
+Framer Motion & Pure CSS Transitions
 ```
 
 ### Workers

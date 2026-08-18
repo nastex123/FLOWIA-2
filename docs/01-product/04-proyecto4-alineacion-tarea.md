@@ -24,35 +24,34 @@ Este documento especifica **en qué se asemeja la tarea asignada (Proyecto 4) co
 
 ---
 
-## 3. Análisis de Brechas (resumen ejecutivo)
+## 3. Análisis de Brechas & Estado de Ejecución
 
 Estado real verificado en el código del repositorio:
 
-| Capacidad | Estado |
-| :--- | :--- |
-| Motores de extracción (tabular, PDF, visión/OCR, reglas) | ✅ Implementados y con tests |
-| Pipeline end-to-end con persistencia | ✅ Implementado |
-| Clasificación híbrida (reglas + ML clásico) | ✅ Implementado |
-| Reglas de negocio + webhooks salientes | ✅ Implementados y disparados en el pipeline |
-| Validador matemático determinista | ⚠️ Implementado como servicio, **no conectado al pipeline** |
-| FlowMind Sentinel (IBAN, duplicados, umbrales, Benford) | ⚠️ Implementado, **no conectado al pipeline** y con histórico mock |
-| Resolución de entidades | ⚠️ Implementado, **sin persistencia** y con datos mock |
-| Modelo de dominio de factura estructurado | ❌ No existe (extracción genérica key-value) |
-| Persistencia de entidades, huellas de facturas y hallazgos | ❌ No existe (pendiente del roadmap) |
-| App de gestión financiera funcional | ❌ Frontend web roto (`frontend/src/lib/` ausente); sin UI financiera |
-| Hot-folder que alimenta la BD automáticamente | ⚠️ Existe watcher local, **no integrado con el backend** |
+| Capacidad | Estado | Responsable | Detalle |
+| :--- | :---: | :--- | :--- |
+| Motores de extracción (tabular, PDF, visión/OCR, reglas) | ✅ Implementado | Core | `PDFExtractor`, `VisionExtractor`, `TabularExtractor` |
+| Pipeline end-to-end con persistencia SQLite/Postgres | ✅ Implementado | Core | Asíncrono, multi-tenant y seguro |
+| Clasificación híbrida (reglas + ML clásico) | ✅ Implementado | Core | `scikit-learn` TF-IDF + heurísticas |
+| Reglas de negocio + webhooks salientes | ✅ Implementado | Core | `RuleEngine` determinista con HMAC |
+| Modelo de dominio de factura estructurado (`StructuredInvoice`) | ✅ Implementado | Luis (P1) | `InvoiceStructurizer` con normalización difusa |
+| Persistencia de `DocumentCheck`, `EntityRecord`, `InvoiceFingerprint` | ✅ Implementado | Luis (P1) | Tablas en BD y migración Alembic |
+| Endpoints REST de revisión (`/documents`, `/decision/checks`, `/review`) | ✅ Implementado | Luis (P2) | Respuestas tipadas con `check_summary` |
+| App de gestión financiera nativa (`PySide6 / Qt6`) | ✅ Implementado | Brandon (P3) | UI navegable, KPIs, badges de severidad, auditoría y 13 tests en verde |
+| Instalador y lanzador unificado multiplataforma | ✅ Implementado | Brandon (P3) | `install.py` y `start.py` (100% Python) |
+| Retiro de frontend web obsoleto y dependencias Node.js | ✅ Ejecutado | Equipo | Alineado con ADR-003 |
+| Hot-folder conectado al backend con API Key | ⏳ En progreso | Beatriz (P4a) | `tray_agent.py` enviando a `/upload` |
+| Pantalla de configuración del agente (`SettingsView`) | ⏳ En progreso | Beatriz (P4a) | Formulario de carpetas y API Key |
+| Integración final y orquestación del vertical completo | ⏳ Pendiente | Hector (P4b) | Validación global y cierre |
 
 ---
 
-## 4. Decisiones de Esta Iteración
+## 4. Decisiones Ejecutadas
 
-Tomadas por el equipo antes de iniciar la implementación:
-
-1. **Cliente principal = App de escritorio PySide6** (decisión `ADR-003`). El frontend web Next.js queda **deprecated**. La app de escritorio actúa como cliente del backend FastAPI (persistencia, validación, reglas y webhooks).
-2. **Validadores conectados al pipeline**: para documentos clasificados como `invoice`, el pipeline ejecuta `InvoiceStructurizer`, `MathematicalDocumentValidator`, `FlowMindSentinel` y `EntityResolutionEngine`, persistiendo hallazgos.
-3. **Automatización por hot-folder → backend** con API Key (`fm_...`), persistiendo en la BD y disparando reglas/webhooks. No se incluye conector IMAP en esta iteración.
-4. **Reconciliación = validación + revisión visual**: detección y visualización de discrepancias matemáticas, cambios de IBAN, duplicados y umbrales. **No** se incluye el cruce a 3 vías (PO/GR/INV) en esta iteración (queda como Fase 10 del roadmap).
-5. **Documentación primero**: este paquete documental (alineación, TDD, ADR y división de trabajo) se redacta antes de escribir código.
+1. **Cliente oficial = Suite de escritorio PySide6** (`ADR-003`). El frontend web Next.js fue **removido por completo del repositorio**.
+2. **Validadores conectados al pipeline**: las facturas procesadas alimentan el structurizer, validación matemática, Sentinel y persistencia de hallazgos.
+3. **Pila 100% Python**: eliminación total de Node.js y npm, simplificando el entorno de desarrollo y ejecución.
+4. **Instalación y arranque deterministas**: scripts `install.py` y `start.py` con autodetección de plataforma (Windows/Linux) y asignación automática de puertos.
 
 ---
 

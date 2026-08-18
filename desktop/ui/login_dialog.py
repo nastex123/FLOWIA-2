@@ -1,10 +1,12 @@
-"""Login dialog for the FlowMind desktop financial app (JWT + API Key modes)."""
+"""Gothic Authentication Chamber Dialog for FlowMind AI Desktop."""
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -19,67 +21,99 @@ from desktop.controllers.api_client import DesktopFlowMindClient, FlowMindApiErr
 
 
 class LoginDialog(QDialog):
-    """Authenticates against the backend with JWT, API key, or Demo Mode."""
+    """Gothic Authentication Chamber for FlowMind AI Desktop."""
 
     def __init__(self, client: DesktopFlowMindClient, parent=None):
         super().__init__(parent)
         self.client = client
-        self.setWindowTitle("Iniciar sesión — FlowMind AI")
-        self.setMinimumWidth(440)
+        self.setWindowTitle("Autenticacion — FlowMind AI")
+        self.setMinimumWidth(580)
+        self.setMinimumHeight(490)
         self._build_ui()
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
-        layout.setSpacing(16)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(18)
+        layout.setContentsMargins(28, 28, 28, 28)
 
-        header_label = QLabel("<h2>🧠 FlowMind AI</h2><p style='color: #94a3b8;'>Plataforma de Gestión Financiera & Auditoría Local</p>")
-        layout.addWidget(header_label)
+        # Header Logo & Subtitle
+        header_frame = QFrame()
+        header_frame.setObjectName("glassCard")
+        h_layout = QVBoxLayout(header_frame)
+        h_layout.setContentsMargins(18, 16, 18, 16)
 
+        header_label = QLabel("<h2 style='margin: 0; color: #fda4af; font-family: Georgia, serif; font-size: 22px; letter-spacing: 1px;'>FLOWMIND AI</h2><p style='margin: 4px 0 0 0; color: #a8a29e; font-size: 13px;'>Catedral de Inteligencia Financiera & Auditoria Local</p>")
+        header_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        h_layout.addWidget(header_label)
+        layout.addWidget(header_frame)
+
+        # Main Tabs
         tabs = QTabWidget()
+        tabs.setObjectName("glassTabs")
 
+        # TAB 1: JWT Login & Demo
         jwt_tab = QWidget()
         jwt_form = QFormLayout(jwt_tab)
-        jwt_form.setSpacing(10)
+        jwt_form.setSpacing(14)
+        jwt_form.setContentsMargins(14, 18, 14, 18)
+
         self.email_edit = QLineEdit()
         self.email_edit.setPlaceholderText("admin@flowmind.local")
         self.email_edit.setText("admin@flowmind.local")
+        self.email_edit.setMinimumHeight(38)
+
         self.password_edit = QLineEdit()
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_edit.setPlaceholderText("admin123")
         self.password_edit.setText("admin123")
-        
+        self.password_edit.setMinimumHeight(38)
+
         btn_row = QHBoxLayout()
-        self.login_btn = QPushButton("Conectar & Cargar")
+        btn_row.setSpacing(14)
+
+        self.login_btn = QPushButton("Conectar al Servidor")
+        self.login_btn.setMinimumHeight(42)
         self.login_btn.clicked.connect(self._on_login)
-        self.demo_btn = QPushButton("Modo Demo Offline")
-        self.demo_btn.setStyleSheet("background-color: #059669; color: white;")
+
+        self.demo_btn = QPushButton("Modo Cripta Offline")
+        self.demo_btn.setObjectName("successButton")
+        self.demo_btn.setMinimumHeight(42)
         self.demo_btn.clicked.connect(self._on_demo_mode)
-        btn_row.addWidget(self.login_btn)
-        btn_row.addWidget(self.demo_btn)
+
+        btn_row.addWidget(self.login_btn, stretch=1)
+        btn_row.addWidget(self.demo_btn, stretch=1)
 
         self.org_combo = QComboBox()
+        self.org_combo.setMinimumHeight(38)
         self.org_combo.setEnabled(False)
 
-        jwt_form.addRow("Correo:", self.email_edit)
-        jwt_form.addRow("Contraseña:", self.password_edit)
+        jwt_form.addRow("<span style='color: #fda4af; font-family: Georgia, serif; font-weight: 600;'>Usuario / Email:</span>", self.email_edit)
+        jwt_form.addRow("<span style='color: #fda4af; font-family: Georgia, serif; font-weight: 600;'>Contrasena:</span>", self.password_edit)
         jwt_form.addRow("", btn_row)
-        jwt_form.addRow("Organización:", self.org_combo)
-        tabs.addTab(jwt_tab, "Usuario (JWT / Demo)")
+        jwt_form.addRow("<span style='color: #fda4af; font-family: Georgia, serif; font-weight: 600;'>Santuario / Org:</span>", self.org_combo)
+        tabs.addTab(jwt_tab, "Usuario (JWT / Cripta)")
 
+        # TAB 2: API Key Mode
         api_tab = QWidget()
         api_form = QFormLayout(api_tab)
-        api_form.setSpacing(10)
+        api_form.setSpacing(14)
+        api_form.setContentsMargins(14, 18, 14, 18)
+
         self.api_key_edit = QLineEdit()
         self.api_key_edit.setPlaceholderText("fm_...")
+        self.api_key_edit.setMinimumHeight(38)
+
         self.api_org_edit = QLineEdit()
         self.api_org_edit.setPlaceholderText("default-org (opcional)")
-        api_form.addRow("API Key:", self.api_key_edit)
-        api_form.addRow("Organización:", self.api_org_edit)
-        tabs.addTab(api_tab, "API Key")
+        self.api_org_edit.setMinimumHeight(38)
+
+        api_form.addRow("<span style='color: #fda4af; font-family: Georgia, serif; font-weight: 600;'>API Key:</span>", self.api_key_edit)
+        api_form.addRow("<span style='color: #fda4af; font-family: Georgia, serif; font-weight: 600;'>Organizacion:</span>", self.api_org_edit)
+        tabs.addTab(api_tab, "Clave API")
 
         layout.addWidget(tabs)
 
+        # Dialog Buttons
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
@@ -102,7 +136,7 @@ class LoginDialog(QDialog):
             self.client.login(self.email_edit.text().strip(), self.password_edit.text())
             self.client.me()
         except FlowMindApiError as e:
-            QMessageBox.critical(self, "Error de autenticación", e.detail)
+            QMessageBox.critical(self, "Error de autenticacion", e.detail)
             return
 
         self.org_combo.clear()
@@ -133,11 +167,10 @@ class LoginDialog(QDialog):
                 self.accept()
                 return
             except FlowMindApiError as e:
-                # Si falló la conexión directa y hay opción demo
                 reply = QMessageBox.question(
                     self,
-                    "Backend no disponible",
-                    f"{e.detail}\n\n¿Deseas continuar en 'Modo Demo' para explorar la interfaz?",
+                    "Santuario no disponible",
+                    f"{e.detail}\n\n¿Deseas ingresar en 'Modo Cripta Offline' para explorar la catedral local?",
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 )
                 if reply == QMessageBox.StandardButton.Yes:
@@ -154,6 +187,6 @@ class LoginDialog(QDialog):
         else:
             QMessageBox.warning(
                 self,
-                "Configuración incompleta",
-                "Inicia sesión con usuario, activa el Modo Demo o introduce una API Key.",
+                "Configuracion incompleta",
+                "Inicia sesion con usuario, activa el Modo Cripta o introduce una API Key.",
             )

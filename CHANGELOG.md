@@ -4,6 +4,193 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:49] (America/Bogota)
+
+- **[Docs & Tooling / Web Frontend Architecture Transition]** Actualizacion del instalador automatico y sincronizacion de toda la documentacion enfatizando la arquitectura Web Frontend (Next.js 14+)
+  - **Qué:** 
+    - `install.py`: actualizacion del instalador unificado para verificar Node.js/npm, instalar automaticamente dependencias en `frontend/` (`npm install`) y presentar resumen de acceso a `http://localhost:3000`.
+    - `README.md`: actualizacion integral de la descripcion, stack y guias de inicio rapido indicando que la suite opera como aplicacion web moderna servida en navegador (`http://localhost:3000`), sustituyendo las ventanas nativas de escritorio.
+    - `AGENTS.md` y `GEMINI.md`: actualizacion de las directivas y definicion del stack oficial a Frontend Web (Next.js 14+ / React / Tailwind CSS / Lucide / Canvas GPU).
+    - `docs/03-architecture/01-general-architecture.md` y `docs/03-architecture/03-web-frontend.md`: nuevo documento arquitectonico del frontend web y actualizacion de diagramas Mermaid.
+  - **Por qué:** Reflejar de forma precisa y unificada la transicion oficial hacia la arquitectura web moderna en todo el repositorio.
+  - **Archivos:** `install.py`, `README.md`, `AGENTS.md`, `GEMINI.md`, `docs/03-architecture/01-general-architecture.md`, `docs/03-architecture/03-web-frontend.md`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 15:39] (America/Bogota)
+
+- **[UI / Gothic Sacred Glyphs Catalog]** Creacion de un catalogo de 24 figuras goticas vectoriales y grilla interactiva de sellos de catedral
+  - **Qué:** 
+    - `frontend/src/components/GothicGlyphs.tsx`: catalogo de 24 figuras goticas y de geometria sagrada vectoriales (Cuadrifolio, Trifolio Ojival, Hexagrama Sacro, Octagrama, Cruz Templaria, Roseton Solar de 16 Rayos, Flor de Lis, Portal Ojival, Arco Conopial, Boveda de Cruceria, Oculo Central, Sello Alquimico de Saturno, Compas de Cantero, Dodecagrama, Pinaculo y Aguja, Gargola Guardiana, Hoja de Acanto, Escuadra y Compas, Arbotante, Sello Criptografico, Rueda Solar, Cruz de Espada, Portal de Vesica Piscis y Caliz Sagrado).
+    - `frontend/src/components/GothicGlyphsGrid.tsx`: componente de grilla responsiva que renderiza el catalogo de 24 sellos con interaccion hover y transformaciones en rotacion.
+    - Integracion de la grilla de sellos en `Dashboard` y `LocalExtractionPage`.
+  - **Por qué:** Expandir la densidad artistica con mas de 20 figuras goticas autenticas para ambientar el fondo y paneles de la aplicacion.
+  - **Archivos:** `frontend/src/components/GothicGlyphs.tsx`, `frontend/src/components/GothicGlyphsGrid.tsx`, `frontend/src/app/page.tsx`, `frontend/src/app/local/page.tsx`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 15:36] (America/Bogota)
+
+- **[UI / Gothic Cathedral Enrichment]** Incorporacion de esquineros de filigrana, divisores sacros, ventanas ojivales y siluetas de catedral
+  - **Qué:** 
+    - `frontend/src/components/GothicCornerOrnament.tsx`: esquineros de forja gotica con trifolios y rosetas en esquinas de tarjetas y contenedores.
+    - `frontend/src/components/GothicDivider.tsx`: divisores con cruz gotica radiante, filigrana ahusada y etiquetas de santuario.
+    - `frontend/src/components/GothicArchWatermark.tsx`: ventanal ojival de catedral en marca de agua vectorial para rellenar espacios libres.
+    - `frontend/src/components/GothicBackdrop.tsx`: integracion de siluetas de arco apuntado, constelaciones y 55 brasas con filigrana conectiva.
+    - Integracion de todos los ornamentos en `Dashboard`, `InvoiceReviewPage`, `SettingsPage` y `LocalExtractionPage`.
+  - **Por qué:** Enriquecer la ambientacion visual de catedral gotica y erradicar espacios vacios o planos en la aplicacion.
+  - **Archivos:** `frontend/src/components/GothicCornerOrnament.tsx`, `frontend/src/components/GothicDivider.tsx`, `frontend/src/components/GothicArchWatermark.tsx`, `frontend/src/components/GothicBackdrop.tsx`, `frontend/src/components/KpiCard.tsx`, `frontend/src/app/page.tsx`, `frontend/src/app/review/[id]/page.tsx`, `frontend/src/app/settings/page.tsx`, `frontend/src/app/local/page.tsx`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 15:31] (America/Bogota)
+
+- **[Frontend / Missing Routes]** Creacion de las paginas de Configuracion y Extraccion Local en Next.js
+  - **Qué:** 
+    - `frontend/src/app/settings/page.tsx`: nueva pagina de configuracion del sistema (umbrales de confianza Sentinel, deteccion de duplicados, directorio Hot-Folder y claves API) con diseno gotico y rosetones rotatorios.
+    - `frontend/src/app/local/page.tsx`: nueva pagina de extraccion local offline con visor de campos clave en dos columnas y grilla de reconciliacion tabular.
+  - **Por qué:** Resolver el error 404 al navegar hacia las secciones de Configuracion y Extraccion Local desde la barra lateral.
+  - **Archivos:** `frontend/src/app/settings/page.tsx`, `frontend/src/app/local/page.tsx`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 15:25] (America/Bogota)
+
+- **[UI / Gothic Card Circles]** Incorporacion de rosetones goticos rotatorios dentro de cada tarjeta y panel con relative overflow-hidden
+  - **Qué:** 
+    - `frontend/src/components/GothicRoseCircle.tsx`: nuevo componente SVG de geometria sagrada gotica (octagrama, lancetas y arcos concentricos) con rotacion CSS continua y suave (`animate-[spin_40s_linear_infinite]`).
+    - `frontend/src/components/KpiCard.tsx`: integrado roseton rotatorio con halo carmesí al fondo de las metricas.
+    - `frontend/src/components/DocumentTable.tsx`: integrados rosetones rotatorios en la barra de busqueda y en el panel principal de la tabla.
+    - `frontend/src/app/review/[id]/page.tsx`: integrados rosetones en tarjetas de Emisor, Receptor, Metadatos, Totales Financieros, Items y Auditoria Sentinel.
+    - `frontend/src/app/login/page.tsx` y `FileUploadModal.tsx`: rosetones de gran escala en los modales de autenticacion e ingesta.
+  - **Por qué:** Realzar la identidad visual gotica con geometria sagrada animada dentro de cada contenedor.
+  - **Archivos:** `frontend/src/components/GothicRoseCircle.tsx`, `frontend/src/components/KpiCard.tsx`, `frontend/src/components/DocumentTable.tsx`, `frontend/src/app/review/[id]/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/components/FileUploadModal.tsx`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 15:20] (America/Bogota)
+
+- **[Frontend / Next.js Migration]** Creacion y despliegue del frontend web moderno en Next.js (App Router, TypeScript, Tailwind CSS, HTML5 Canvas y Lucide Icons)
+  - **Qué:** 
+    - `frontend/`: nueva suite web modular con Next.js 14+ y Tailwind CSS con tema Gotico Obsidian, Crimson y Amethyst.
+    - `frontend/src/components/GothicBackdrop.tsx`: canvas HTML5 en segundo plano que renderiza a 60 FPS un Roseton de Catedral Gotica de 12 petalos rotatorio y brasas carmesí ascendentes.
+    - `frontend/src/components/Sidebar.tsx`: barra lateral con transicion fluida en CSS puro (`transition-all duration-300`) entre 256px y 80px sin desbordamientos de texto.
+    - `frontend/src/components/Header.tsx`: cabecera con selector de organizacion multi-tenant, estado del santuario y boton de subida rapida.
+    - `frontend/src/components/KpiCard.tsx` y `DocumentTable.tsx`: tarjetas KPI con bordes iluminados y tabla de comprobantes con busqueda, badges de severidad y chips de filtrado.
+    - `frontend/src/components/FileUploadModal.tsx`: modal con Drag & Drop para ingesta documental.
+    - `frontend/src/app/review/[id]/page.tsx`: workspace de revision estructurada por pestañas (Cabecera, Items, Auditoria Sentinel, Validador Matematico y JSON) con barra flotante de aprobacion.
+    - `frontend/src/app/login/page.tsx`: camara de autenticacion con soporte directo para Modo Cripta Offline.
+    - `start.py` y `scripts/start_frontend.ps1`: lanzador unificado actualizado para orquestar FastAPI backend en puerto 8000 y Next.js web frontend en puerto 3000.
+  - **Por qué:** Proporcionar una experiencia de usuario moderna, fluida y sin restricciones de frameworks de escritorio nativos.
+  - **Archivos:** `frontend/`, `scripts/start_frontend.ps1`, `start.py`, `tests/test_desktop_gui_redesign.py`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 15:00] (America/Bogota)
+
+- **[UI / Gothic Geometry & Visual Fixes]** Incorporacion de Roseton Gotico animado, circulos alquimicos, correccion de sidebar contraido y eliminacion definitiva del recuadro blanco en tablas
+  - **Qué:** 
+    - `desktop/ui/components/particle_backdrop.py`: implementacion de renderizado vectorial de un Roseton de Catedral Gotica de 12 petalos y circulos de compas alquimico con rotacion lenta continua combinados con las brasas carmesí ascendentes.
+    - `desktop/ui/styles.py`: eliminacion definitiva del recuadro blanco en `QTableView` mediante la estilizacion explicita de `QTableCornerButton::section`, `QHeaderView::section:vertical` (cabeceras verticales con borde carmesí) y fondo oscuro continuo en el viewport.
+    - `desktop/ui/main_window.py`: correccion del modo compacto del sidebar (68px) usando insignias romanas `[ I ]`, `[ II ]`, `[ III ]`, `[ IV ]` centradas sin recorte de texto.
+    - `desktop/ui/documents_view.py`: desactivacion del corner button nativo y unificacion de cabeceras oscuras.
+  - **Por qué:** Eliminar artefactos visuales nativos del sistema operativo y enriquecer la direccion artistica gotica con geometria sagrada de catedral.
+  - **Archivos:** `desktop/ui/components/particle_backdrop.py`, `desktop/ui/styles.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 14:53] (America/Bogota)
+
+- **[UI / Gothic Theme Overhaul]** Rediseño estetico integral con temática Gotica Obsidian, Crimson y Amethyst
+  - **Qué:** 
+    - `desktop/ui/styles.py`: transformacion completa de la paleta hacia Obsidian oscuro (`#030408`), Crimson carmesí (`#881337`, `#be123c`, `#e11d48`), Amethyst violeta y acentos de latón/oro envejecido; tipografia serif en encabezados (Georgia, Palatino, Garamond) y sans de alta precision para datos contables.
+    - `desktop/ui/components/particle_backdrop.py`: implementacion de particulas goticas (brasas carmesí ascendentes y motas de niebla etérea con variacion de pulso y lineas de filigrana).
+    - `desktop/ui/main_window.py`: adaptacion de marcas, titulos y estados ("FlowMind AI — Catedral Financiera", "Santuario Conectado", "Cripta Local").
+    - `desktop/ui/documents_view.py`: tarjetas KPI con bordes carmesí/oro y tipografia numerica en 32px; tabla de libro mayor estilizada en tonos cripta.
+    - `desktop/ui/invoice_review_view.py`: workspace catedral por pestañas translúcidas y boton de accion consagratoria `Consagrar y Aprobar Comprobante`.
+    - `desktop/ui/login_dialog.py`: camara de autenticacion gotica de 580px con foco carmesí y acceso rapido al "Modo Cripta Offline".
+  - **Por qué:** Aplicar una direccion artistica gotica inmersiva y de alto impacto visual manteniendo plena ergonomia y determinismo contable.
+  - **Archivos:** `desktop/ui/styles.py`, `desktop/ui/components/particle_backdrop.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/login_dialog.py`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 14:41] (America/Bogota)
+
+- **[UI / Particles & Animations]** Incorporacion de fondo animado de particulas vivas, animaciones fluidas con QPropertyAnimation, correccion de proporciones y regla estricta de cero emojis
+  - **Qué:** 
+    - `desktop/ui/components/particle_backdrop.py`: nuevo widget canvas de particulas interconectadas con halo de brillo neón cian y calculo de proximidad en tiempo real acelerado por QPainter.
+    - `desktop/ui/components/animations.py`: utilidades `SidebarAnimator` para apertura/cierre fluido con curva cubica y `PageTransitioner` para desvanecimiento suave de opacidad entre vistas.
+    - `desktop/ui/login_dialog.py`: redimensionado a 560px de ancho para eliminar cualquier recorte en los botones de autenticacion ("Conectar al Servidor", "Modo Demo Offline") y fondo oscuro forzado en QDialog.
+    - `desktop/ui/styles.py`: eliminacion de artefactos blancos en dialogos, configuracion explicita de QDialog y paleta Obsidian/Cyan.
+    - `skills/`, `AGENTS.md`, `GEMINI.md`, `README.md`: incorporacion de la directiva estricta de cero emojis para mantener estilo sobrio, tecnico y formal en todo el proyecto.
+  - **Por qué:** Resolver los recortes visuales identificados en capturas de pantalla, dar una atmosfera de alta gama y consolidar la regla de comunicacion formal.
+  - **Archivos:** `desktop/ui/components/particle_backdrop.py`, `desktop/ui/components/animations.py`, `desktop/ui/components/__init__.py`, `desktop/ui/login_dialog.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/styles.py`, `skills/flowmind-development/SKILL.md`, `skills/documentation/SKILL.md`, `skills/technical-partner/SKILL.md`, `AGENTS.md`, `GEMINI.md`, `README.md`, `tests/test_desktop_gui_redesign.py`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 14:20] (America/Bogota)
+
+- **[UI / Desktop Redesign]** Rediseño visual integral de la Suite de Escritorio PySide6 con escala ampliada, estética Glassmorphism Cyber-Dark y workspace por pestañas
+  - **Qué:** 
+    - `desktop/ui/styles.py`: nuevo sistema de diseño con escala base de 14px, tarjetas translúcidas multicapa (`rgba(15, 23, 42, 0.75)`), bordes de cristal cian sutiles con iluminación al foco/hover, badges de severidad en píldora brillante y scrollbars estilizadas.
+    - `desktop/ui/main_window.py`: resolución base ampliada a 1440x900 (mínimo 1080x720), sidebar translúcido colapsable/desplegable con botón `☰` (alterna entre 240px con texto y 68px con iconos) y barra de estado con indicador de conexión en vivo.
+    - `desktop/ui/documents_view.py`: 4 tarjetas KPI flotantes de gran escala con métricas numéricas de 32px y bordes de color superior, barra de búsqueda con chips de filtrado interactivo (`Todos`, `Críticos`, `Advertencias`, `Revisados`) y tabla de 44px de alto por fila.
+    - `desktop/ui/invoice_review_view.py`: rediseñada como un workspace de pantalla completa con pestañas translúcidas (`QTabWidget` con Cabecera & Resumen, Líneas de Ítems, Auditoría Sentinel, Validador Matemático y Evidencia JSON) y barra de acción flotante inferior con botón destacado `✓ Aprobar y Marcar como Revisada`.
+    - `desktop/ui/login_dialog.py`: diálogo centrado con efecto Glassmorphism y botón destacado para "Modo Demo Offline".
+    - `tests/test_desktop_gui_redesign.py`: nueva suite de pruebas unitarias verificando el sidebar colapsable, tarjetas KPI, chips de filtrado y el workspace por pestañas (17/17 tests en verde).
+  - **Por qué:** Mejorar drásticamente la experiencia de usuario, legibilidad, ergonomía visual y velocidad de auditoría documental conforme a las directivas del proceso `/grill-me`.
+  - **Archivos:** `desktop/ui/styles.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/login_dialog.py`, `tests/test_desktop_gui_redesign.py`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 14:10] (America/Bogota)
+
+- **[Docs / Governance]** Inclusión de directiva obligatoria y advertencia al inicio del `README.md`
+  - **Qué:** Inclusión de una alerta `> [!IMPORTANT]` en la cabecera de `README.md` que instruye a desarrolladores y agentes de IA a leer obligatoriamente toda la documentación en `docs/`, `AGENTS.md`, `GEMINI.md` y todas las skills del repositorio (`skills/documentation/`, `skills/flowmind-development/`, `skills/technical-partner/`) antes de realizar modificaciones.
+  - **Por qué:** Garantizar que cualquier colaborador o agente de IA mantenga la consistencia arquitectónica, el tipado estricto, la privacidad local y la sincronización continua de la documentación.
+  - **Archivos:** `README.md`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 14:05] (America/Bogota)
+
+- **[Docs / Project]** Sincronización integral de la documentación técnica (`docs/`), estado de avance y consolidación de tareas
+  - **Qué:** 
+    - `docs/01-product/03-roadmap.md`: actualizada la Fase 3 con la entrega completa de la Suite de Escritorio PySide6 (UI de gestión financiera, KPIs, visor en 2 columnas, badges de severidad, revisión y tests), actualizada la Fase 8 (agente de bandeja e instalador `install.py`) y Fase 10 (persistencia de `document_checks`, `entity_records`, `invoice_fingerprints`).
+    - `docs/01-product/04-proyecto4-alineacion-tarea.md`: actualizada la matriz de brechas y decisiones ejecutadas, reflejando la resolución del dominio de factura estructurada, endpoints de revisión y la UI de escritorio.
+    - `docs/03-architecture/01-general-architecture.md`: actualizado el diagrama Mermaid global eliminando el nodo web y consolidando la arquitectura cliente-servidor 100% nativa en Python.
+    - `docs/08-operations/02-trabajo-equipo-proyecto4.md`: actualizada la tabla de criterios de finalización con el estado real de cada persona (Brandon P3 completado al 100%, Luis P1+P2 completado al 100%, Beatriz P4a en progreso y Hector P4b pendiente de integración final).
+  - **Por qué:** Mantener `docs/` como la fuente de verdad técnica y arquitectónica del proyecto, asegurando trazabilidad exacta entre el código implementado, los entregables de cada integrante del equipo y las fases pendientes.
+  - **Archivos:** `docs/01-product/03-roadmap.md`, `docs/01-product/04-proyecto4-alineacion-tarea.md`, `docs/03-architecture/01-general-architecture.md`, `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 13:56] (America/Bogota)
+
+- **[Architecture / Cleanup]** Eliminación del frontend web (Next.js) y consolidación 100% en la Suite de Escritorio Nativa (PySide6 / Qt6)
+  - **Qué:** 
+    - `frontend/`: eliminado el directorio completo y todos los archivos del andamiaje web roto de Next.js (`package.json`, `tsconfig.json`, `src/`, `next.config.js`).
+    - `scripts/start_frontend.ps1`: eliminado.
+    - `backend/app/core/config.py`: actualizado `ALLOWED_ORIGINS` por defecto a `["*"]` para clientes locales de escritorio y API.
+    - `install.py`: simplificado para enfocarse 100% en Python, eliminando verificaciones de Node.js/npm y el paso de `npm install`.
+    - `start.py`: eliminado el flag `--web` y el subproceso Next.js, consolidando el lanzador en Backend FastAPI + Suite de Escritorio PySide6.
+    - `.gitignore`, `.env.example`, `.env`, `README.md`, `AGENTS.md`, `GEMINI.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md`: actualizados para reflejar que el stack es 100% Python y que la suite de escritorio es el único cliente de usuario.
+  - **Por qué:** Cumplir con la decisión arquitectónica ADR-003, eliminar deuda técnica innecesaria de Node.js/npm y enfocar todos los esfuerzos del equipo en la GUI de escritorio nativa PySide6.
+  - **Archivos:** `frontend/` (eliminado), `scripts/start_frontend.ps1` (eliminado), `backend/app/core/config.py`, `install.py`, `start.py`, `.gitignore`, `.env.example`, `.env`, `README.md`, `AGENTS.md`, `GEMINI.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 13:49] (America/Bogota)
+
+- **[Tooling / Scripts]** Creación del instalador automatizado multiplataforma `install.py` y actualización del `README.md`
+  - **Qué:** 
+    - `install.py`: nuevo script de configuración automática y multiplataforma (Windows, Linux y macOS) sin dependencias externas. Detecta el sistema operativo, valida Python 3.11+, Git y Node.js/npm, crea el entorno virtual `venv`, actualiza `pip`, instala el paquete backend en modo editable con extras `[dev]` (`pip install -e "./backend[dev]"`), copia y configura `.env` para SQLite local out-of-the-box, ejecuta `npm install` en el frontend, y realiza un *Smoke Test* de 9 módulos críticos (`fastapi`, `pydantic v2`, `sqlalchemy`, `pandas`, `pymupdf`, `sklearn`, `opencv`, `pyside6`, `networkx`). Incluye soporte para banderas `--os windows`, `--os linux`, `--backend-only`, `--frontend-only` y `--skip-smoke-test`.
+    - `README.md`: actualizado para presentar `python install.py` como la opción recomendada de instalación rápida con un solo comando.
+  - **Por qué:** Eliminar fricciones de instalación y garantizar que cualquier desarrollador configure y verifique el entorno de desarrollo completo de forma determinista y reproducible con un solo comando.
+  - **Archivos:** `install.py`, `README.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 13:35] (America/Bogota)
 
 - **[Docs / Config]** Actualización integral del `README.md` y guía de instalación clara paso a paso

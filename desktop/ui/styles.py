@@ -1,231 +1,498 @@
-"""Modern Dark Design System and Stylesheet for FlowMind AI Desktop."""
+"""Gothic Cyber-Obsidian Design System and Stylesheet for FlowMind AI Desktop."""
 
 DARK_THEME_QSS = """
-/* Global Window & Fonts */
+/* ============================================================================
+   1. GOTHIC OBSIDIAN GLOBAL WINDOW & TYPOGRAPHY
+   ============================================================================ */
 QMainWindow {
-    background-color: #0b0f17;
+    background-color: #030408;
     color: #f1f5f9;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Georgia", "Palatino Linotype", "Garamond", "Times New Roman", -apple-system, sans-serif;
+}
+
+QDialog {
+    background-color: #06050b;
+    color: #f8fafc;
+    border: 1px solid rgba(225, 29, 72, 0.45);
+    border-radius: 10px;
+    font-family: "Georgia", "Segoe UI", sans-serif;
 }
 
 QWidget {
-    color: #f1f5f9;
-    font-size: 13px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-family: "Segoe UI", "Georgia", sans-serif;
 }
 
-/* Toolbar */
-QToolBar {
-    background-color: #111827;
-    border-bottom: 1px solid #1f2937;
-    padding: 8px 12px;
-    spacing: 8px;
+/* ============================================================================
+   2. GOTHIC GLASSMORPHISM CARDS & PANELS (Crimson & Obsidian)
+   ============================================================================ */
+QFrame#glassCard, QFrame#card {
+    background-color: rgba(12, 10, 20, 0.85);
+    border: 1px solid rgba(136, 19, 55, 0.40);
+    border-radius: 10px;
+    padding: 16px;
 }
 
-QToolButton {
-    background-color: #1f2937;
-    color: #f1f5f9;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid #374151;
+QFrame#glassCard:hover, QFrame#card:hover {
+    border: 1px solid rgba(225, 29, 72, 0.75);
+    background-color: rgba(19, 13, 28, 0.92);
 }
 
-QToolButton:hover {
-    background-color: #374151;
-    border-color: #4b5563;
+QFrame#kpiCard {
+    background-color: rgba(15, 11, 24, 0.88);
+    border: 1px solid rgba(159, 18, 57, 0.40);
+    border-radius: 10px;
+    padding: 16px 18px;
 }
 
-QToolButton:pressed {
-    background-color: #111827;
+QFrame#kpiCard:hover {
+    background-color: rgba(28, 17, 43, 0.96);
+    border: 1px solid rgba(244, 63, 94, 0.90);
 }
 
-/* Push Buttons */
-QPushButton {
-    background-color: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
+QFrame#glassPanel {
+    background-color: rgba(8, 6, 14, 0.92);
+    border: 1px solid rgba(136, 19, 55, 0.35);
+    border-radius: 10px;
+    padding: 14px;
 }
 
-QPushButton:hover {
-    background-color: #1d4ed8;
+QFrame#actionBar {
+    background-color: rgba(15, 10, 24, 0.98);
+    border-top: 1px solid rgba(225, 29, 72, 0.45);
+    padding: 14px 22px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
-QPushButton:pressed {
-    background-color: #1e40af;
+/* ============================================================================
+   3. GOTHIC SIDEBAR NAVIGATION & COMPACT MODE
+   ============================================================================ */
+QWidget#sidebarContainer {
+    background-color: rgba(6, 4, 11, 0.98);
+    border-right: 1px solid rgba(136, 19, 55, 0.35);
 }
 
-QPushButton:disabled {
-    background-color: #374151;
-    color: #9ca3af;
-}
-
-/* Sidebar List */
 QListWidget#sidebar {
-    background-color: #111827;
+    background-color: transparent;
     color: #94a3b8;
-    border-right: 1px solid #1f2937;
-    border-top: none;
-    border-bottom: none;
-    border-left: none;
+    border: none;
     padding: 12px 6px;
     outline: none;
 }
 
 QListWidget#sidebar::item {
-    padding: 10px 14px;
-    margin-bottom: 4px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
     border-radius: 8px;
     font-weight: 600;
-    color: #94a3b8;
+    font-size: 14px;
+    color: #a8a29e;
+    border-left: 2px solid transparent;
 }
 
 QListWidget#sidebar::item:hover {
-    background-color: #1f2937;
-    color: #f1f5f9;
+    background-color: rgba(35, 18, 48, 0.85);
+    color: #fda4af;
+    border-left: 2px solid rgba(225, 29, 72, 0.75);
 }
 
 QListWidget#sidebar::item:selected {
-    background-color: #1e3a8a;
-    color: #60a5fa;
-    border-left: 3px solid #3b82f6;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(136, 19, 55, 0.90), stop:1 rgba(35, 12, 35, 0.50));
+    color: #ffe4e6;
+    font-weight: 700;
+    border-left: 4px solid #e11d48;
 }
 
-/* Cards & Frames */
-QFrame#card {
-    background-color: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 10px;
-    padding: 14px;
-}
-
-QFrame#kpiCard {
-    background-color: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 8px;
-    padding: 12px;
-}
-
-/* Line Edits & Inputs */
-QLineEdit, QTextEdit, QPlainTextEdit {
-    background-color: #111827;
-    color: #f1f5f9;
-    border: 1px solid #374151;
+QPushButton#sidebarToggle {
+    background-color: rgba(24, 15, 34, 0.85);
+    color: #fda4af;
+    border: 1px solid rgba(136, 19, 55, 0.45);
     border-radius: 6px;
-    padding: 8px 12px;
-    selection-background-color: #2563eb;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 6px 10px;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+QPushButton#sidebarToggle:hover {
+    background-color: rgba(136, 19, 55, 0.50);
+    color: #ffffff;
+    border-color: rgba(225, 29, 72, 0.85);
+}
+
+/* ============================================================================
+   4. GOTHIC BUTTONS (Crimson, Amethyst & Brass)
+   ============================================================================ */
+QPushButton {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #881337, stop:1 #4c0519);
+    color: #fff1f2;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(225, 29, 72, 0.45);
+    min-height: 24px;
+    letter-spacing: 0.3px;
+}
+
+QPushButton:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #be123c, stop:1 #881337);
+    border-color: rgba(251, 113, 133, 0.90);
+    color: #ffffff;
+}
+
+QPushButton:pressed {
+    background-color: #4c0519;
+}
+
+QPushButton:disabled {
+    background-color: rgba(20, 15, 28, 0.60);
+    color: #584c63;
+    border-color: rgba(88, 28, 135, 0.20);
+}
+
+QPushButton#secondaryButton {
+    background-color: rgba(26, 18, 38, 0.85);
+    color: #cbd5e1;
+    border: 1px solid rgba(136, 19, 55, 0.35);
+}
+
+QPushButton#secondaryButton:hover {
+    background-color: rgba(45, 25, 60, 0.95);
+    color: #ffffff;
+    border-color: rgba(225, 29, 72, 0.65);
+}
+
+QPushButton#successButton {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #064e3b, stop:1 #022c22);
+    color: #ecfdf5;
+    border: 1px solid rgba(16, 185, 129, 0.55);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    letter-spacing: 0.5px;
+}
+
+QPushButton#successButton:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #047857, stop:1 #064e3b);
+    border-color: rgba(52, 211, 153, 0.95);
+    color: #ffffff;
+}
+
+/* Chip Filter Buttons */
+QPushButton#chipFilter {
+    background-color: rgba(20, 14, 30, 0.85);
+    color: #94a3b8;
+    border: 1px solid rgba(136, 19, 55, 0.35);
+    border-radius: 16px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 18px;
+}
+
+QPushButton#chipFilter:hover {
+    background-color: rgba(40, 20, 50, 0.95);
+    color: #fce7f3;
+    border-color: rgba(225, 29, 72, 0.65);
+}
+
+QPushButton#chipFilter[active="true"] {
+    background-color: rgba(136, 19, 55, 0.40);
+    color: #fda4af;
+    border: 1px solid #e11d48;
+}
+
+/* ============================================================================
+   5. GOTHIC INPUTS & COMBOBOXES
+   ============================================================================ */
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: rgba(10, 8, 18, 0.95);
+    color: #f8fafc;
+    border: 1px solid rgba(136, 19, 55, 0.35);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 14px;
+    selection-background-color: #881337;
 }
 
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
-    border: 1px solid #3b82f6;
-    background-color: #0f172a;
+    border: 1px solid #e11d48;
+    background-color: rgba(15, 10, 25, 0.98);
 }
 
-/* Combo Boxes */
 QComboBox {
-    background-color: #111827;
-    color: #f1f5f9;
-    border: 1px solid #374151;
+    background-color: rgba(10, 8, 18, 0.95);
+    color: #f8fafc;
+    border: 1px solid rgba(136, 19, 55, 0.35);
     border-radius: 6px;
-    padding: 8px 12px;
-    min-height: 20px;
+    padding: 9px 14px;
+    min-height: 24px;
+    font-size: 14px;
 }
 
 QComboBox:focus {
-    border: 1px solid #3b82f6;
+    border: 1px solid #e11d48;
 }
 
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 24px;
+    width: 28px;
     border-left: none;
 }
 
 QComboBox QAbstractItemView {
-    background-color: #111827;
-    color: #f1f5f9;
-    border: 1px solid #374151;
-    selection-background-color: #2563eb;
-    selection-color: #ffffff;
+    background-color: #0b0814;
+    color: #f8fafc;
+    border: 1px solid rgba(225, 29, 72, 0.45);
+    selection-background-color: #4c0519;
+    selection-color: #fda4af;
     border-radius: 6px;
-    padding: 4px;
+    padding: 6px;
 }
 
-/* Tables */
+/* ============================================================================
+   6. GOTHIC TABLE VIEW & CORNER BUTTON (Definitive Fix for White Box)
+   ============================================================================ */
 QTableView {
-    background-color: #111827;
+    background-color: #07050c;
+    alternate-background-color: #0b0814;
     color: #f1f5f9;
-    gridline-color: #1f2937;
-    border: 1px solid #1f2937;
+    gridline-color: rgba(136, 19, 55, 0.15);
+    border: 1px solid rgba(136, 19, 55, 0.30);
     border-radius: 8px;
-    selection-background-color: #1e3a8a;
+    selection-background-color: rgba(136, 19, 55, 0.65);
     selection-color: #ffffff;
     outline: none;
+    font-size: 14px;
+}
+
+QTableCornerButton::section {
+    background-color: #050308;
+    border: 1px solid rgba(136, 19, 55, 0.25);
+}
+
+QHeaderView {
+    background-color: #050308;
+}
+
+QHeaderView::section:horizontal {
+    background-color: #050308;
+    color: #fda4af;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #881337;
+    border-right: 1px solid rgba(136, 19, 55, 0.20);
+    border-top: none;
+    border-left: none;
+    padding: 12px 14px;
+}
+
+QHeaderView::section:vertical {
+    background-color: #050308;
+    color: #a8a29e;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 12px;
+    border-right: 2px solid #881337;
+    border-bottom: 1px solid rgba(136, 19, 55, 0.15);
+    border-top: none;
+    border-left: none;
+    padding: 6px 12px;
+    text-align: center;
 }
 
 QTableView::item {
-    padding: 6px 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(88, 28, 135, 0.12);
+}
+
+QTableView::item:hover {
+    background-color: rgba(28, 15, 40, 0.65);
 }
 
 QTableView::item:selected {
-    background-color: #1e3a8a;
+    background-color: rgba(136, 19, 55, 0.70);
+    color: #ffe4e6;
 }
 
-QHeaderView::section {
-    background-color: #0b0f17;
-    color: #94a3b8;
-    font-weight: bold;
-    font-size: 12px;
-    border-bottom: 1px solid #1f2937;
-    border-right: 1px solid #1f2937;
-    border-top: none;
-    border-left: none;
-    padding: 8px 10px;
-}
-
-/* Tabs */
+/* ============================================================================
+   7. CATHEDRAL TABS
+   ============================================================================ */
 QTabWidget::pane {
-    border: 1px solid #1f2937;
-    border-radius: 8px;
-    background-color: #111827;
-    padding: 8px;
+    border: 1px solid rgba(136, 19, 55, 0.35);
+    border-radius: 10px;
+    background-color: rgba(10, 8, 17, 0.92);
+    padding: 16px;
 }
 
 QTabBar::tab {
-    background-color: #1f2937;
+    background-color: rgba(15, 10, 24, 0.88);
     color: #94a3b8;
     font-weight: 600;
-    padding: 8px 16px;
-    margin-right: 4px;
+    font-size: 14px;
+    padding: 10px 22px;
+    margin-right: 6px;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
+    border: 1px solid rgba(136, 19, 55, 0.30);
+    border-bottom: none;
+    letter-spacing: 0.3px;
+}
+
+QTabBar::tab:hover {
+    background-color: rgba(28, 17, 43, 0.95);
+    color: #fda4af;
 }
 
 QTabBar::tab:selected {
-    background-color: #111827;
-    color: #60a5fa;
-    border-top: 2px solid #3b82f6;
+    background-color: rgba(10, 8, 17, 0.98);
+    color: #f43f5e;
+    font-weight: 700;
+    border: 1px solid rgba(225, 29, 72, 0.60);
+    border-bottom: 2px solid #e11d48;
 }
 
-/* Status Bar */
+/* ============================================================================
+   8. STATUS BAR, TOOLBAR & SCROLLBARS
+   ============================================================================ */
+QToolBar {
+    background-color: rgba(6, 4, 11, 0.98);
+    border-bottom: 1px solid rgba(136, 19, 55, 0.30);
+    padding: 8px 14px;
+    spacing: 10px;
+}
+
+QToolButton {
+    background-color: rgba(22, 14, 32, 0.85);
+    color: #f1f5f9;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(136, 19, 55, 0.35);
+}
+
+QToolButton:hover {
+    background-color: rgba(45, 22, 60, 0.95);
+    border-color: rgba(225, 29, 72, 0.70);
+    color: #ffffff;
+}
+
 QStatusBar {
-    background-color: #0b0f17;
+    background-color: rgba(4, 3, 7, 0.98);
     color: #64748b;
-    border-top: 1px solid #1f2937;
-    font-size: 12px;
-    padding: 4px 8px;
+    border-top: 1px solid rgba(136, 19, 55, 0.25);
+    font-size: 13px;
+    padding: 6px 12px;
 }
 
-/* Splitter */
+QScrollBar:vertical {
+    border: none;
+    background: rgba(10, 8, 16, 0.60);
+    width: 10px;
+    border-radius: 5px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: rgba(136, 19, 55, 0.45);
+    min-height: 24px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: rgba(225, 29, 72, 0.85);
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    border: none;
+    background: rgba(10, 8, 16, 0.60);
+    height: 10px;
+    border-radius: 5px;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: rgba(136, 19, 55, 0.45);
+    min-width: 24px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: rgba(225, 29, 72, 0.85);
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
 QSplitter::handle {
-    background-color: #1f2937;
-    width: 2px;
+    background-color: rgba(136, 19, 55, 0.30);
+    width: 3px;
 }
 
 QSplitter::handle:hover {
-    background-color: #3b82f6;
+    background-color: #e11d48;
 }
 """
+
+
+def get_badge_qss(severity: str) -> str:
+    """Returns CSS style string for gothic severity pills without emojis."""
+    sev = severity.lower()
+    if sev in ("critical", "block", "high", "error"):
+        return """
+            background-color: rgba(159, 18, 57, 0.25);
+            color: #fb7185;
+            border: 1px solid rgba(225, 29, 72, 0.65);
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        """
+    elif sev in ("warning", "warn", "medium"):
+        return """
+            background-color: rgba(180, 83, 9, 0.25);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.65);
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        """
+    elif sev in ("ok", "verified", "approved", "reviewed", "low"):
+        return """
+            background-color: rgba(6, 78, 59, 0.25);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.65);
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        """
+    else:  # info / default
+        return """
+            background-color: rgba(88, 28, 135, 0.25);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.65);
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        """

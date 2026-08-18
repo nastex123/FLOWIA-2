@@ -67,10 +67,19 @@ El código debe:
 
 * ser legible;
 * tener nombres descriptivos;
-* utilizar tipado estricto (Type hints en Python, TypeScript en frontend);
+* utilizar tipado estricto (Type hints en Python);
 * separar responsabilidades;
 * evitar duplicación innecesaria;
 * tener funciones pequeñas y enfocadas.
+
+### 2.5 Estilo y Comunicación (Cero Emojis)
+
+El agente debe comunicarse de forma sobria, técnica y formal:
+
+* No utilizar emojis en respuestas, planes de ejecución, explicaciones ni mensajes.
+* No utilizar emojis en nombres de variables, funciones, clases, archivos o tests.
+* No utilizar emojis en mensajes de commit ni entradas de CHANGELOG.md.
+* No utilizar emojis en etiquetas o botones de interfaces de usuario.
 
 ---
 
@@ -111,15 +120,15 @@ Responsables de operaciones potencialmente largas y asíncronas:
 * clasificación y ejecución de modelos de Machine Learning tradicionales;
 * tareas en segundo plano.
 
-### Frontend
+### Frontend Web Suite (UI)
 
 Responsable de:
 
-* interfaz de usuario interactiva y accesible (Next.js);
-* interacción fluida con usuarios;
-* visualización de resultados tabulares y estructurados;
-* configuración de reglas de negocio y mapeos;
-* administración de organizaciones y tenants.
+* interfaz de usuario web moderna, reactiva y de alta velocidad (Next.js 14+ / React / TypeScript / Tailwind CSS);
+* interacción fluida con usuarios y visualización en tiempo real en navegador (`http://localhost:3000`);
+* revisión estructurada de facturas y auditoría de anomalías;
+* monitor y visualización de ingestas y estado de la cripta local;
+* configuración de conexiones y selector de organizaciones.
 
 ---
 
@@ -134,7 +143,7 @@ El stack objetivo se basa en tecnologías sólidas, escalables y de ejecución l
 * Pydantic v2
 * SQLAlchemy (Asyncio)
 * Alembic
-* PostgreSQL (con extensiones necesarias)
+* PostgreSQL (con extensiones necesarias) / SQLite Local Asíncrono
 * Redis
 
 ### Procesamiento de Documentos e Inteligencia Local (Pure Libraries)
@@ -143,14 +152,14 @@ El stack objetivo se basa en tecnologías sólidas, escalables y de ejecución l
 * **PDFs & Documentos:** `PyMuPDF` (`fitz`), `pdfplumber`
 * **NLP & Extracción por Patrones:** `spacy`, `regex`, `rapidfuzz` (fuzzy matching de encabezados y aliases), `nltk`
 * **Machine Learning Clásico & Clasificación:** `scikit-learn` (TF-IDF, Naive Bayes, Logistic Regression, Random Forest)
-* **OCR (local cuando sea necesario):** `pytesseract` / `easyocr`
+* **OCR & Visión Offline:** `pytesseract`, `OpenCV` (`cv2`)
 
-### Frontend
+### Frontend Web (UI)
 
-* Next.js (App Router)
-* React
-* TypeScript
-* Tailwind CSS
+* Next.js 14+ (App Router, React 18, TypeScript)
+* Tailwind CSS (Tema Gótico Obsidian, Crimson y Amethyst)
+* Lucide Icons & HTML5 Canvas acelerado por GPU (Rosetones y Partículas)
+* Framer Motion & CSS transitions puras (Sidebar colapsable de 256px a 80px)
 
 ### Infraestructura
 

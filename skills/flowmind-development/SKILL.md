@@ -5,6 +5,9 @@ description: Metodología especializada para desarrollar FlowMind AI como un Saa
 
 # FlowMind Development Skill
 
+## Regla de Comunicación: Cero Emojis
+Está estrictamente prohibido el uso de emojis en respuestas, código, comentarios, nombres de variables, etiquetas de interfaz, documentación y changelogs. Mantener una comunicación 100% técnica, formal y sobria.
+
 ## Propósito
 
 Esta skill define cómo debe trabajar un agente de IA cuando desarrolla **FlowMind AI**.

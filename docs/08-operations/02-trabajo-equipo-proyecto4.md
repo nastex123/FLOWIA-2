@@ -213,12 +213,12 @@ Integración final + suite completa + docs finales + CHANGELOG global (Hector / 
 
 ---
 
-## 9. Criterios de finalización por persona
+## 9. Criterios de Finalización & Estado de Ejecución por Persona
 
-| Persona | ¿Cuándo termina? |
-| :--- | :--- |
-| **P1 — Luis** | Migración aplicable `upgrade head`; pipeline de factura persiste checks/entidades/huellas; tests de structurizer y pipeline en verde. |
-| **P2 — Luis** | Endpoints enriquecidos y de revisión responden según TDD §5; tests de API en verde; sin mocks en routers. |
-| **P3 — Brandon** | App navegable (lista con badges, detalle con hallazgos, revisión funcional); `api_client.upload_file` entregado; tests de escritorio en verde. |
-| **P4 — Beatriz** | Hot-folder envía a `/upload` con API Key y notifica; suite completa en verde. |
-| **P4 — Hector** | Vertical integrado y verificado end-to-end; documentación sincronizada y CHANGELOG consolidado. |
+| Persona | Rol & Entregables | Criterio de Finalización | Estado Actual |
+| :--- | :--- | :--- | :---: |
+| **P1 — Luis** | Backend Core (dominio, pipeline, structurizer, persistencia) | Migración aplicable `upgrade head`; pipeline de factura persiste checks/entidades/huellas; tests de structurizer y pipeline en verde. | ✅ **COMPLETADO** |
+| **P2 — Luis** | Backend API de Revisión (endpoints enriquecidos, checks, review) | Endpoints enriquecidos y de revisión responden según TDD §5; tests de API en verde; sin mocks en routers. | ✅ **COMPLETADO** |
+| **P3 — Brandon** | Frontend / App de Escritorio PySide6 (UI de gestión financiera) | App navegable (lista con KPIs y badges, detalle con hallazgos, revisión funcional); `api_client.upload_file` entregado; 13 tests de escritorio en verde. | ✅ **COMPLETADO** |
+| **P4a — Beatriz** | Automatización Hot-Folder (agente de bandeja → backend) | Hot-folder envía a `/upload` con API Key y notifica nativamente; `settings_view.py` integrado; suite completa en verde. | ⏳ **EN PROGRESO** |
+| **P4b — Hector** | Integración Final & Orquestación (coordinador del vertical) | Vertical integrado y verificado end-to-end; documentación sincronizada y CHANGELOG consolidado. | ⏳ **PENDIENTE** |

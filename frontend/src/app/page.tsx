@@ -1,137 +1,148 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import {
-  FileSpreadsheet,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  Layers,
-  ShieldCheck,
-  TrendingUp,
-} from "lucide-react";
-import UploadDropzone from "@/components/UploadDropzone";
-import DocumentListTable from "@/components/DocumentListTable";
-import { listDocuments } from "@/lib/api";
-import { useAuthGuard } from "@/lib/useAuthGuard";
-import { DocumentListItem } from "@/types";
+import React, { useEffect, useState } from 'react';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
+import KpiCard from '@/components/KpiCard';
+import DocumentTable from '@/components/DocumentTable';
+import FileUploadModal from '@/components/FileUploadModal';
+import GothicDivider from '@/components/GothicDivider';
+import GothicArchWatermark from '@/components/GothicArchWatermark';
+import GothicGlyphsGrid from '@/components/GothicGlyphsGrid';
+import { api } from '@/lib/api';
+import { DocumentItem } from '@/lib/types';
+import { RefreshCw, Shield } from 'lucide-react';
 
 export default function DashboardPage() {
-  useAuthGuard();
+  const [collapsed, setCollapsed] = useState(false);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
-  const [documents, setDocuments] = useState<DocumentListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchDocs = async () => {
+  const fetchDocuments = async () => {
+    setLoading(true);
     try {
-      const data = await listDocuments();
+      const data = await api.listDocuments();
       setDocuments(data);
-    } catch (err) {
-      console.error("Error loading documents:", err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDocs();
+    fetchDocuments();
   }, []);
 
-  // Poll if any document is currently in pending or processing
-  useEffect(() => {
-    const hasActiveJobs = documents.some(
-      (d) => d.status === "pending" || d.status === "processing"
-    );
-
-    if (!hasActiveJobs) return;
-
-    const interval = setInterval(() => {
-      fetchDocs();
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [documents]);
-
-  const completedCount = documents.filter((d) => d.status === "completed").length;
-  const processingCount = documents.filter(
-    (d) => d.status === "processing" || d.status === "pending"
+  const total = documents.length;
+  const critical = documents.filter(
+    (d) => (d.check_summary?.critical || 0) > 0
+  ).length;
+  const warning = documents.filter(
+    (d) => (d.check_summary?.warning || 0) > 0
+  ).length;
+  const reviewed = documents.filter(
+    (d) => d.review_status === 'reviewed'
   ).length;
 
   return (
-    <div className="space-y-8">
-      {/* 1. Hero / Header Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Automatización Inteligente de Documentos
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Procesa hojas de cálculo (XLSX, CSV) y PDFs con extracción determinista y Machine Learning local.
-          </p>
-        </div>
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-            Tenant: <strong>default-org</strong>
-          </span>
-        </div>
+      {/* Main Content Area */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
+          collapsed ? 'ml-20' : 'ml-64'
+        }`}
+      >
+        <Header onOpenUpload={() => setUploadOpen(true)} />
+
+        <main className="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6 relative">
+          {/* Subtle Arch Watermark in Background */}
+          <GothicArchWatermark className="w-80 h-[520px] -right-10 top-20 opacity-10 text-crimson-600 hidden xl:block" />
+
+          {/* Header Title Section */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-serif tracking-widest text-crimson-400 uppercase mb-1">
+                <span>✠</span>
+                <span>Catedral de Inteligencia Financiera</span>
+                <span>✠</span>
+              </div>
+              <h1 className="font-serif text-2xl md:text-3xl font-bold text-crimson-200">
+                Libro Mayor & Auditoría de Comprobantes
+              </h1>
+              <p className="text-xs md:text-sm text-slate-400 mt-1">
+                Registro criptográfico, detección de anomalías y análisis determinista de facturas.
+              </p>
+            </div>
+            <button
+              onClick={fetchDocuments}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-obsidian-900/90 hover:bg-crimson-950/50 text-slate-300 border border-crimson-900/40 text-xs font-serif font-semibold shadow-sm transition-all"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Actualizar Registros</span>
+            </button>
+          </div>
+
+          {/* 4 Gothic KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+            <KpiCard
+              title="Total Comprobantes"
+              value={total}
+              colorHex="#fda4af"
+              borderColorClass="border-t-2 border-t-crimson-600"
+            />
+            <KpiCard
+              title="Anomalías Críticas"
+              value={critical}
+              colorHex="#fb7185"
+              borderColorClass="border-t-2 border-t-rose-600"
+            />
+            <KpiCard
+              title="Advertencias Fiscales"
+              value={warning}
+              colorHex="#fde047"
+              borderColorClass="border-t-2 border-t-amber-500"
+            />
+            <KpiCard
+              title="Consagradas & Auditadas"
+              value={reviewed}
+              colorHex="#6ee7b7"
+              borderColorClass="border-t-2 border-t-emerald-500"
+            />
+          </div>
+
+          {/* Gothic Cathedral Divider */}
+          <GothicDivider label="Registro Tabular & Auditoría" />
+
+          {/* Document Table */}
+          <div className="relative z-10">
+            <DocumentTable documents={documents} onRefresh={fetchDocuments} />
+          </div>
+
+          {/* Gothic Cathedral Glyphs Grid (24 Figures) */}
+          <GothicDivider label="Santuario de Sellos & Geometría Sagrada" />
+          <div className="relative z-10">
+            <GothicGlyphsGrid />
+          </div>
+
+          {/* Bottom Cathedral Footer Bar */}
+          <div className="p-4 rounded-xl bg-obsidian-900/60 border border-crimson-900/20 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-serif">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-crimson-400" />
+              <span>Protección Activa de Privacidad: 100% de la inferencia ejecutada en procesador local.</span>
+            </div>
+            <span className="text-crimson-800 font-bold mt-2 sm:mt-0">✦ Cero Filtración de Datos a la Nube ✦</span>
+          </div>
+        </main>
       </div>
 
-      {/* 2. Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Archivos</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-              <Layers className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">{documents.length}</p>
-          <span className="text-[11px] text-slate-500 mt-1 block">Registrados en base local</span>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Completados</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">{completedCount}</p>
-          <span className="text-[11px] text-emerald-400/80 mt-1 block">Datos estructurados y validados</span>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">En Proceso</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">{processingCount}</p>
-          <span className="text-[11px] text-amber-400/80 mt-1 block">Segundo plano (Zero Blocking)</span>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Privacidad</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">100%</p>
-          <span className="text-[11px] text-emerald-400/80 mt-1 block">Cero fugas a nubes de IA</span>
-        </div>
-      </div>
-
-      {/* 3. Upload Dropzone */}
-      <UploadDropzone onUploadSuccess={() => fetchDocs()} />
-
-      {/* 4. Documents Table */}
-      <DocumentListTable
-        documents={documents}
-        isLoading={isLoading}
-        onRefresh={() => fetchDocs()}
+      {/* File Upload Modal */}
+      <FileUploadModal
+        isOpen={uploadOpen}
+        onClose={() => setUploadOpen(false)}
+        onUploaded={fetchDocuments}
       />
     </div>
   );
