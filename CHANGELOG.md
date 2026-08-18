@@ -4,6 +4,20 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:25] (America/Bogota)
+
+- **[UI / Gothic Card Circles]** Incorporacion de rosetones goticos rotatorios dentro de cada tarjeta y panel con relative overflow-hidden
+  - **Qué:** 
+    - `frontend/src/components/GothicRoseCircle.tsx`: nuevo componente SVG de geometria sagrada gotica (octagrama, lancetas y arcos concentricos) con rotacion CSS continua y suave (`animate-[spin_40s_linear_infinite]`).
+    - `frontend/src/components/KpiCard.tsx`: integrado roseton rotatorio con halo carmesí al fondo de las metricas.
+    - `frontend/src/components/DocumentTable.tsx`: integrados rosetones rotatorios en la barra de busqueda y en el panel principal de la tabla.
+    - `frontend/src/app/review/[id]/page.tsx`: integrados rosetones en tarjetas de Emisor, Receptor, Metadatos, Totales Financieros, Items y Auditoria Sentinel.
+    - `frontend/src/app/login/page.tsx` y `FileUploadModal.tsx`: rosetones de gran escala en los modales de autenticacion e ingesta.
+  - **Por qué:** Realzar la identidad visual gotica con geometria sagrada animada dentro de cada contenedor.
+  - **Archivos:** `frontend/src/components/GothicRoseCircle.tsx`, `frontend/src/components/KpiCard.tsx`, `frontend/src/components/DocumentTable.tsx`, `frontend/src/app/review/[id]/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/components/FileUploadModal.tsx`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:20] (America/Bogota)
 
 - **[Frontend / Next.js Migration]** Creacion y despliegue del frontend web moderno en Next.js (App Router, TypeScript, Tailwind CSS, HTML5 Canvas y Lucide Icons)

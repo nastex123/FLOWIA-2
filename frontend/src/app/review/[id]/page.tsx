@@ -2,15 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import FileUploadModal from '@/components/FileUploadModal';
+import GothicRoseCircle from '@/components/GothicRoseCircle';
 import { api } from '@/lib/api';
 import { DocumentDetail } from '@/lib/types';
 import {
   ArrowLeft,
-  CheckCircle,
   FileSpreadsheet,
   ShieldCheck,
   Calculator,
@@ -23,7 +23,6 @@ import {
 
 export default function InvoiceReviewPage() {
   const params = useParams();
-  const router = useRouter();
   const documentId = params?.id as string;
 
   const [collapsed, setCollapsed] = useState(false);
@@ -142,91 +141,101 @@ export default function InvoiceReviewPage() {
               {/* Emisor y Receptor */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Emisor */}
-                <div className="rounded-xl p-5 bg-obsidian-900/80 backdrop-blur-xl border border-crimson-900/30">
-                  <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm mb-3">
-                    <Building className="w-4 h-4" />
-                    <span>EMISOR / PROVEEDOR</span>
+                <div className="relative overflow-hidden rounded-xl p-5 bg-obsidian-900/80 backdrop-blur-xl border border-crimson-900/30 group">
+                  <GothicRoseCircle className="w-32 h-32 -right-6 -bottom-6 opacity-15 group-hover:opacity-35 text-crimson-500" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm mb-3">
+                      <Building className="w-4 h-4" />
+                      <span>EMISOR / PROVEEDOR</span>
+                    </div>
+                    <dl className="space-y-2 text-xs">
+                      <div className="flex justify-between border-b border-crimson-900/15 py-1">
+                        <dt className="text-slate-400">Razón Social:</dt>
+                        <dd className="font-semibold text-slate-100">{invoice.vendor_name || '—'}</dd>
+                      </div>
+                      <div className="flex justify-between border-b border-crimson-900/15 py-1">
+                        <dt className="text-slate-400">NIF / CIF:</dt>
+                        <dd className="font-semibold text-slate-100">{invoice.vendor_tax_id || '—'}</dd>
+                      </div>
+                      <div className="flex justify-between border-b border-crimson-900/15 py-1">
+                        <dt className="text-slate-400">IBAN Bancario:</dt>
+                        <dd className="font-semibold text-slate-100 font-mono">{invoice.vendor_iban || '—'}</dd>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <dt className="text-slate-400">Dirección:</dt>
+                        <dd className="font-semibold text-slate-100">{invoice.vendor_address || '—'}</dd>
+                      </div>
+                    </dl>
                   </div>
-                  <dl className="space-y-2 text-xs">
-                    <div className="flex justify-between border-b border-crimson-900/15 py-1">
-                      <dt className="text-slate-400">Razón Social:</dt>
-                      <dd className="font-semibold text-slate-100">{invoice.vendor_name || '—'}</dd>
-                    </div>
-                    <div className="flex justify-between border-b border-crimson-900/15 py-1">
-                      <dt className="text-slate-400">NIF / CIF:</dt>
-                      <dd className="font-semibold text-slate-100">{invoice.vendor_tax_id || '—'}</dd>
-                    </div>
-                    <div className="flex justify-between border-b border-crimson-900/15 py-1">
-                      <dt className="text-slate-400">IBAN Bancario:</dt>
-                      <dd className="font-semibold text-slate-100 font-mono">{invoice.vendor_iban || '—'}</dd>
-                    </div>
-                    <div className="flex justify-between py-1">
-                      <dt className="text-slate-400">Dirección:</dt>
-                      <dd className="font-semibold text-slate-100">{invoice.vendor_address || '—'}</dd>
-                    </div>
-                  </dl>
                 </div>
 
                 {/* Receptor */}
-                <div className="rounded-xl p-5 bg-obsidian-900/80 backdrop-blur-xl border border-crimson-900/30">
-                  <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm mb-3">
-                    <User className="w-4 h-4" />
-                    <span>RECEPTOR / CLIENTE</span>
+                <div className="relative overflow-hidden rounded-xl p-5 bg-obsidian-900/80 backdrop-blur-xl border border-crimson-900/30 group">
+                  <GothicRoseCircle className="w-32 h-32 -right-6 -bottom-6 opacity-15 group-hover:opacity-35 text-crimson-500" reverse />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm mb-3">
+                      <User className="w-4 h-4" />
+                      <span>RECEPTOR / CLIENTE</span>
+                    </div>
+                    <dl className="space-y-2 text-xs">
+                      <div className="flex justify-between border-b border-crimson-900/15 py-1">
+                        <dt className="text-slate-400">Razón Social:</dt>
+                        <dd className="font-semibold text-slate-100">{invoice.customer_name || '—'}</dd>
+                      </div>
+                      <div className="flex justify-between border-b border-crimson-900/15 py-1">
+                        <dt className="text-slate-400">NIF / CIF:</dt>
+                        <dd className="font-semibold text-slate-100">{invoice.customer_tax_id || '—'}</dd>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <dt className="text-slate-400">Dirección:</dt>
+                        <dd className="font-semibold text-slate-100">{invoice.customer_address || '—'}</dd>
+                      </div>
+                    </dl>
                   </div>
-                  <dl className="space-y-2 text-xs">
-                    <div className="flex justify-between border-b border-crimson-900/15 py-1">
-                      <dt className="text-slate-400">Razón Social:</dt>
-                      <dd className="font-semibold text-slate-100">{invoice.customer_name || '—'}</dd>
-                    </div>
-                    <div className="flex justify-between border-b border-crimson-900/15 py-1">
-                      <dt className="text-slate-400">NIF / CIF:</dt>
-                      <dd className="font-semibold text-slate-100">{invoice.customer_tax_id || '—'}</dd>
-                    </div>
-                    <div className="flex justify-between py-1">
-                      <dt className="text-slate-400">Dirección:</dt>
-                      <dd className="font-semibold text-slate-100">{invoice.customer_address || '—'}</dd>
-                    </div>
-                  </dl>
                 </div>
               </div>
 
               {/* Metadatos y Fechas */}
-              <div className="rounded-xl p-5 bg-obsidian-900/80 backdrop-blur-xl border border-crimson-900/30">
-                <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm mb-3">
-                  <Calendar className="w-4 h-4" />
-                  <span>METADATOS DE FACTURA</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                  <div>
-                    <span className="text-slate-400 block">Nº Factura:</span>
-                    <span className="font-bold text-slate-100 text-sm">{invoice.invoice_number || '—'}</span>
+              <div className="relative overflow-hidden rounded-xl p-5 bg-obsidian-900/80 backdrop-blur-xl border border-crimson-900/30 group">
+                <GothicRoseCircle className="w-44 h-44 -right-10 -bottom-10 opacity-15 group-hover:opacity-30 text-crimson-600" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 text-crimson-300 font-serif font-bold text-sm mb-3">
+                    <Calendar className="w-4 h-4" />
+                    <span>METADATOS DE FACTURA</span>
                   </div>
-                  <div>
-                    <span className="text-slate-400 block">Fecha Emisión:</span>
-                    <span className="font-bold text-slate-100 text-sm">{invoice.issue_date || '—'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block">Vencimiento:</span>
-                    <span className="font-bold text-slate-100 text-sm">{invoice.due_date || '—'}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block">Divisa:</span>
-                    <span className="font-bold text-slate-100 text-sm">{invoice.currency || 'EUR'}</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                    <div>
+                      <span className="text-slate-400 block">Nº Factura:</span>
+                      <span className="font-bold text-slate-100 text-sm">{invoice.invoice_number || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">Fecha Emisión:</span>
+                      <span className="font-bold text-slate-100 text-sm">{invoice.issue_date || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">Vencimiento:</span>
+                      <span className="font-bold text-slate-100 text-sm">{invoice.due_date || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">Divisa:</span>
+                      <span className="font-bold text-slate-100 text-sm">{invoice.currency || 'EUR'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Totales Financieros Destacados */}
-              <div className="rounded-xl p-6 bg-gradient-to-r from-obsidian-900 to-crimson-950/50 backdrop-blur-xl border-2 border-crimson-600/50 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
-                <div>
+              <div className="relative overflow-hidden rounded-xl p-6 bg-gradient-to-r from-obsidian-900 to-crimson-950/60 backdrop-blur-xl border-2 border-crimson-600/50 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl group">
+                <GothicRoseCircle className="w-56 h-56 -right-12 -bottom-12 opacity-25 group-hover:opacity-45 text-crimson-400" />
+                <div className="relative z-10">
                   <span className="text-xs text-slate-400 font-serif uppercase">Subtotal Neto</span>
                   <p className="text-xl font-bold text-slate-100 mt-1">{invoice.subtotal?.toLocaleString('es-ES')} EUR</p>
                 </div>
-                <div>
+                <div className="relative z-10">
                   <span className="text-xs text-slate-400 font-serif uppercase">Impuestos (IVA)</span>
                   <p className="text-xl font-bold text-amber-400 mt-1">{invoice.tax_total?.toLocaleString('es-ES')} EUR</p>
                 </div>
-                <div className="sm:text-right">
+                <div className="relative z-10 sm:text-right">
                   <span className="text-xs text-crimson-300 font-serif font-bold uppercase tracking-wider">TOTAL A PAGAR</span>
                   <p className="text-3xl font-serif font-bold text-emerald-400 mt-1">{invoice.total_amount?.toLocaleString('es-ES')} EUR</p>
                 </div>
@@ -236,9 +245,10 @@ export default function InvoiceReviewPage() {
 
           {/* Tab 2: Líneas de Items */}
           {activeTab === 'items' && (
-            <div className="rounded-xl overflow-hidden bg-obsidian-900/90 border border-crimson-900/30">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-obsidian-950 border-b border-crimson-900/30 font-serif uppercase text-crimson-300">
+            <div className="relative overflow-hidden rounded-xl bg-obsidian-900/90 border border-crimson-900/30 group">
+              <GothicRoseCircle className="w-48 h-48 -right-10 -bottom-10 opacity-15 group-hover:opacity-30 text-crimson-500" />
+              <table className="w-full text-left text-xs text-slate-300 relative z-10">
+                <thead className="bg-obsidian-950/95 border-b border-crimson-900/30 font-serif uppercase text-crimson-300">
                   <tr>
                     <th className="px-5 py-3">Descripción</th>
                     <th className="px-4 py-3 text-center">Cantidad</th>
@@ -268,14 +278,17 @@ export default function InvoiceReviewPage() {
               {(detail.checks || []).map((c, idx) => (
                 <div
                   key={idx}
-                  className={`p-4 rounded-xl border backdrop-blur-md ${
+                  className={`relative overflow-hidden p-4 rounded-xl border backdrop-blur-md group ${
                     c.severity === 'critical'
                       ? 'bg-rose-950/30 border-rose-600/40 text-rose-200'
                       : 'bg-emerald-950/30 border-emerald-600/40 text-emerald-200'
                   }`}
                 >
-                  <p className="font-serif font-bold text-sm">{c.title || c.check_type}</p>
-                  <p className="text-xs mt-1 text-slate-300">{c.message}</p>
+                  <GothicRoseCircle className="w-24 h-24 -right-4 -bottom-4 opacity-15 text-crimson-400" />
+                  <div className="relative z-10">
+                    <p className="font-serif font-bold text-sm">{c.title || c.check_type}</p>
+                    <p className="text-xs mt-1 text-slate-300">{c.message}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -283,19 +296,22 @@ export default function InvoiceReviewPage() {
 
           {/* Tab 4: Validador Matemático */}
           {activeTab === 'math' && (
-            <div className="p-6 rounded-xl bg-obsidian-900/90 border border-crimson-900/30 space-y-4">
-              <h3 className="font-serif font-bold text-crimson-300 text-sm">
-                Recálculo Determinista de Bases Imponibles
-              </h3>
-              <p className="text-xs text-slate-400">
-                La cuadratura entre la base imponible declarada ({invoice.subtotal} EUR) y la cuota de IVA aplicada ({invoice.tax_total} EUR) concuerda con exactitud matemática determinista (diferencia: 0.00 EUR).
-              </p>
+            <div className="relative overflow-hidden p-6 rounded-xl bg-obsidian-900/90 border border-crimson-900/30 space-y-4 group">
+              <GothicRoseCircle className="w-40 h-40 -right-8 -bottom-8 opacity-20 text-crimson-500" />
+              <div className="relative z-10">
+                <h3 className="font-serif font-bold text-crimson-300 text-sm">
+                  Recálculo Determinista de Bases Imponibles
+                </h3>
+                <p className="text-xs text-slate-400 mt-2">
+                  La cuadratura entre la base imponible declarada ({invoice.subtotal} EUR) y la cuota de IVA aplicada ({invoice.tax_total} EUR) concuerda con exactitud matemática determinista (diferencia: 0.00 EUR).
+                </p>
+              </div>
             </div>
           )}
 
           {/* Tab 5: JSON */}
           {activeTab === 'json' && (
-            <pre className="p-5 rounded-xl bg-obsidian-950 border border-crimson-900/30 text-xs font-mono text-crimson-200 overflow-x-auto">
+            <pre className="relative overflow-hidden p-5 rounded-xl bg-obsidian-950 border border-crimson-900/30 text-xs font-mono text-crimson-200 overflow-x-auto">
               {JSON.stringify(detail, null, 2)}
             </pre>
           )}

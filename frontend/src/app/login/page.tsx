@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Shield, Sparkles, LogIn } from 'lucide-react';
+import GothicRoseCircle from '@/components/GothicRoseCircle';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,9 +34,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-2xl bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/40 p-8 shadow-2xl space-y-6">
+      <div className="relative overflow-hidden w-full max-w-md rounded-2xl bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/40 p-8 shadow-2xl space-y-6 group">
+        <GothicRoseCircle className="w-56 h-56 -right-12 -bottom-12 opacity-20 group-hover:opacity-40 text-crimson-500" />
+        
         {/* Brand */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 relative z-10">
           <div className="w-12 h-12 rounded-xl bg-crimson-950/60 border border-crimson-600/40 flex items-center justify-center mx-auto text-crimson-400">
             <Shield className="w-6 h-6" />
           </div>
@@ -48,7 +51,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4 relative z-10">
           <div>
             <label className="block text-xs font-serif font-semibold text-slate-300 mb-1">
               Usuario / Email

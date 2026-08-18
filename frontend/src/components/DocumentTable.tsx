@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, Eye, AlertTriangle, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { DocumentItem } from '@/lib/types';
+import GothicRoseCircle from './GothicRoseCircle';
 
 interface DocumentTableProps {
   documents: DocumentItem[];
@@ -66,8 +67,9 @@ export default function DocumentTable({ documents, onRefresh }: DocumentTablePro
   return (
     <div className="space-y-4">
       {/* Search & Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-3 items-center justify-between p-3.5 rounded-xl bg-obsidian-900/80 backdrop-blur-md border border-crimson-900/30">
-        <div className="relative w-full md:w-96">
+      <div className="relative overflow-hidden flex flex-col md:flex-row gap-3 items-center justify-between p-3.5 rounded-xl bg-obsidian-900/80 backdrop-blur-md border border-crimson-900/30 group">
+        <GothicRoseCircle className="w-28 h-28 -right-6 -top-6 opacity-15 group-hover:opacity-30 text-crimson-600" />
+        <div className="relative w-full md:w-96 z-10">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
@@ -79,7 +81,7 @@ export default function DocumentTable({ documents, onRefresh }: DocumentTablePro
         </div>
 
         {/* Filter Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto relative z-10">
           {[
             { key: 'all', label: 'Todos' },
             { key: 'critical', label: 'Críticos' },
@@ -102,10 +104,11 @@ export default function DocumentTable({ documents, onRefresh }: DocumentTablePro
       </div>
 
       {/* Table Panel */}
-      <div className="rounded-xl overflow-hidden bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 shadow-2xl">
-        <div className="overflow-x-auto">
+      <div className="relative overflow-hidden rounded-xl bg-obsidian-900/90 backdrop-blur-xl border border-crimson-900/30 shadow-2xl group">
+        <GothicRoseCircle className="w-64 h-64 -right-16 -bottom-16 opacity-10 group-hover:opacity-25 text-crimson-500" reverse />
+        <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-obsidian-950 border-b-2 border-crimson-900/40 font-serif text-xs uppercase tracking-wider text-crimson-300">
+            <thead className="bg-obsidian-950/95 border-b-2 border-crimson-900/40 font-serif text-xs uppercase tracking-wider text-crimson-300">
               <tr>
                 <th className="px-5 py-3.5">Comprobante</th>
                 <th className="px-4 py-3.5">Estado</th>
