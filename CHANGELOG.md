@@ -4,6 +4,21 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 14:53] (America/Bogota)
+
+- **[UI / Gothic Theme Overhaul]** Rediseño estetico integral con temática Gotica Obsidian, Crimson y Amethyst
+  - **Qué:** 
+    - `desktop/ui/styles.py`: transformacion completa de la paleta hacia Obsidian oscuro (`#030408`), Crimson carmesí (`#881337`, `#be123c`, `#e11d48`), Amethyst violeta y acentos de latón/oro envejecido; tipografia serif en encabezados (Georgia, Palatino, Garamond) y sans de alta precision para datos contables.
+    - `desktop/ui/components/particle_backdrop.py`: implementacion de particulas goticas (brasas carmesí ascendentes y motas de niebla etérea con variacion de pulso y lineas de filigrana).
+    - `desktop/ui/main_window.py`: adaptacion de marcas, titulos y estados ("FlowMind AI — Catedral Financiera", "Santuario Conectado", "Cripta Local").
+    - `desktop/ui/documents_view.py`: tarjetas KPI con bordes carmesí/oro y tipografia numerica en 32px; tabla de libro mayor estilizada en tonos cripta.
+    - `desktop/ui/invoice_review_view.py`: workspace catedral por pestañas translúcidas y boton de accion consagratoria `Consagrar y Aprobar Comprobante`.
+    - `desktop/ui/login_dialog.py`: camara de autenticacion gotica de 580px con foco carmesí y acceso rapido al "Modo Cripta Offline".
+  - **Por qué:** Aplicar una direccion artistica gotica inmersiva y de alto impacto visual manteniendo plena ergonomia y determinismo contable.
+  - **Archivos:** `desktop/ui/styles.py`, `desktop/ui/components/particle_backdrop.py`, `desktop/ui/main_window.py`, `desktop/ui/documents_view.py`, `desktop/ui/invoice_review_view.py`, `desktop/ui/login_dialog.py`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 14:41] (America/Bogota)
 
 - **[UI / Particles & Animations]** Incorporacion de fondo animado de particulas vivas, animaciones fluidas con QPropertyAnimation, correccion de proporciones y regla estricta de cero emojis

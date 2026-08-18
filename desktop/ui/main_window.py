@@ -1,4 +1,4 @@
-"""Native PySide6 Desktop User Interface for FlowMind AI (Glassmorphism + Particle Canvas)."""
+"""Native PySide6 Desktop User Interface for FlowMind AI (Gothic Obsidian & Crimson)."""
 
 from pathlib import Path
 from typing import Optional
@@ -40,11 +40,11 @@ from desktop.ui.styles import DARK_THEME_QSS, get_badge_qss
 
 
 class MainWindow(QMainWindow):
-    """FlowMind AI Desktop Main Application Window with Animated Ambient Background."""
+    """FlowMind AI Desktop Main Window with Gothic Atmosphere and Ambient Particles."""
 
     def __init__(self, client: Optional[DesktopFlowMindClient] = None):
         super().__init__()
-        self.setWindowTitle("FlowMind AI — Suite de Gestion Financiera & Auditoria Local")
+        self.setWindowTitle("FlowMind AI — Catedral de Inteligencia Financiera & Auditoria Local")
         self.resize(1440, 900)
         self.setMinimumSize(1080, 720)
 
@@ -55,37 +55,37 @@ class MainWindow(QMainWindow):
         self._settings_widget: Optional[QWidget] = None
         self._sidebar_expanded: bool = True
 
-        self._setup_modern_theme()
+        self._setup_gothic_theme()
         self._init_ui()
         self._setup_tray_icon()
 
         QTimer.singleShot(0, self._prompt_login)
 
-    def _setup_modern_theme(self) -> None:
-        """Applies modern dark palette and centralized QSS."""
+    def _setup_gothic_theme(self) -> None:
+        """Applies Gothic obsidian & crimson palette and centralized QSS."""
         self.setStyleSheet(DARK_THEME_QSS)
 
     def _init_ui(self) -> None:
-        # 1. Top Glass Header Bar
+        # 1. Top Gothic Header Bar
         toolbar = QToolBar("Acciones Principales")
         toolbar.setIconSize(QSize(18, 18))
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
 
         # Brand / Title Label
-        brand_label = QLabel("<b style='font-size: 16px; color: #38bdf8;'>FlowMind AI</b> &nbsp;<span style='color: #64748b;'>| Suite Desktop</span>")
+        brand_label = QLabel("<b style='font-size: 16px; font-family: Georgia, serif; color: #fda4af; letter-spacing: 1px;'>FLOWMIND AI</b> &nbsp;<span style='color: #713f56; font-size: 13px;'>| CATEDRAL FINANCIERA</span>")
         brand_label.setStyleSheet("padding-left: 8px; padding-right: 16px;")
         toolbar.addWidget(brand_label)
 
-        login_action = QAction("Iniciar Sesion", self)
+        login_action = QAction("Autenticacion", self)
         login_action.triggered.connect(self._prompt_login)
         toolbar.addAction(login_action)
 
-        upload_action = QAction("Subir Documento", self)
+        upload_action = QAction("Subir Comprobante", self)
         upload_action.triggered.connect(self._upload_document)
         toolbar.addAction(upload_action)
 
-        open_action = QAction("Extraer Localmente", self)
+        open_action = QAction("Extraccion en Cripta", self)
         open_action.triggered.connect(self._open_file_dialog)
         toolbar.addAction(open_action)
 
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         toolbar.addWidget(spacer)
 
         # Connection Status Pill
-        self.conn_pill = QLabel("Modo Local")
+        self.conn_pill = QLabel("Cripta Local Activa")
         self.conn_pill.setStyleSheet(get_badge_qss("ok"))
         toolbar.addWidget(self.conn_pill)
 
@@ -110,18 +110,17 @@ class MainWindow(QMainWindow):
         central_container = QWidget()
         self.setCentralWidget(central_container)
 
-        # Particle Backdrop Canvas (bottom layer)
-        self.particle_backdrop = ParticleBackdropWidget(num_particles=38, parent=central_container)
+        # Gothic Particle Canvas (bottom layer)
+        self.particle_backdrop = ParticleBackdropWidget(num_particles=42, parent=central_container)
 
         # Foreground UI Layout
         main_layout = QHBoxLayout(central_container)
         main_layout.setContentsMargins(12, 12, 12, 12)
         main_layout.setSpacing(12)
 
-        # Ensure particle canvas resizes with central widget
         central_container.resizeEvent = self._handle_central_resize
 
-        # 3. Sidebar Container (Glass Frame)
+        # 3. Gothic Sidebar Container
         self.sidebar_container = QWidget()
         self.sidebar_container.setObjectName("sidebarContainer")
         self.sidebar_container.setFixedWidth(240)
@@ -133,7 +132,7 @@ class MainWindow(QMainWindow):
 
         # Sidebar Header with Toggle Button
         sidebar_top = QHBoxLayout()
-        self.sidebar_title = QLabel("<b style='color: #cbd5e1; font-size: 13px; letter-spacing: 0.5px;'>NAVEGACION</b>")
+        self.sidebar_title = QLabel("<b style='color: #fda4af; font-family: Georgia, serif; font-size: 13px; letter-spacing: 1px;'>NAVEGACION</b>")
         self.toggle_btn = QPushButton("≡")
         self.toggle_btn.setObjectName("sidebarToggle")
         self.toggle_btn.setToolTip("Plegar / Desplegar barra lateral")
@@ -148,10 +147,10 @@ class MainWindow(QMainWindow):
         self.sidebar.setObjectName("sidebar")
 
         self.nav_items_data = [
-            ("Facturas & Auditoria", "FACT"),
-            ("Revision Detallada", "REV"),
+            ("Libro Mayor & Auditoria", "LIB"),
+            ("Inspeccion de Factura", "INSP"),
             ("Configuracion", "CONF"),
-            ("Procesamiento Local", "LOC"),
+            ("Cripta de Extraccion", "CRIP"),
         ]
 
         for full_text, _ in self.nav_items_data:
@@ -162,7 +161,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(self.sidebar)
 
         # Sidebar Footer
-        self.sidebar_footer = QLabel("<div style='color: #475569; font-size: 11px; text-align: center;'>FlowMind AI v0.2.0<br>100% Local & Privado</div>")
+        self.sidebar_footer = QLabel("<div style='color: #831843; font-family: Georgia, serif; font-size: 11px; text-align: center;'>FlowMind AI v0.2.0<br>Cripta 100% Privada</div>")
         self.sidebar_footer.setAlignment(Qt.AlignmentFlag.AlignCenter)
         sidebar_layout.addWidget(self.sidebar_footer)
 
@@ -179,14 +178,14 @@ class MainWindow(QMainWindow):
         self.placeholder_view = QFrame()
         self.placeholder_view.setObjectName("glassCard")
         ph_layout = QVBoxLayout(self.placeholder_view)
-        ph_label = QLabel("<h3>Ningun comprobante seleccionado</h3><p style='color: #94a3b8;'>Ve a <b>Facturas & Auditoria</b> y haz doble clic sobre cualquier documento para abrir la inspeccion.</p>")
+        ph_label = QLabel("<h3 style='font-family: Georgia, serif; color: #fda4af;'>Ningun comprobante seleccionado</h3><p style='color: #94a3b8;'>Ve a <b>Libro Mayor & Auditoria</b> y haz doble clic sobre cualquier documento para iniciar el ritual de inspeccion.</p>")
         ph_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         ph_layout.addWidget(ph_label)
 
         self.settings_placeholder = QFrame()
         self.settings_placeholder.setObjectName("glassCard")
         sph_layout = QVBoxLayout(self.settings_placeholder)
-        self.settings_label = QLabel("<h3>Configuracion del Sistema</h3><p style='color: #94a3b8;'>El modulo de configuracion del agente Hot-Folder se integrara en P4.</p>")
+        self.settings_label = QLabel("<h3 style='font-family: Georgia, serif; color: #fda4af;'>Configuracion del Sistema</h3><p style='color: #94a3b8;'>El modulo de configuracion del agente Hot-Folder se integrara en P4.</p>")
         self.settings_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         sph_layout.addWidget(self.settings_label)
 
@@ -204,7 +203,7 @@ class MainWindow(QMainWindow):
         # 5. Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("Listo — Modo 100% Local y Privado (Zero Cloud Data Leakage)")
+        self.status_bar.showMessage("Listo — Cripta Local y Privada (Zero Cloud Data Leakage)")
 
     def _handle_central_resize(self, event) -> None:
         if hasattr(self, "particle_backdrop"):
@@ -243,7 +242,7 @@ class MainWindow(QMainWindow):
         left_widget = QFrame()
         left_widget.setObjectName("glassCard")
         left_layout = QVBoxLayout(left_widget)
-        left_layout.addWidget(QLabel("<b>Campos Clave Extraidos & Metadatos Locales</b>"))
+        left_layout.addWidget(QLabel("<b style='font-family: Georgia, serif; color: #fda4af;'>Campos Clave Extraidos & Metadatos Locales</b>"))
         self.fields_text = QTextEdit()
         self.fields_text.setReadOnly(True)
         self.fields_text.setPlaceholderText("Abre un archivo desde la barra de herramientas para procesarlo con los motores locales...")
@@ -253,7 +252,7 @@ class MainWindow(QMainWindow):
         right_widget = QFrame()
         right_widget.setObjectName("glassCard")
         right_layout = QVBoxLayout(right_widget)
-        right_layout.addWidget(QLabel("<b>Vista de Tabla Estructurada (Reconciliation Grid Pro)</b>"))
+        right_layout.addWidget(QLabel("<b style='font-family: Georgia, serif; color: #fda4af;'>Vista de Tabla Estructurada (Reconciliation Grid Pro)</b>"))
         self.table_view = QTableView()
         self.table_view.setModel(self.table_model)
         self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
@@ -271,7 +270,7 @@ class MainWindow(QMainWindow):
 
     def _setup_tray_icon(self) -> None:
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setToolTip("FlowMind AI Desktop Agent")
+        self.tray_icon.setToolTip("FlowMind AI Desktop Sentinel")
 
     # ------------------------------------------------------------------
     # Navigation
@@ -298,7 +297,7 @@ class MainWindow(QMainWindow):
             except ImportError:
                 self._settings_widget = self.settings_placeholder
                 self.settings_label.setText(
-                    "<h3>Configuracion del Hot-Folder</h3><p style='color: #94a3b8;'>El modulo `SettingsView` se integrara en P4.</p>"
+                    "<h3 style='font-family: Georgia, serif; color: #fda4af;'>Configuracion del Hot-Folder</h3><p style='color: #94a3b8;'>El modulo `SettingsView` se integrara en P4.</p>"
                 )
             if self._settings_widget not in [self.stack.widget(i) for i in range(self.stack.count())]:
                 self.stack.addWidget(self._settings_widget)
@@ -330,19 +329,19 @@ class MainWindow(QMainWindow):
             self.documents_view.refresh()
             self.sidebar.setCurrentRow(0)
             org = self.client.organization_id or "default-org"
-            self.conn_pill.setText(f"Conectado ({org})")
+            self.conn_pill.setText(f"Santuario ({org})")
             self.conn_pill.setStyleSheet(get_badge_qss("ok"))
             self.status_bar.showMessage(
-                f"Conectado a {self.client.base_url} — Org: {org}"
+                f"Conectado a {self.client.base_url} — Santuario: {org}"
             )
         else:
-            self.conn_pill.setText("Modo Offline")
+            self.conn_pill.setText("Cripta Local")
             self.conn_pill.setStyleSheet(get_badge_qss("warning"))
-            self.status_bar.showMessage("Sin autenticar — Modo Demo / Extraccion Local activo.")
+            self.status_bar.showMessage("Sin autenticar — Modo Cripta / Demostracion activo.")
 
     def _upload_document(self) -> None:
         file_filter = "Todos los compatibles (*.xlsx *.xls *.csv *.pdf *.png *.jpg *.jpeg);;Hojas de calculo (*.xlsx *.xls *.csv);;PDFs (*.pdf);;Imagenes (*.png *.jpg *.jpeg)"
-        path, _ = QFileDialog.getOpenFileName(self, "Subir documento al backend", "", file_filter)
+        path, _ = QFileDialog.getOpenFileName(self, "Subir comprobante a la catedral", "", file_filter)
         if not path:
             return
         try:
@@ -351,7 +350,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error de subida", e.detail)
             return
         self.status_bar.showMessage(
-            f"Documento '{result.get('filename')}' enviado a la cola ({result.get('status')})."
+            f"Comprobante '{result.get('filename')}' enviado a la cola ({result.get('status')})."
         )
         self.documents_view.refresh()
 
@@ -411,7 +410,7 @@ class MainWindow(QMainWindow):
             self.hot_folder_watcher.start()
             self.hotfolder_btn.setText("Detener Hot-Folder")
             self.hotfolder_btn.setStyleSheet(
-                "background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #dc2626, stop:1 #b91c1c); color: white; font-weight: bold; border-color: rgba(239, 68, 68, 0.6);"
+                "background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #991b1b, stop:1 #450a0a); color: white; font-weight: bold; border-color: rgba(239, 68, 68, 0.6);"
             )
             self.status_bar.showMessage(f"Hot-Folder activo monitorizando: {self.hot_folder_watcher.input_dir}")
         else:

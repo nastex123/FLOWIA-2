@@ -1,4 +1,4 @@
-"""Documents list view with large KPI cards, glassmorphism styling and anomaly badges."""
+"""Documents list view with large Gothic KPI cards and anomaly badges."""
 
 from typing import Any, Dict, List, Optional
 
@@ -34,7 +34,7 @@ COLUMNS = [
 
 
 class DocumentsView(QWidget):
-    """Financial documents list with large KPI glass cards and interactive filters."""
+    """Financial documents list with large KPI gothic cards and interactive filters."""
 
     document_activated = Signal(str)
 
@@ -53,27 +53,27 @@ class DocumentsView(QWidget):
         # 1. Header Section
         header = QHBoxLayout()
         title_box = QVBoxLayout()
-        title = QLabel("<h1 style='margin: 0; font-size: 24px; color: #f8fafc;'>Facturas & Comprobantes</h1>")
-        subtitle = QLabel("<span style='color: #94a3b8; font-size: 14px;'>Gestion automatizada de comprobantes, deteccion de anomalias y auditoria de fraudes</span>")
+        title = QLabel("<h1 style='margin: 0; font-size: 24px; font-family: Georgia, serif; color: #fda4af; letter-spacing: 0.5px;'>Libro Mayor & Auditoria de Comprobantes</h1>")
+        subtitle = QLabel("<span style='color: #a8a29e; font-size: 14px;'>Registro criptografico, deteccion de anomalias y analisis determinista de comprobantes</span>")
         title_box.addWidget(title)
         title_box.addWidget(subtitle)
         header.addLayout(title_box)
         header.addStretch()
 
-        self.refresh_btn = QPushButton("Actualizar Lista")
+        self.refresh_btn = QPushButton("Actualizar Registros")
         self.refresh_btn.setObjectName("secondaryButton")
         self.refresh_btn.clicked.connect(self.refresh)
         header.addWidget(self.refresh_btn)
         layout.addLayout(header)
 
-        # 2. Large Scale Glass KPI Summary Cards
+        # 2. Large Scale Gothic KPI Summary Cards
         kpi_layout = QHBoxLayout()
         kpi_layout.setSpacing(14)
 
-        self.total_card = self._create_kpi_card("TOTAL COMPROBANTES", "0", "#38bdf8", "border-top: 3px solid #38bdf8;")
-        self.critical_card = self._create_kpi_card("ANOMALIAS CRITICAS", "0", "#f87171", "border-top: 3px solid #ef4444;")
-        self.warning_card = self._create_kpi_card("ADVERTENCIAS FISCALES", "0", "#fbbf24", "border-top: 3px solid #f59e0b;")
-        self.reviewed_card = self._create_kpi_card("REVISADAS & AUDITADAS", "0", "#34d399", "border-top: 3px solid #10b981;")
+        self.total_card = self._create_kpi_card("TOTAL COMPROBANTES", "0", "#fda4af", "border-top: 3px solid #e11d48;")
+        self.critical_card = self._create_kpi_card("ANOMALIAS CRITICAS", "0", "#fb7185", "border-top: 3px solid #be123c;")
+        self.warning_card = self._create_kpi_card("ADVERTENCIAS FISCALES", "0", "#fde047", "border-top: 3px solid #d97706;")
+        self.reviewed_card = self._create_kpi_card("CONSAGRADAS & AUDITADAS", "0", "#6ee7b7", "border-top: 3px solid #059669;")
 
         kpi_layout.addWidget(self.total_card)
         kpi_layout.addWidget(self.critical_card)
@@ -81,7 +81,7 @@ class DocumentsView(QWidget):
         kpi_layout.addWidget(self.reviewed_card)
         layout.addLayout(kpi_layout)
 
-        # 3. Search & Filter Bar (Glass Frame)
+        # 3. Search & Filter Bar (Gothic Frame)
         filter_frame = QFrame()
         filter_frame.setObjectName("glassCard")
         filter_layout = QHBoxLayout(filter_frame)
@@ -117,7 +117,7 @@ class DocumentsView(QWidget):
 
         layout.addWidget(filter_frame)
 
-        # 4. Pro Table View
+        # 4. Pro Table View (Crypt Theme)
         table_frame = QFrame()
         table_frame.setObjectName("glassPanel")
         table_layout = QVBoxLayout(table_frame)
@@ -135,7 +135,7 @@ class DocumentsView(QWidget):
         layout.addWidget(table_frame)
 
         # 5. Bottom Status
-        self.status_label = QLabel("<span style='color: #64748b; font-size: 13px;'>Cargando documentos...</span>")
+        self.status_label = QLabel("<span style='color: #78716c; font-size: 13px;'>Cargando manuscritos y comprobantes...</span>")
         layout.addWidget(self.status_label)
 
     def _create_kpi_card(self, title: str, initial_value: str, color_hex: str, extra_border: str) -> QFrame:
@@ -146,8 +146,8 @@ class DocumentsView(QWidget):
         vbox.setContentsMargins(14, 12, 14, 12)
         vbox.setSpacing(4)
 
-        t_lbl = QLabel(f"<span style='color: #94a3b8; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;'>{title}</span>")
-        v_lbl = QLabel(f"<b style='font-size: 32px; color: {color_hex}; line-height: 1.1;'>{initial_value}</b>")
+        t_lbl = QLabel(f"<span style='color: #a8a29e; font-family: Georgia, serif; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;'>{title}</span>")
+        v_lbl = QLabel(f"<b style='font-size: 32px; font-family: Georgia, serif; color: {color_hex}; line-height: 1.1;'>{initial_value}</b>")
         vbox.addWidget(t_lbl)
         vbox.addWidget(v_lbl)
 
@@ -173,7 +173,7 @@ class DocumentsView(QWidget):
         try:
             documents = self.client.list_documents()
         except FlowMindApiError as e:
-            self.status_label.setText(f"<span style='color: #ef4444;'>Error cargando documentos: {e.detail}</span>")
+            self.status_label.setText(f"<span style='color: #ef4444;'>Error cargando comprobantes: {e.detail}</span>")
             return
         self.set_documents(documents)
 
@@ -191,7 +191,7 @@ class DocumentsView(QWidget):
         self.warning_card._val_label.setText(f"<b style='font-size: 32px; color: {self.warning_card._color_hex};'>{warning}</b>")
         self.reviewed_card._val_label.setText(f"<b style='font-size: 32px; color: {self.reviewed_card._color_hex};'>{reviewed}</b>")
 
-        self.status_label.setText(f"<span style='color: #94a3b8;'>Mostrando {total} comprobantes procesados en el sistema</span>")
+        self.status_label.setText(f"<span style='color: #a8a29e;'>Mostrando {total} comprobantes procesados en la cripta</span>")
         self._apply_filter()
 
     def _apply_filter(self) -> None:
