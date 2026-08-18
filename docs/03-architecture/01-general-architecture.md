@@ -14,8 +14,7 @@ El sistema trasciende el procesamiento documental tradicional mediante una arqui
 
 ```mermaid
 flowchart TD
-    subgraph ClientInterfaces ["Interfaces de Usuario"]
-        WEB["Frontend Web SaaS (Next.js 14 App Router)"]
+    subgraph ClientInterfaces ["Interfaces de Usuario (100% Python Native)"]
         DESKTOP["Desktop Suite Nativa (PySide6 / Qt6)"]
         TRAY["Hot-Folder Tray Agent (watchdog)"]
     end
@@ -57,8 +56,7 @@ flowchart TD
         VECTOR_DB[("Índice FAISS Local")]
     end
 
-    WEB <-->|REST HTTP| APILayer
-    DESKTOP -->|Integración Nativa / API| DocumentPlane
+    DESKTOP <-->|REST HTTP & Local Engine| APILayer
     TRAY -->|Watchdog / API Key| APILayer
     APILayer --> VALIDATOR
     VALIDATOR --> STORAGE

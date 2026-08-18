@@ -4,6 +4,19 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 14:05] (America/Bogota)
+
+- **[Docs / Project]** Sincronización integral de la documentación técnica (`docs/`), estado de avance y consolidación de tareas
+  - **Qué:** 
+    - `docs/01-product/03-roadmap.md`: actualizada la Fase 3 con la entrega completa de la Suite de Escritorio PySide6 (UI de gestión financiera, KPIs, visor en 2 columnas, badges de severidad, revisión y tests), actualizada la Fase 8 (agente de bandeja e instalador `install.py`) y Fase 10 (persistencia de `document_checks`, `entity_records`, `invoice_fingerprints`).
+    - `docs/01-product/04-proyecto4-alineacion-tarea.md`: actualizada la matriz de brechas y decisiones ejecutadas, reflejando la resolución del dominio de factura estructurada, endpoints de revisión y la UI de escritorio.
+    - `docs/03-architecture/01-general-architecture.md`: actualizado el diagrama Mermaid global eliminando el nodo web y consolidando la arquitectura cliente-servidor 100% nativa en Python.
+    - `docs/08-operations/02-trabajo-equipo-proyecto4.md`: actualizada la tabla de criterios de finalización con el estado real de cada persona (Brandon P3 completado al 100%, Luis P1+P2 completado al 100%, Beatriz P4a en progreso y Hector P4b pendiente de integración final).
+  - **Por qué:** Mantener `docs/` como la fuente de verdad técnica y arquitectónica del proyecto, asegurando trazabilidad exacta entre el código implementado, los entregables de cada integrante del equipo y las fases pendientes.
+  - **Archivos:** `docs/01-product/03-roadmap.md`, `docs/01-product/04-proyecto4-alineacion-tarea.md`, `docs/03-architecture/01-general-architecture.md`, `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 13:56] (America/Bogota)
 
 - **[Architecture / Cleanup]** Eliminación del frontend web (Next.js) y consolidación 100% en la Suite de Escritorio Nativa (PySide6 / Qt6)

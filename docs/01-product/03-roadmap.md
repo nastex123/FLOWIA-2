@@ -1,6 +1,6 @@
 # Roadmap de Desarrollo y Fases de Entrega
 
-Este documento define el estado de avance y las fases de entrega de **FlowMind AI**.
+Este documento define el estado de avance, los componentes completados y las fases de entrega de **FlowMind AI**.
 
 ---
 
@@ -21,24 +21,25 @@ Este documento define el estado de avance y las fases de entrega de **FlowMind A
 - [x] Pipeline asíncrono en segundo plano (`FastAPI BackgroundTasks`) para procesamiento no bloqueante.
 - [x] Endpoints REST para `/health`, `/upload`, `/documents/{id}`, `/documents` y `/extract`.
 
-### ✅ Fase 3: Frontend Dashboard & Visualizador Interactivo
-- [x] Aplicación Next.js 14+ (App Router), TypeScript y Tailwind CSS.
-- [x] Studio de subida interactivo con soporte *Drag & Drop* y validación en cliente.
-- [x] Dashboard con métricas de archivos procesados, estados y nivel de privacidad.
-- [x] Visualizador de tablas complejas con soporte multi-hoja, buscador en vivo por celdas y cuadrícula de campos normalizados.
-- [x] Exportador instantáneo a formatos limpios CSV y JSON estructurado.
+### ✅ Fase 3: Suite de Gestión Financiera & Auditoría Desktop (`PySide6 / Qt6`)
+- [x] Interfaz de usuario nativa de alto rendimiento en PySide6 (Qt6) con Dark Theme moderno y paleta Slate.
+- [x] Visor de facturas y comprobantes con tarjetas KPIs de auditoría en tiempo real y buscador instantáneo.
+- [x] Modelo de tabla virtual (`VirtualDataTableModel`) con badges coloreados de severidad de anomalías (`critical`, `warning`, `info`, `ok`).
+- [x] Detalle de factura estructurada en 2 columnas: metadatos de cabecera, tabla de ítems, recálculo de IVA y panel lateral de hallazgos (`document_checks`).
+- [x] Acción "Marcar como revisada" conectada a `POST /documents/{id}/review`.
+- [x] Diálogo de autenticación JWT con selector de organizaciones y acceso directo a "Modo Demo Offline".
+- [x] Suite de 13 pruebas automatizadas de interfaz y contrato API en verde.
 
 ### ✅ Fase 4: Generador de Documentos de Negocio
 - [x] Script generador en Python (`scripts/generate_sample_documents.py`).
 - [x] 6 documentos de prueba realistas generados en `samples/` (Factura Excel, Inventario CSV, Pedido CSV, Nómina Excel, Factura PDF, Contrato PDF).
 - [x] Suite de pruebas automatizadas integradas (`tests/test_generated_samples.py`).
 
-### ✅ Fase 5: Motor de Esquemas Canónicos & Mapeo Visual de Columnas
+### ✅ Fase 5: Motor de Esquemas Canónicos & Normalización
 - [x] Modelo de datos `SchemaDefinition` y 4 plantillas de esquema estándar (Facturas, Inventario, Órdenes de Compra, Nóminas).
 - [x] Motor de asignación óptima voraz con coincidencia difusa (`rapidfuzz`) en `SchemaNormalizer`.
 - [x] Normalizador tipado para monedas, fechas ISO y booleanos.
-- [x] Gestor de esquemas en frontend (`/schemas`) con constructor dinámico de campos y alias.
-- [x] Modal de mapeo interactivo (`SchemaMapperModal`) con sugerencias automáticas de afinidad y preview en tiempo real.
+- [x] Extracción y normalización estructurada automática (`InvoiceStructurizer`).
 
 ### ✅ Fase 6: Reglas de Automatización de Negocio & Webhooks Salientes
 - [x] Modelo `AutomationRule` con operadores deterministas (`gt`, `lt`, `gte`, `lte`, `eq`, `neq`, `contains`, `is_empty`, `not_empty`) y eventos `extraction_completed` / `normalization_completed`.
@@ -55,12 +56,13 @@ Este documento define el estado de avance y las fases de entrega de **FlowMind A
 
 ## 🔮 Fases de Expansión y Estado de Componentes
 
-### 📌 Fase 8: Suite de Escritorio & Agente de Bandeja (`PySide6 / Qt6`)
-- [x] Arquitectura de componentes de escritorio y modelo virtual de datos (`VirtualDataTableModel` con `QAbstractTableModel`).
+### 📌 Fase 8: Automatización Hot-Folder & Herramientas de Despliegue
+- [x] Instalador automatizado multiplataforma sin dependencias externas (`install.py` con soporte Windows/Linux/macOS y smoke tests).
+- [x] Lanzador unificado multiplataforma (`start.py`, `start.ps1`, `start.sh`) con autodetección de puertos y apagado coordinado.
 - [x] Agente de monitorización de carpetas en segundo plano (`HotFolderWatcher` con `watchdog`).
-- [x] Interfaz de usuario nativa PySide6 con Dark Theme e Inspector (`desktop/ui/main_window.py`).
+- [ ] Conexión del `HotFolderWatcher` al backend vía `POST /documents/upload` con API Key (Beatriz - Tarea P4a).
+- [ ] Pantalla de configuración del agente (`desktop/ui/settings_view.py` - Beatriz - Tarea P4a).
 - [ ] Empaquetador ejecutable standalone con Nuitka/PyInstaller y edición portable para memorias USB.
-- [ ] `Visual Annotation Studio` interactivo con `QGraphicsView` para delimitación de plantillas.
 
 ### 📌 Fase 9: Visión Artificial Local, OCR & Códigos 1D/2D
 - [x] Decodificador nativo de Códigos QR (TicketBAI, Veri\*factu, Swiss QR) y Barcodes 1D (Code 128, EAN-13) con `zxing-cpp` y `pyzbar`.
@@ -80,8 +82,8 @@ Este documento define el estado de avance y las fases de entrega de **FlowMind A
 - [x] **Conciliación 3 Vías (`ThreeWayMatchingEngine`)**: Conciliación de cantidades y precios unitarios entre PO, GR e INV.
 - [x] **Parser Bancario Norma 43 (`Norma43Parser`)**: Extracción estructurada de extractos bancarios españoles.
 - [x] **Desagregador de Nóminas (`PayrollSplitter`)**: Segmentación de PDFs masivos de nóminas por empleado.
-- [ ] Persistencia en base de datos para entidades históricas canónicas e huellas de facturas (`EntityRecord` y `InvoiceFingerprint`).
-- [ ] Workbench de Aprobación 4-Ojos y Decision Score en el Frontend.
+- [x] **Persistencia en Base de Datos**: Modelos `DocumentCheck`, `EntityRecord`, `InvoiceFingerprint` y migración Alembic (Luis - P1/P2).
+- [ ] Orquestación final del vertical completo y consolidación de contratos (Hector - Tarea P4b).
 
 ### 📌 Fase 11: Búsqueda Semántica Local & Anonimización PII
 - [x] *PII Redactor*: Anonimizador local de DNI, IBAN, emails y teléfonos antes de exportar o compartir documentos (`PIIRedactor`).
@@ -93,3 +95,4 @@ Este documento define el estado de avance y las fases de entrega de **FlowMind A
 - [x] Sellado encadenado inmutable de facturas (*Tamper-Evident Hash Chaining*) para cumplimiento de la Ley Antifraude / *Veri\*factu* (`VerifactuEngine`).
 - [ ] Ingesta desatendida por correo electrónico (conectores IMAP / Microsoft Graph API).
 - [ ] Conectores de integración directa para ERPs (Odoo XML-RPC, SAP Business One, A3ERP, Sage).
+
