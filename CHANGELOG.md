@@ -4,6 +4,17 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 15:31] (America/Bogota)
+
+- **[Frontend / Missing Routes]** Creacion de las paginas de Configuracion y Extraccion Local en Next.js
+  - **Qué:** 
+    - `frontend/src/app/settings/page.tsx`: nueva pagina de configuracion del sistema (umbrales de confianza Sentinel, deteccion de duplicados, directorio Hot-Folder y claves API) con diseno gotico y rosetones rotatorios.
+    - `frontend/src/app/local/page.tsx`: nueva pagina de extraccion local offline con visor de campos clave en dos columnas y grilla de reconciliacion tabular.
+  - **Por qué:** Resolver el error 404 al navegar hacia las secciones de Configuracion y Extraccion Local desde la barra lateral.
+  - **Archivos:** `frontend/src/app/settings/page.tsx`, `frontend/src/app/local/page.tsx`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:25] (America/Bogota)
 
 - **[UI / Gothic Card Circles]** Incorporacion de rosetones goticos rotatorios dentro de cada tarjeta y panel con relative overflow-hidden
