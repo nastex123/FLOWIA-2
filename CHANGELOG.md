@@ -6,6 +6,24 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+### [2026-08-18 08:27] (America/Bogota)
+
+- **[Docs]** Ajuste de la división de trabajo del Proyecto 4 de 3 a 4 personas
+  - **Qué:** Se reescribió `docs/08-operations/02-trabajo-equipo-proyecto4.md` para dividir la implementación en 4 personas (P1 Backend Core, P2 Backend API de Revisión, P3 App de Escritorio UI, P4 Automatización Hot-Folder + Integración), especificando la **tarea exacta y los pasos a seguir** de cada una, contratos de interfaz y criterios de finalización. Se actualizaron las referencias a "3 personas" en `README.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md` y `docs/01-product/04-proyecto4-alineacion-tarea.md`.
+  - **Por qué:** El equipo amplió su número de integrantes a 4; la división anterior concentraba toda la parte de escritorio en una sola persona.
+  - **Archivos:** `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `README.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md`, `docs/01-product/04-proyecto4-alineacion-tarea.md`, `CHANGELOG.md`.
+
+---
+
+### [2026-08-18 08:13] (America/Bogota)
+
+- **[Docs]** Documentación previa del Proyecto 4 — Extractor, Validador y Reconciliador de Facturas y Comprobantes
+  - **Qué:** Se creó el paquete documental previo a la implementación: (1) alineación de la tarea asignada con el proyecto y análisis de brechas; (2) TDD del vertical completo (dominio `StructuredInvoice`, pipeline de validación, modelo de datos con `document_checks`/`entity_records`/`invoice_fingerprints`, contratos de API de revisión, app de escritorio PySide6 y flujo hot-folder→backend); (3) ADR-003 (cliente principal en PySide6 con frontend web deprecated); (4) división del trabajo en 4 personas con contratos de interfaz. Se actualizó el índice de documentación de `README.md` y se marcó `frontend/README.md` como deprecated.
+  - **Por qué:** La tarea asignada exige coordinar a 4 personas sobre un vertical completo; la documentación es la fuente de verdad del proyecto y debe definirse y acordarse antes de escribir código (regla de `documentation` skill).
+  - **Archivos:** `docs/01-product/04-proyecto4-alineacion-tarea.md`, `docs/04-engineering/04-invoice-validation-review.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md`, `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `README.md`, `frontend/README.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-17 19:44] (America/Bogota)
 
 - **[Docs]** Eliminación de archivos planos obsoletos en la raíz de `docs/` y migración completa a la jerarquía formal

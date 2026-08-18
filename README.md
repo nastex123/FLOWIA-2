@@ -16,15 +16,14 @@ FlowMind-AI-Repository-Development/
 ├── GEMINI.md                  # Contexto operativo para el agente
 ├── skills/                    # Metodologías especializadas de desarrollo
 ├── docs/                      # Fuente de verdad arquitectónica
-│   ├── 01-architecture.md     # Diseño global del sistema (Document Plane & Decision Plane)
-│   ├── 02-mvp-roadmap.md      # Fases de entrega y roadmap de expansión (Fases 1 a 12)
-│   ├── 03-schemas-and-mapping.md # Motor de esquemas canónicos y mapeo difuso
-│   ├── 04-api-reference.md    # Referencia completa de la API REST
-│   ├── 05-desktop-pyside6.md  # Suite de escritorio nativa PySide6 y Tray Agent
-│   ├── 06-advanced-engines.md # Conciliación 3 vías, Norma 43, Barcode/QR, OMR y Nóminas
-│   ├── 07-local-search-and-compliance.md # Búsqueda vectorial FAISS, SII AEAT y Verifactu
-│   ├── 08-enterprise-decision-engine.md  # Fact Graph, Validador Matemático y FlowMind Sentinel
-│   └── 11-security.md         # Modelo de seguridad, RBAC y aislamiento multi-tenant
+│   ├── 00-vision/             # Filosofía de privacidad Zero Cloud Data Leakage
+│   ├── 01-product/            # PRD, Esquemas Canónicos, Roadmap y alineación con tareas
+│   ├── 03-architecture/       # Diseño global (Document & Decision Plane), Decision Engine, Desktop
+│   ├── 04-engineering/        # API Reference, Database/Alembic, Advanced Engines, TDD Proyecto 4
+│   ├── 05-ai/                 # Arquitectura de IA y ML local
+│   ├── 06-security/           # Seguridad, Privacidad, Cumplimiento SII/PII
+│   ├── 08-operations/         # Propuestas de expansión y división de trabajo en equipo
+│   └── 09-decisions/          # ADRs 001-003 (local-first, dos planos, desktop-first)
 ├── backend/                   # API REST en FastAPI + Pydantic v2 + SQLite/SQLAlchemy
 │   ├── app/
 │   │   ├── api/routers/       # Endpoints REST (/documents, /schemas, /automation, /decision, /business, /compliance, /auth)
@@ -38,7 +37,7 @@ FlowMind-AI-Repository-Development/
 │   ├── services/              # HotFolderWatcher con watchdog
 │   ├── ui/                    # MainWindow (Dark Theme, Grid Pro, Inspector)
 │   └── main.py                # Lanzador de la app de escritorio
-├── frontend/                  # Interfaz web en Next.js 14 + TypeScript + Tailwind CSS
+├── frontend/                  # Interfaz web Next.js 14 (DEPRECATED → cliente PySide6, ver ADR-003)
 ├── samples/                   # Documentos reales de prueba (XLSX, CSV, PDF)
 ├── scripts/                   # Scripts de utilidades y generador de archivos de muestra
 ├── start.py                   # Lanzador unificado multiplataforma (Windows / Linux / macOS)
@@ -141,6 +140,7 @@ La documentación del proyecto se organiza conforme al estándar de `documentati
   * [`docs/01-product/01-prd.md`](docs/01-product/01-prd.md) — Product Requirements Document (FRs, NFRs y Personas).
   * [`docs/01-product/02-schemas-and-mapping.md`](docs/01-product/02-schemas-and-mapping.md) — Esquemas canónicos y normalización con RapidFuzz.
   * [`docs/01-product/03-roadmap.md`](docs/01-product/03-roadmap.md) — Fases de entrega y estado de avance de componentes.
+  * [`docs/01-product/04-proyecto4-alineacion-tarea.md`](docs/01-product/04-proyecto4-alineacion-tarea.md) — Semejanza del proyecto con la tarea asignada (Extractor, Validador y Reconciliador de Facturas) y análisis de brechas.
 * **03 — Arquitectura:**
   * [`docs/03-architecture/01-general-architecture.md`](docs/03-architecture/01-general-architecture.md) — Diseño global del sistema (Document Plane & Decision Plane).
   * [`docs/03-architecture/02-enterprise-decision-engine.md`](docs/03-architecture/02-enterprise-decision-engine.md) — Grafo de Hechos (`NetworkX`), Validador Matemático y FlowMind Sentinel.
@@ -149,13 +149,15 @@ La documentación del proyecto se organiza conforme al estándar de `documentati
   * [`docs/04-engineering/01-api-reference.md`](docs/04-engineering/01-api-reference.md) — Referencia exhaustiva de endpoints REST.
   * [`docs/04-engineering/02-database.md`](docs/04-engineering/02-database.md) — Base de datos asíncrona y migraciones con Alembic.
   * [`docs/04-engineering/03-advanced-engines.md`](docs/04-engineering/03-advanced-engines.md) — Conciliación 3 vías, Norma 43, Barcode/QR, OMR y Nóminas.
+  * [`docs/04-engineering/04-invoice-validation-review.md`](docs/04-engineering/04-invoice-validation-review.md) — TDD del vertical de facturas (dominio, pipeline validado, API de revisión, app PySide6 y hot-folder→backend).
 * **05 — Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Pipeline de ML clásico, TF-IDF y ausencia de LLMs externos.
 * **06 — Seguridad & Cumplimiento:**
   * [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Directrices de seguridad, RBAC y aislamiento multi-tenant.
   * [`docs/06-security/02-compliance-and-pii.md`](docs/06-security/02-compliance-and-pii.md) — Cumplimiento fiscal AEAT SII, Veri\*factu y redactor PII/RGPD.
-* **08 — Operaciones & Roadmap:** [`docs/08-operations/01-expansion-proposals.md`](docs/08-operations/01-expansion-proposals.md) — 22 Propuestas estratégicas de expansión futura.
+* **08 — Operaciones & Roadmap:** [`docs/08-operations/01-expansion-proposals.md`](docs/08-operations/01-expansion-proposals.md) — 22 Propuestas estratégicas de expansión futura. · [`docs/08-operations/02-trabajo-equipo-proyecto4.md`](docs/08-operations/02-trabajo-equipo-proyecto4.md) — División de trabajo en 4 personas del Proyecto 4.
 * **09 — Decisiones Arquitectónicas (ADRs):**
   * [`docs/09-decisions/ADR-001-local-deterministic-engine.md`](docs/09-decisions/ADR-001-local-deterministic-engine.md) — Inferencia 100% local sin LLMs en la nube.
   * [`docs/09-decisions/ADR-002-two-plane-architecture.md`](docs/09-decisions/ADR-002-two-plane-architecture.md) — Desacoplamiento de Document Plane y Decision Plane.
+  * [`docs/09-decisions/ADR-003-desktop-first-ui.md`](docs/09-decisions/ADR-003-desktop-first-ui.md) — Cliente de interfaz principal en PySide6 (frontend web deprecated).
 
 
