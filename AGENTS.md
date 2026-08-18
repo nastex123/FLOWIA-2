@@ -67,7 +67,7 @@ El código debe:
 
 * ser legible;
 * tener nombres descriptivos;
-* utilizar tipado estricto (Type hints en Python, TypeScript en frontend);
+* utilizar tipado estricto (Type hints en Python);
 * separar responsabilidades;
 * evitar duplicación innecesaria;
 * tener funciones pequeñas y enfocadas.
@@ -79,7 +79,7 @@ El código debe:
 La arquitectura contempla la siguiente separación:
 
 ```text
-frontend/
+desktop/
 backend/
 workers/
 infrastructure/
@@ -111,15 +111,15 @@ Responsables de operaciones potencialmente largas y asíncronas:
 * clasificación y ejecución de modelos de Machine Learning tradicionales;
 * tareas en segundo plano.
 
-### Frontend
+### Desktop Suite (UI)
 
 Responsable de:
 
-* interfaz de usuario interactiva y accesible (Next.js);
-* interacción fluida con usuarios;
-* visualización de resultados tabulares y estructurados;
-* configuración de reglas de negocio y mapeos;
-* administración de organizaciones y tenants.
+* interfaz de usuario nativa y de alta velocidad (PySide6 / Qt6);
+* interacción fluida con usuarios y visualización en tiempo real;
+* revisión estructurada de facturas y auditoría de anomalías;
+* agente de bandeja (*Hot-Folder Agent*) para monitoreo de carpetas locales;
+* configuración de conexiones y selector de organizaciones.
 
 ---
 
@@ -134,7 +134,7 @@ El stack objetivo se basa en tecnologías sólidas, escalables y de ejecución l
 * Pydantic v2
 * SQLAlchemy (Asyncio)
 * Alembic
-* PostgreSQL (con extensiones necesarias)
+* PostgreSQL (con extensiones necesarias) / SQLite Local Asíncrono
 * Redis
 
 ### Procesamiento de Documentos e Inteligencia Local (Pure Libraries)
@@ -143,14 +143,13 @@ El stack objetivo se basa en tecnologías sólidas, escalables y de ejecución l
 * **PDFs & Documentos:** `PyMuPDF` (`fitz`), `pdfplumber`
 * **NLP & Extracción por Patrones:** `spacy`, `regex`, `rapidfuzz` (fuzzy matching de encabezados y aliases), `nltk`
 * **Machine Learning Clásico & Clasificación:** `scikit-learn` (TF-IDF, Naive Bayes, Logistic Regression, Random Forest)
-* **OCR (local cuando sea necesario):** `pytesseract` / `easyocr`
+* **OCR & Visión Offline:** `pytesseract`, `OpenCV` (`cv2`)
 
-### Frontend
+### Desktop Client (UI)
 
-* Next.js (App Router)
-* React
-* TypeScript
-* Tailwind CSS
+* PySide6 (Qt6)
+* QTableView + VirtualDataTableModel para renderizado de alta velocidad
+* watchdog (Hot-Folder Agent)
 
 ### Infraestructura
 

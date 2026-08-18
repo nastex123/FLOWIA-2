@@ -4,6 +4,21 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 13:56] (America/Bogota)
+
+- **[Architecture / Cleanup]** Eliminación del frontend web (Next.js) y consolidación 100% en la Suite de Escritorio Nativa (PySide6 / Qt6)
+  - **Qué:** 
+    - `frontend/`: eliminado el directorio completo y todos los archivos del andamiaje web roto de Next.js (`package.json`, `tsconfig.json`, `src/`, `next.config.js`).
+    - `scripts/start_frontend.ps1`: eliminado.
+    - `backend/app/core/config.py`: actualizado `ALLOWED_ORIGINS` por defecto a `["*"]` para clientes locales de escritorio y API.
+    - `install.py`: simplificado para enfocarse 100% en Python, eliminando verificaciones de Node.js/npm y el paso de `npm install`.
+    - `start.py`: eliminado el flag `--web` y el subproceso Next.js, consolidando el lanzador en Backend FastAPI + Suite de Escritorio PySide6.
+    - `.gitignore`, `.env.example`, `.env`, `README.md`, `AGENTS.md`, `GEMINI.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md`: actualizados para reflejar que el stack es 100% Python y que la suite de escritorio es el único cliente de usuario.
+  - **Por qué:** Cumplir con la decisión arquitectónica ADR-003, eliminar deuda técnica innecesaria de Node.js/npm y enfocar todos los esfuerzos del equipo en la GUI de escritorio nativa PySide6.
+  - **Archivos:** `frontend/` (eliminado), `scripts/start_frontend.ps1` (eliminado), `backend/app/core/config.py`, `install.py`, `start.py`, `.gitignore`, `.env.example`, `.env`, `README.md`, `AGENTS.md`, `GEMINI.md`, `docs/09-decisions/ADR-003-desktop-first-ui.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 13:49] (America/Bogota)
 
 - **[Tooling / Scripts]** Creación del instalador automatizado multiplataforma `install.py` y actualización del `README.md`

@@ -2,15 +2,14 @@
 """Cross-platform installation and setup script for FlowMind AI.
 
 Supports Windows, Linux, and macOS.
-Sets up the Python virtual environment, installs backend and desktop dependencies,
-initializes environment variables (.env), and installs frontend dependencies.
+Sets up the Python virtual environment, installs backend and PySide6 desktop dependencies,
+initializes environment variables (.env), and runs verification smoke tests.
 
 Usage:
     python install.py
     python install.py --os windows
     python install.py --os linux
-    python install.py --backend-only
-    python install.py --frontend-only
+    python install.py --skip-smoke-test
 """
 
 import argparse
@@ -35,7 +34,7 @@ if sys.platform == "win32":
 # Project root directory
 ROOT_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT_DIR / "backend"
-FRONTEND_DIR = ROOT_DIR / "frontend"
+DESKTOP_DIR = ROOT_DIR / "desktop"
 VENV_DIR = ROOT_DIR / "venv"
 
 # ANSI Colors for terminal output
@@ -53,7 +52,7 @@ def print_banner():
     print(f"{CYAN}{BOLD}   FlowMind AI -- Automated Environment & Dependency Installer{RESET}")
     print(f"{CYAN}{'=' * 70}{RESET}")
     print(f"   {GREEN}* Architecture:{RESET} 100% Local & Privacy-First Suite (Zero Cloud)")
-    print(f"   {GREEN}* Components:{RESET}   FastAPI Backend + PySide6 Desktop + Next.js Web")
+    print(f"   {GREEN}* Suite:{RESET}        FastAPI Backend + PySide6 Native Desktop UI (Qt6)")
     print(f"{CYAN}{'=' * 70}{RESET}\n")
 
 
@@ -90,8 +89,8 @@ def resolve_os_choice(cli_os: Optional[str]) -> str:
 
 
 def check_prerequisites(target_os: str) -> None:
-    """Verifies that Python 3.11+ is being used and checks Git and Node.js."""
-    print(f"{CYAN}[1/6] Verificando requisitos previos del sistema...{RESET}")
+    """Verifies that Python 3.11+ is being used and checks Git."""
+    print(f"{CYAN}[1/5] Verificando requisitos previos del sistema...{RESET}")
 
     # 1. Python version check
     v = sys.version_info
@@ -112,20 +111,6 @@ def check_prerequisites(target_os: str) -> None:
     else:
         print(f"  {YELLOW}[WARN] Git no detectado en PATH (opcional si el repo ya fue descargado){RESET}")
 
-    # 3. Node.js and npm check
-    node_path = shutil.which("node")
-    npm_cmd = "npm.cmd" if target_os == "windows" else "npm"
-    npm_path = shutil.which(npm_cmd) or shutil.which("npm")
-
-    if node_path and npm_path:
-        try:
-            node_ver = subprocess.check_output([node_path, "--version"], text=True).strip()
-            print(f"  {GREEN}[OK] Node.js:{RESET} {node_ver}")
-        except Exception:
-            print(f"  {GREEN}[OK] Node.js:{RESET} Detectado")
-    else:
-        print(f"  {YELLOW}[WARN] Node.js / npm no detectados. (El Frontend Web requerira Node 18+){RESET}")
-
 
 def get_venv_executables(target_os: str) -> Tuple[Path, Path]:
     """Returns the paths to python and pip executables inside the virtualenv."""
@@ -140,7 +125,7 @@ def get_venv_executables(target_os: str) -> Tuple[Path, Path]:
 
 def setup_virtualenv(target_os: str) -> Tuple[Path, Path]:
     """Creates virtual environment if it does not already exist."""
-    print(f"\n{CYAN}[2/6] Configurando entorno virtual de Python ({target_os.upper()})...{RESET}")
+    print(f"\n{CYAN}[2/5] Configurando entorno virtual de Python ({target_os.upper()})...{RESET}")
     py_bin, pip_bin = get_venv_executables(target_os)
 
     if not VENV_DIR.exists():
@@ -162,7 +147,7 @@ def setup_virtualenv(target_os: str) -> Tuple[Path, Path]:
 
 def install_python_dependencies(py_bin: Path, pip_bin: Path) -> None:
     """Upgrades pip and installs backend and desktop packages in editable mode."""
-    print(f"\n{CYAN}[3/6] Instalando dependencias de Python (Backend + Suite Desktop)...{RESET}")
+    print(f"\n{CYAN}[3/5] Instalando dependencias de Python (Backend + Suite Desktop PySide6)...{RESET}")
     print("  Actualizando pip al ultimo nivel...")
     subprocess.run([str(py_bin), "-m", "pip", "install", "--upgrade", "pip"], check=True)
 
@@ -174,7 +159,7 @@ def install_python_dependencies(py_bin: Path, pip_bin: Path) -> None:
 
 def setup_env_file() -> None:
     """Ensures .env exists and is configured for out-of-the-box local SQLite mode."""
-    print(f"\n{CYAN}[4/6] Configurando variables de entorno (.env)...{RESET}")
+    print(f"\n{CYAN}[4/5] Configurando variables de entorno (.env)...{RESET}")
     env_file = ROOT_DIR / ".env"
     env_example = ROOT_DIR / ".env.example"
 
@@ -188,29 +173,9 @@ def setup_env_file() -> None:
         print(f"  {GREEN}[OK] Archivo .env ya existe. Se mantendra la configuracion actual.{RESET}")
 
 
-def install_frontend_dependencies(target_os: str) -> None:
-    """Runs npm install in the frontend directory if frontend exists."""
-    print(f"\n{CYAN}[5/6] Instalando dependencias del Frontend Web (Next.js)...{RESET}")
-    if not FRONTEND_DIR.exists():
-        print(f"  {YELLOW}[WARN] Directorio frontend/ no encontrado. Omitiendo.{RESET}")
-        return
-
-    npm_cmd = "npm.cmd" if target_os == "windows" else "npm"
-    if not shutil.which(npm_cmd) and not shutil.which("npm"):
-        print(f"  {YELLOW}[WARN] npm no esta disponible en PATH. Puedes ejecutar 'npm install' dentro de frontend/ mas adelante.{RESET}")
-        return
-
-    print("  Ejecutando 'npm install' en ./frontend (esto puede tomar unos segundos)...")
-    try:
-        subprocess.run([npm_cmd, "install"], cwd=str(FRONTEND_DIR), check=True, shell=(target_os == "windows"))
-        print(f"  {GREEN}[OK] Dependencias del frontend instaladas con exito.{RESET}")
-    except subprocess.CalledProcessError as exc:
-        print(f"  {YELLOW}[WARN] npm install retorno codigo {exc.returncode}. Puedes reintentarlo manualmente en ./frontend.{RESET}")
-
-
 def run_smoke_test(py_bin: Path) -> None:
     """Verifies that key modules can be imported in the virtualenv."""
-    print(f"\n{CYAN}[6/6] Ejecutando Smoke Test de integridad del entorno...{RESET}")
+    print(f"\n{CYAN}[5/5] Ejecutando Smoke Test de integridad del entorno...{RESET}")
     modules_to_test = [
         ("FastAPI & Uvicorn", "import fastapi, uvicorn"),
         ("Pydantic v2", "import pydantic; assert int(pydantic.__version__.split('.')[0]) >= 2"),
@@ -257,9 +222,9 @@ def print_completion_summary(target_os: str) -> None:
         print(f"  {CYAN}2. Iniciar la aplicacion unificada (Backend + Desktop UI):{RESET}")
         print(f"     {BOLD}./start.sh{RESET}   o   {BOLD}python3 start.py{RESET}\n")
 
-    print(f"  {CYAN}3. Opciones adicionales de inicio:{RESET}")
-    print(f"     {BOLD}python start.py --web{RESET}     (Inicia tambien el Dashboard Web Next.js en :3000)")
+    print(f"  {CYAN}3. Opciones adicionales:{RESET}")
     print(f"     {BOLD}python start.py --no-ui{RESET}   (Inicia solo la API FastAPI en modo servidor)")
+    print(f"     {BOLD}python desktop/main.py{RESET}    (Inicia directamente la app de escritorio)")
     print(f"     {BOLD}pytest tests/{RESET}            (Ejecuta la suite de pruebas)")
     print(f"{CYAN}{'=' * 70}{RESET}\n")
 
@@ -273,16 +238,6 @@ def main():
         help="Fuerza el sistema operativo objetivo (windows o linux)",
     )
     parser.add_argument(
-        "--backend-only",
-        action="store_true",
-        help="Instala solo dependencias de Python (omite npm)",
-    )
-    parser.add_argument(
-        "--frontend-only",
-        action="store_true",
-        help="Instala solo dependencias de Node.js (npm)",
-    )
-    parser.add_argument(
         "--skip-smoke-test",
         action="store_true",
         help="Omite la prueba de importacion de modulos al final",
@@ -294,16 +249,12 @@ def main():
     target_os = resolve_os_choice(args.target_os)
     print(f"  {BOLD}Plataforma seleccionada:{RESET} {target_os.upper()}\n")
 
-    if not args.frontend_only:
-        check_prerequisites(target_os)
-        py_bin, pip_bin = setup_virtualenv(target_os)
-        install_python_dependencies(py_bin, pip_bin)
-        setup_env_file()
+    check_prerequisites(target_os)
+    py_bin, pip_bin = setup_virtualenv(target_os)
+    install_python_dependencies(py_bin, pip_bin)
+    setup_env_file()
 
-    if not args.backend_only:
-        install_frontend_dependencies(target_os)
-
-    if not args.frontend_only and not args.skip_smoke_test:
+    if not args.skip_smoke_test:
         py_bin, _ = get_venv_executables(target_os)
         if py_bin.exists():
             run_smoke_test(py_bin)

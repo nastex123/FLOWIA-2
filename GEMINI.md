@@ -98,13 +98,13 @@ regex
 spacy (opcional para tokenización y entidades)
 ```
 
-### Frontend
+### Desktop Client (UI)
 
 ```text
-Next.js (App Router)
-React
-TypeScript
-Tailwind CSS
+PySide6 (Qt6)
+VirtualDataTableModel
+Dark Theme UI
+Hot-Folder Tray Agent (watchdog)
 ```
 
 ### Workers

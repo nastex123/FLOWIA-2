@@ -2,7 +2,7 @@
 
 > **Intelligent Business Process Automation & Enterprise Decision Platform (100% Local & Privacy-First)**
 
-FlowMind AI es una plataforma SaaS B2B y suite de escritorio diseñada para automatizar flujos de trabajo empresariales y toma de decisiones operacionales transformando documentos semi-estructurados y desestructurados (Excel, CSV, PDF, imágenes) en hechos verificados, grafos relacionales y acciones automatizadas con evidencia trazable.
+FlowMind AI es una suite de escritorio nativa y plataforma backend diseñada para automatizar flujos de trabajo empresariales y toma de decisiones operacionales transformando documentos semi-estructurados y desestructurados (Excel, CSV, PDF, imágenes) en hechos verificados, grafos relacionales y acciones automatizadas con evidencia trazable.
 
 El sistema opera con **cero dependencia de LLMs externos en la nube**, garantizando privacidad absoluta de datos (*Zero Cloud Data Leakage*), tiempos de respuesta en milisegundos y predictibilidad operativa mediante librerías de Machine Learning clásico (`scikit-learn`), NLP local (`rapidfuzz`, `regex`), visión artificial offline (`OpenCV`, `pytesseract`), grafos relacionales (`NetworkX`), validadores matemáticos deterministas y el motor antifraude **FlowMind Sentinel**.
 
@@ -13,7 +13,6 @@ El sistema opera con **cero dependencia de LLMs externos en la nube**, garantiza
 Antes de comenzar, asegúrate de tener instalado en tu sistema:
 
 * **Python 3.11+** ([Descargar Python](https://www.python.org/downloads/))
-* **Node.js 18+ y npm** ([Descargar Node.js](https://nodejs.org/))
 * **Git** ([Descargar Git](https://git-scm.com/))
 * *(Opcional)* **Docker & Docker Compose** (solo si deseas usar PostgreSQL, Redis y MinIO en lugar del modo SQLite local por defecto).
 
@@ -21,7 +20,7 @@ Antes de comenzar, asegúrate de tener instalado en tu sistema:
 
 ## 🚀 Guía de Instalación
 
-Puedes instalar todas las dependencias del proyecto de forma **automática (Recomendado)** con un solo script, o siguiendo el flujo **manual paso a paso**.
+Puedes instalar todas las dependencias del proyecto de forma **automática (Recomendado)** con un solo comando, o configurando el entorno virtual manualmente.
 
 ### 1. Clonar el repositorio
 
@@ -34,7 +33,7 @@ cd FLOWIA-2
 
 ### Opción A: Instalación Automática Unificada con `install.py` (Recomendada)
 
-El proyecto incluye el script `install.py` que detecta automáticamente tu sistema operativo, crea el entorno virtual `venv`, instala las dependencias de Python (backend + desktop), inicializa `.env` en modo SQLite local, instala dependencias de frontend (`npm install`) y realiza un *Smoke Test* de verificación:
+El proyecto incluye el script `install.py` que detecta automáticamente tu sistema operativo, crea el entorno virtual `venv`, instala las dependencias de Python (backend + suite de escritorio PySide6), inicializa `.env` en modo SQLite local y realiza un *Smoke Test* de verificación:
 
 #### En Windows (PowerShell / CMD):
 ```powershell
@@ -51,8 +50,6 @@ python3 install.py --os linux
 ```
 
 > **Banderas adicionales de `install.py`:**
-> * `--backend-only` : Configura únicamente Python (`venv` + backend + desktop) omitiendo `npm`.
-> * `--frontend-only` : Ejecuta únicamente `npm install` en el directorio `frontend/`.
 > * `--skip-smoke-test` : Omite la verificación final de importaciones.
 
 ---
@@ -71,7 +68,7 @@ python -m venv venv
 # Activar entorno virtual
 .\venv\Scripts\Activate.ps1
 
-# Actualizar pip e instalar dependencias
+# Actualizar pip e instalar dependencias del backend y suite desktop
 python -m pip install --upgrade pip
 pip install -e ".\backend[dev]"
 ```
@@ -84,30 +81,30 @@ python3 -m venv venv
 # Activar entorno virtual
 source venv/bin/activate
 
-# Actualizar pip e instalar dependencias
+# Actualizar pip e instalar dependencias del backend y suite desktop
 pip install --upgrade pip
 pip install -e "./backend[dev]"
 ```
 
 ---
 
-### 3. Configurar Variables de Entorno (`.env`)
+#### 2. Configurar Variables de Entorno (`.env`)
 
 FlowMind AI funciona **out-of-the-box en modo local** utilizando SQLite asíncrono y almacenamiento en disco local sin requerir servicios externos en ambos sistemas operativos.
 
 Copia la plantilla de variables de entorno según tu sistema:
 
-#### En Windows (PowerShell):
+**En Windows (PowerShell):**
 ```powershell
 Copy-Item .env.example .env
 ```
 
-#### En Windows (CMD):
+**En Windows (CMD):**
 ```cmd
 copy .env.example .env
 ```
 
-#### En Linux / macOS (Bash / Zsh):
+**En Linux / macOS (Bash / Zsh):**
 ```bash
 cp .env.example .env
 ```
@@ -128,7 +125,7 @@ Todas las variables se definen en el archivo `.env` en la raíz del proyecto. Ta
 | `STORAGE_BACKEND` | Motor de almacenamiento | `local` | `local` | `local` o `s3` |
 | `LOCAL_STORAGE_PATH` | Ruta de archivos subidos | `./data/storage` o `C:/flowmind/data` | `./data/storage` o `/var/flowmind/data` | `./data/storage` |
 | `SECRET_KEY` | Llave secreta para tokens JWT | `tu-clave-secreta-min-32-caracteres` | `tu-clave-secreta-min-32-caracteres` | *(Cadena aleatoria segura)* |
-| `ALLOWED_ORIGINS` | Orígenes CORS permitidos | `["http://localhost:3000"]` | `["http://localhost:3000"]` | `["https://app.tuempresa.com"]` |
+| `ALLOWED_ORIGINS` | Orígenes CORS permitidos | `["*"]` | `["*"]` | `["*"]` |
 | `MAX_UPLOAD_SIZE_MB` | Tamaño máx. de archivo subido | `25` | `25` | `50` |
 | `ALLOWED_EXTENSIONS` | Extensiones permitidas | `["xlsx","xls","csv","pdf","png","jpg"]` | `["xlsx","xls","csv","pdf","png","jpg"]` | `["xlsx","xls","csv","pdf","png","jpg"]` |
 | `S3_ENDPOINT` *(solo S3)* | Endpoint de MinIO / AWS S3 | `http://localhost:9000` | `http://localhost:9000` | `http://minio:9000` |
@@ -140,7 +137,7 @@ Todas las variables se definen en el archivo `.env` en la raíz del proyecto. Ta
 
 Si necesitas sobreescribir una variable temporalmente sin modificar `.env`:
 
-#### En Windows (PowerShell):
+**En Windows (PowerShell):**
 ```powershell
 $env:DATABASE_URL = "sqlite+aiosqlite:///./data/flowmind.db"
 $env:STORAGE_BACKEND = "local"
@@ -148,7 +145,7 @@ $env:LOCAL_STORAGE_PATH = "./data/storage"
 $env:FLOWMIND_API_URL = "http://127.0.0.1:8000"
 ```
 
-#### En Windows (CMD):
+**En Windows (CMD):**
 ```cmd
 set DATABASE_URL=sqlite+aiosqlite:///./data/flowmind.db
 set STORAGE_BACKEND=local
@@ -156,7 +153,7 @@ set LOCAL_STORAGE_PATH=./data/storage
 set FLOWMIND_API_URL=http://127.0.0.1:8000
 ```
 
-#### En Linux / macOS (Bash / Zsh):
+**En Linux / macOS (Bash / Zsh):**
 ```bash
 export DATABASE_URL="sqlite+aiosqlite:///./data/flowmind.db"
 export STORAGE_BACKEND="local"
@@ -167,19 +164,6 @@ export FLOWMIND_API_URL="http://127.0.0.1:8000"
 > 📌 **Consejo sobre rutas en Windows:**  
 > En los archivos `.env` y variables de entorno, se recomienda usar barras inclinadas normales (`/`) o rutas relativas como `./data/storage`. Python normaliza automáticamente las rutas en Windows y Linux.
 
-
----
-
-### 4. Instalar Dependencias del Frontend (Web Dashboard)
-
-```bash
-cd frontend
-npm install
-cd ..
-```
-
-*(Nota: Si omites este paso, el script lanzador `start.py` detectará automáticamente si falta `node_modules` y ejecutará `npm install` por ti si usas la bandera `--web`).*
-
 ---
 
 ## ⚡ Cómo Iniciar la Aplicación
@@ -188,7 +172,7 @@ cd ..
 
 Inicia automáticamente el Backend (FastAPI con autodetección de puertos libres) y la Suite de Escritorio PySide6 con un solo comando:
 
-#### En Windows (PowerShell):
+**En Windows (PowerShell):**
 ```powershell
 # Asegúrate de tener el entorno virtual activo: .\venv\Scripts\Activate.ps1
 .\start.ps1
@@ -197,7 +181,7 @@ Inicia automáticamente el Backend (FastAPI con autodetección de puertos libres
 python start.py
 ```
 
-#### En Linux o macOS:
+**En Linux o macOS:**
 ```bash
 # Asegúrate de tener el entorno virtual activo: source venv/bin/activate
 chmod +x start.sh
@@ -207,8 +191,7 @@ chmod +x start.sh
 python3 start.py
 ```
 
-#### Banderas adicionales para `start.py`:
-* `python start.py --web` : Inicia Backend + Desktop UI + Frontend Web (Next.js en `http://localhost:3000`).
+*Banderas adicionales para `start.py`:*
 * `python start.py --no-ui` : Inicia únicamente el Backend FastAPI sin abrir la interfaz de escritorio.
 
 ---
@@ -231,13 +214,6 @@ uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
 python desktop/main.py
 ```
 * Permite procesar documentos sin conexión, inspeccionar anomalías, validar facturas y monitorear carpetas *Hot-Folder* en segundo plano.
-
-#### Terminal 3 — Frontend Web (Next.js)
-```bash
-cd frontend
-npm run dev
-```
-* **Dashboard Web disponible en:** `http://localhost:3000`
 
 ---
 
@@ -262,13 +238,12 @@ Al iniciar el backend por primera vez en modo local, se inicializa automáticame
 
 | Parámetro | Valor por Defecto |
 | :--- | :--- |
-| **URL Frontend Web** | `http://localhost:3000` |
 | **Documentación API (Swagger)** | `http://127.0.0.1:8000/docs` |
 | **Usuario / Email** | `admin@flowmind.local` |
 | **Contraseña** | `admin123` |
 | **Organización** | `default-org` |
 
-> 🔒 *Puedes interactuar vía API mediante `Authorization: Bearer <token>` o generando una API Key (`fm_...`) desde la sección de configuración.*
+> 🔒 *Puedes iniciar sesión en la Suite de Escritorio PySide6 con estas credenciales o utilizar el botón "Modo Demo Offline" para pruebas directas.*
 
 ---
 
@@ -280,7 +255,7 @@ Para generar un conjunto de documentos empresariales realistas (Facturas XLSX, I
 python scripts/generate_sample_documents.py
 ```
 
-Los archivos de muestra se generarán en la carpeta `samples/` listos para ser procesados desde la web o la suite de escritorio.
+Los archivos de muestra se generarán en la carpeta `samples/` listos para ser procesados desde la suite de escritorio.
 
 ---
 
@@ -300,7 +275,7 @@ FLOWIA-2/
 ├── AGENTS.md                  # Reglas de desarrollo para agentes IA
 ├── GEMINI.md                  # Contexto operativo para el agente
 ├── install.py                 # Instalador automatizado multiplataforma (Windows / Linux)
-├── start.py                   # Lanzador unificado multiplataforma (Backend + Desktop + Web)
+├── start.py                   # Lanzador unificado multiplataforma (Backend + Desktop PySide6)
 ├── start.sh                   # Script de inicio para Linux / macOS
 ├── start.ps1                  # Script de inicio para Windows PowerShell
 ├── .env.example               # Plantilla de variables de entorno
@@ -318,7 +293,6 @@ FLOWIA-2/
 │   ├── services/              # HotFolderWatcher con watchdog
 │   ├── ui/                    # MainWindow (Dark Theme, Grid Pro, Inspector, Review)
 │   └── main.py                # Punto de entrada de la aplicación de escritorio
-├── frontend/                  # Interfaz web en Next.js 14 + React + Tailwind CSS
 ├── infrastructure/            # Definiciones Docker Compose (PostgreSQL, Redis, MinIO)
 ├── samples/                   # Documentos reales de prueba (XLSX, CSV, PDF)
 ├── scripts/                   # Scripts auxiliares y generador de archivos de muestra
@@ -346,4 +320,6 @@ Para profundizar en el diseño y arquitectura del sistema, consulta la documenta
   * [`docs/04-engineering/02-database.md`](docs/04-engineering/02-database.md) — Base de datos asíncrona y migraciones.
   * [`docs/04-engineering/03-advanced-engines.md`](docs/04-engineering/03-advanced-engines.md) — Conciliación a 3 vías, Norma 43, Barcode/QR, OMR y Nóminas.
 * **05 — Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Machine Learning local y TF-IDF sin LLMs externos.
+* **06 — Seguridad & Cumplimiento:** [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Seguridad, RBAC y aislamiento multi-tenant.
+* **09 — Decisiones Arquitectónicas (ADR):** [`docs/09-decisions/ADR-003-desktop-first-ui.md`](docs/09-decisions/ADR-003-desktop-first-ui.md) — Adopción de PySide6 como interfaz única y retiro del frontend web.— Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Machine Learning local y TF-IDF sin LLMs externos.
 * **06 — Seguridad & Cumplimiento:** [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Seguridad, RBAC y aislamiento multi-tenant.
