@@ -4,6 +4,15 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-18 14:10] (America/Bogota)
+
+- **[Docs / Governance]** Inclusión de directiva obligatoria y advertencia al inicio del `README.md`
+  - **Qué:** Inclusión de una alerta `> [!IMPORTANT]` en la cabecera de `README.md` que instruye a desarrolladores y agentes de IA a leer obligatoriamente toda la documentación en `docs/`, `AGENTS.md`, `GEMINI.md` y todas las skills del repositorio (`skills/documentation/`, `skills/flowmind-development/`, `skills/technical-partner/`) antes de realizar modificaciones.
+  - **Por qué:** Garantizar que cualquier colaborador o agente de IA mantenga la consistencia arquitectónica, el tipado estricto, la privacidad local y la sincronización continua de la documentación.
+  - **Archivos:** `README.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 14:05] (America/Bogota)
 
 - **[Docs / Project]** Sincronización integral de la documentación técnica (`docs/`), estado de avance y consolidación de tareas
