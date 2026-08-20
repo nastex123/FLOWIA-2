@@ -30,6 +30,7 @@ export default function InvoiceReviewPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [detail, setDetail] = useState<DocumentDetail | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     'header' | 'items' | 'sentinel' | 'math' | 'json'
   >('header');
@@ -37,9 +38,46 @@ export default function InvoiceReviewPage() {
 
   useEffect(() => {
     if (documentId) {
-      api.getDocument(documentId).then(setDetail);
+      setError(null);
+      api.getDocument(documentId)
+        .then(setDetail)
+        .catch((err) => {
+          setDetail(null);
+          setError(err.message || 'Error al cargar el documento.');
+        });
     }
   }, [documentId]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-16 h-16 rounded-full bg-rose-950/40 border border-rose-600/40 flex items-center justify-center mx-auto">
+            <ShieldCheck className="w-8 h-8 text-rose-400" />
+          </div>
+          <h2 className="font-serif text-xl font-bold text-crimson-200">Acceso Denegado</h2>
+          <p className="text-sm text-slate-400">{error}</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <a
+              href="/login"
+              className="px-4 py-2 rounded-lg bg-crimson-900/60 hover:bg-crimson-800/60 text-crimson-100 text-xs font-semibold border border-crimson-600/40 transition-all"
+            >
+              Iniciar Sesion
+            </a>
+            <button
+              onClick={() => {
+                api.setDemoMode(true);
+                window.location.reload();
+              }}
+              className="px-4 py-2 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 text-xs font-semibold border border-emerald-600/40 transition-all"
+            >
+              Modo Demo Offline
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!detail) {
     return (

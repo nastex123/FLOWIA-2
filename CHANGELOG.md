@@ -4,6 +4,32 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-20 10:00] (America/Bogota)
+
+- **[Frontend / Token Invalid Fix & Demo Mode]** Corrección del error `Token inválido o expirado` al inspeccionar facturas y implementación de Modo Demo Offline
+  - **Que:**
+    - `frontend/src/lib/api.ts`: implementación del sistema de modo demo (`isDemoMode`, `setDemoMode`) que utiliza datos mock locales en lugar de llamar al backend. Cuando se activa, `listDocuments()` y `getDocument(id)` retornan datos de ejemplo desde `src/lib/mock-data.ts`. Se agregó la función `reviewDocument()` para el botón de aprobación. Auto-limpieza de tokens inválidos/expirados del `localStorage` al recibir respuesta 401.
+    - `frontend/src/lib/mock-data.ts` (NUEVO): 3 documentos de factura completos con datos realistas (AceroCorp, TechParts, LogiTrans) incluyendo emisor, receptor, items, checks Sentinel y validaciones matemáticas para pruebas offline.
+    - `frontend/src/lib/types.ts`: agregadas las interfaces `InvoiceItem`, `StructuredInvoice`, `CheckResult`, `ExtractionInfo` y `DocumentDetail` para soportar la página de inspección de facturas.
+    - `frontend/src/app/review/[id]/page.tsx`: manejo de errores con estado `error` y pantalla amigable que ofrece botones "Iniciar Sesión" y "Modo Demo Offline" cuando falla la carga del documento por token inválido o ausente.
+    - `frontend/src/app/login/page.tsx`: corregido `api.setDemoMode(true)` (antes llamaba a función inexistente).
+  - **Por que:** El error `Token inválido o expirado` ocurría porque el backend requiere JWT Bearer token en todos los endpoints y el frontend no manejaba el caso de autenticación faltante o expirada. Ahora al navegar a `/review/[id]` sin token, se muestra una pantalla clara con opciones de inicio de sesión o modo demo, en lugar de un error en consola que rompe la interfaz.
+  - **Resultado:** Navegación fluida entre páginas. Modo demo funcional con datos de ejemplo. Errores de autenticación manejados graceful.
+  - **Archivos:** `frontend/src/lib/api.ts`, `frontend/src/lib/mock-data.ts`, `frontend/src/lib/types.ts`, `frontend/src/app/review/[id]/page.tsx`, `frontend/src/app/login/page.tsx`, `README.md`, `CHANGELOG.md`.
+
+### [2026-08-20 09:30] (America/Bogota)
+
+- **[Frontend / TypeError Fix]** Corrección del error `TypeError: Cannot read properties of undefined (reading 'length')` al cargar el dashboard
+  - **Que:**
+    - `frontend/src/lib/types.ts` (NUEVO): archivo de tipos TypeScript con las interfaces `CheckSummary`, `DocumentItem`, `Organization` y `UserProfile` que faltaban y causaban fallos silenciosos en los componentes.
+    - `frontend/src/lib/api.ts` (REESCRITO): centralizacion completo del cliente API con las funciones `getProfile`, `listDocuments`, `getDocument`, `uploadDocument`, `getOrganization`, `setOrganization`, `login`, `register` y `logout`. Anteriormente solo existia una funcion `getProfile` incompleta.
+    - `frontend/src/app/page.tsx`: adicion de manejo de errores en `fetchDocuments` para evitar el crash cuando la API retorna `undefined` (por error de red o autenticacion). Ahora usa `setDocuments(data || [])` y captura excepciones devolviendo arreglo vacio.
+    - `frontend/src/components/Header.tsx`: validacion robusta en `getProfile()` para verificar que la respuesta tenga `profile.user` y `Array.isArray(profile.organizations)` antes de asignar el estado, evitando el crash cuando el backend devuelve 401.
+    - `frontend/src/components/FileUploadModal.tsx`: correccion del nombre de funcion de `api.uploadFile(file)` a `api.uploadDocument(file)` para coincidir con la implementacion real.
+  - **Por que:** El error ocurria porque `api.listDocuments()` no estaba definida y retornaba `undefined`. Al acceder a `.length` en `page.tsx` linea 36 (`const total = documents.length`) se lanzaba la excepcion. Ademas, `types.ts` no existia, generando errores de compilacion silenciosos, y `Header.tsx` no validaba la respuesta de `getProfile()` antes de acceder a `profile.organizations.length`.
+  - **Resultado:** El frontend carga correctamente mostrando el dashboard con KPIs en 0 y la tabla de documentos vacia (sin errores en consola).
+  - **Archivos:** `frontend/src/lib/types.ts`, `frontend/src/lib/api.ts`, `frontend/src/app/page.tsx`, `frontend/src/components/Header.tsx`, `frontend/src/components/FileUploadModal.tsx`, `README.md`, `CHANGELOG.md`.
+
 ### [2026-08-20 07:15] (America/Bogota)
 
 - **[Desktop / P4 — Automatizacion Hot-Folder e Integracion Final]** Implementacion completa de la fase de automatizacion del agente de bandeja y cierre del vertical de facturas y comprobantes
