@@ -225,7 +225,7 @@ uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload
 #### Terminal 2 — Frontend Web (Next.js 14+)
 ```bash
 cd frontend
-npm run dev
+npm run devhttps://github.com/nastex123/FLOWIA-2.git
 ```
 * **Aplicación Web:** `http://localhost:3000`
 

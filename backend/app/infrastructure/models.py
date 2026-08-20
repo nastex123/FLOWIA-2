@@ -16,6 +16,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -145,6 +146,13 @@ class Document(Base):
     status: Mapped[DocumentStatus] = mapped_column(
         Enum(DocumentStatus), default=DocumentStatus.PENDING, index=True
     )
+    review_status: Mapped[str] = mapped_column(
+        String(20), default="unreviewed", index=True
+    )
+    reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    reviewed_by: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
+    )
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=get_utc_now
@@ -158,6 +166,12 @@ class Document(Base):
     )
     extraction_record: Mapped[Optional["ExtractionRecord"]] = relationship(
         "ExtractionRecord", back_populates="document", uselist=False, cascade="all, delete-orphan"
+    )
+    checks: Mapped[List["DocumentCheck"]] = relationship(
+        "DocumentCheck", back_populates="document", cascade="all, delete-orphan"
+    )
+    fingerprints: Mapped[List["InvoiceFingerprint"]] = relationship(
+        "InvoiceFingerprint", back_populates="document", cascade="all, delete-orphan"
     )
 
 
@@ -177,6 +191,7 @@ class ExtractionRecord(Base):
     confidence: Mapped[float] = mapped_column(Float, default=0.0)
     fields_json: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
     tables_json: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, default=list)
+    structured_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
     raw_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     processing_time_ms: Mapped[float] = mapped_column(Float, default=0.0)
     created_at: Mapped[datetime] = mapped_column(
@@ -283,3 +298,77 @@ class WebhookDelivery(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=get_utc_now, index=True
     )
+
+
+class DocumentCheck(Base):
+    __tablename__ = "document_checks"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("organizations.id"), nullable=False, index=True
+    )
+    document_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("documents.id"), nullable=False, index=True
+    )
+    check_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    severity: Mapped[str] = mapped_column(String(20), default="ok", index=True)
+    status: Mapped[str] = mapped_column(String(20), default="open", index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    detail_json: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=get_utc_now, index=True
+    )
+
+    document: Mapped["Document"] = relationship("Document", back_populates="checks")
+
+
+class EntityRecord(Base):
+    __tablename__ = "entity_records"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("organizations.id"), nullable=False, index=True
+    )
+    entity_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    tax_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
+    ibans_json: Mapped[List[str]] = mapped_column(JSON, default=list)
+    email_domain: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=get_utc_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=get_utc_now, onupdate=get_utc_now
+    )
+
+
+class InvoiceFingerprint(Base):
+    __tablename__ = "invoice_fingerprints"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "fingerprint", name="uq_org_invoice_fingerprint"),
+    )
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("organizations.id"), nullable=False, index=True
+    )
+    document_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("documents.id"), nullable=False, index=True
+    )
+    fingerprint: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    vendor_tax_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    invoice_number: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    invoice_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    total_amount: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=get_utc_now, index=True
+    )
+
+    document: Mapped["Document"] = relationship("Document", back_populates="fingerprints")
