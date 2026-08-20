@@ -1,2 +1,0 @@
-# FlowMind AI — Backend Dependencies
--r ../requirements.txt
