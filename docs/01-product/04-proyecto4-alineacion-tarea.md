@@ -40,9 +40,9 @@ Estado real verificado en el código del repositorio:
 | App de gestión financiera nativa (`PySide6 / Qt6`) | ✅ Implementado | Brandon (P3) | UI navegable, KPIs, badges de severidad, auditoría y 13 tests en verde |
 | Instalador y lanzador unificado multiplataforma | ✅ Implementado | Brandon (P3) | `install.py` y `start.py` (100% Python) |
 | Retiro de frontend web obsoleto y dependencias Node.js | ✅ Ejecutado | Equipo | Alineado con ADR-003 |
-| Hot-folder conectado al backend con API Key | ⏳ En progreso | Beatriz (P4a) | `tray_agent.py` enviando a `/upload` |
-| Pantalla de configuración del agente (`SettingsView`) | ⏳ En progreso | Beatriz (P4a) | Formulario de carpetas y API Key |
-| Integración final y orquestación del vertical completo | ⏳ Pendiente | Hector (P4b) | Validación global y cierre |
+| Hot-folder conectado al backend con API Key | ✅ Completado | Beatriz (P4a) | `tray_agent.py`: bifurcacion `_process_via_backend` / `_process_locally`. Suite 17 tests en verde. |
+| Pantalla de configuración del agente (`SettingsView`) | ✅ Completado | Beatriz (P4a) | `settings_view.py`: formulario API Key, carpetas, iniciar/parar agente, log de actividad. |
+| Integración final y orquestación del vertical completo | ✅ Completado | Hector (P4b) | Documentacion sincronizada, roadmap actualizado y CHANGELOG consolidado. |
 
 ---
 

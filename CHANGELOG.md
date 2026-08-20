@@ -4,6 +4,22 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-20 07:15] (America/Bogota)
+
+- **[Desktop / P4 — Automatizacion Hot-Folder e Integracion Final]** Implementacion completa de la fase de automatizacion del agente de bandeja y cierre del vertical de facturas y comprobantes
+  - **Que:**
+    - `desktop/ui/settings_view.py` (NUEVO): pantalla de configuracion del agente Hot-Folder con campos de API Key (toggle mostrar/ocultar), Organization ID, URL del backend, carpetas de entrada/salida con selector de directorio, botones iniciar/parar el agente, registro de actividad con timestamps y senal `agent_status_changed`.
+    - `desktop/services/tray_agent.py` (REESCRITO): `HotFolderHandler._process_file` bifurca entre `_process_via_backend` (cuando `client.api_key` esta configurado — envia a `POST /api/v1/documents/upload` con headers `X-API-Key` y `X-Organization-Id`) y `_process_locally` (modo offline sin API Key — escribe JSON en `output_dir`). `HotFolderWatcher` acepta cliente inyectable. Manejo explicito de `FlowMindApiError` con reporte en el callback `on_processed`.
+    - `tests/test_desktop_automation.py` (NUEVO, 461 lineas, 17 tests): cubre routing al backend con API Key, headers correctos, fallback local, skip de archivos temporales/ocultos/no soportados por extension, idempotencia de `start()`, cliente inyectado, end-to-end con mock del backend y modo offline con escritura de JSON.
+    - `docs/01-product/03-roadmap.md`: items de P4a (hot-folder y SettingsView) y P4b (orquestacion final) marcados como completados.
+    - `docs/01-product/04-proyecto4-alineacion-tarea.md`: brechas de P4a y P4b actualizadas a estado completado.
+    - `docs/08-operations/02-trabajo-equipo-proyecto4.md`: estado de Beatriz (P4a) y Hector (P4b) actualizados a COMPLETADO.
+  - **Por que:** Completar el vertical end-to-end del Proyecto 4: el agente de escritorio ahora alimenta automaticamente la base de datos del backend al detectar nuevos comprobantes en la carpeta monitorizada, disparando el pipeline de extraccion, validacion matematica, Sentinel y reglas/webhooks. Sin API Key el sistema cae a modo offline garantizando operacion en entornos sin backend.
+  - **Resultado:** Suite completa 17/17 tests en verde. Vertical completo integrado y verificado.
+  - **Archivos:** `desktop/ui/settings_view.py`, `desktop/services/tray_agent.py`, `tests/test_desktop_automation.py`, `docs/01-product/03-roadmap.md`, `docs/01-product/04-proyecto4-alineacion-tarea.md`, `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `CHANGELOG.md`.
+
+---
+
 ### [2026-08-18 15:49] (America/Bogota)
 
 - **[Docs & Tooling / Web Frontend Architecture Transition]** Actualizacion del instalador automatico y sincronizacion de toda la documentacion enfatizando la arquitectura Web Frontend (Next.js 14+)

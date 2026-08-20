@@ -60,8 +60,8 @@ Este documento define el estado de avance, los componentes completados y las fas
 - [x] Instalador automatizado multiplataforma sin dependencias externas (`install.py` con soporte Windows/Linux/macOS y smoke tests).
 - [x] Lanzador unificado multiplataforma (`start.py`, `start.ps1`, `start.sh`) con autodetección de puertos y apagado coordinado.
 - [x] Agente de monitorización de carpetas en segundo plano (`HotFolderWatcher` con `watchdog`).
-- [ ] Conexión del `HotFolderWatcher` al backend vía `POST /documents/upload` con API Key (Beatriz - Tarea P4a).
-- [ ] Pantalla de configuración del agente (`desktop/ui/settings_view.py` - Beatriz - Tarea P4a).
+- [x] Conexión del `HotFolderWatcher` al backend vía `POST /documents/upload` con API Key (Beatriz - Tarea P4a).
+- [x] Pantalla de configuración del agente (`desktop/ui/settings_view.py` - Beatriz - Tarea P4a).
 - [ ] Empaquetador ejecutable standalone con Nuitka/PyInstaller y edición portable para memorias USB.
 
 ### 📌 Fase 9: Visión Artificial Local, OCR & Códigos 1D/2D
@@ -83,7 +83,7 @@ Este documento define el estado de avance, los componentes completados y las fas
 - [x] **Parser Bancario Norma 43 (`Norma43Parser`)**: Extracción estructurada de extractos bancarios españoles.
 - [x] **Desagregador de Nóminas (`PayrollSplitter`)**: Segmentación de PDFs masivos de nóminas por empleado.
 - [x] **Persistencia en Base de Datos**: Modelos `DocumentCheck`, `EntityRecord`, `InvoiceFingerprint` y migración Alembic (Luis - P1/P2).
-- [ ] Orquestación final del vertical completo y consolidación de contratos (Hector - Tarea P4b).
+- [x] Orquestación final del vertical completo y consolidación de contratos (Hector - Tarea P4b).
 
 ### 📌 Fase 11: Búsqueda Semántica Local & Anonimización PII
 - [x] *PII Redactor*: Anonimizador local de DNI, IBAN, emails y teléfonos antes de exportar o compartir documentos (`PIIRedactor`).
