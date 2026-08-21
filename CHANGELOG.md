@@ -4,6 +4,45 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-20 10:00] (America/Bogota)
+
+- **[Frontend / Token Invalid Fix & Demo Mode]** Corrección del error `Token inválido o expirado` al inspeccionar facturas y implementación de Modo Demo Offline
+  - **Que:**
+    - `frontend/src/lib/api.ts`: implementación del sistema de modo demo (`isDemoMode`, `setDemoMode`) que utiliza datos mock locales en lugar de llamar al backend. Cuando se activa, `listDocuments()` y `getDocument(id)` retornan datos de ejemplo desde `src/lib/mock-data.ts`. Se agregó la función `reviewDocument()` para el botón de aprobación. Auto-limpieza de tokens inválidos/expirados del `localStorage` al recibir respuesta 401.
+    - `frontend/src/lib/mock-data.ts` (NUEVO): 3 documentos de factura completos con datos realistas (AceroCorp, TechParts, LogiTrans) incluyendo emisor, receptor, items, checks Sentinel y validaciones matemáticas para pruebas offline.
+    - `frontend/src/lib/types.ts`: agregadas las interfaces `InvoiceItem`, `StructuredInvoice`, `CheckResult`, `ExtractionInfo` y `DocumentDetail` para soportar la página de inspección de facturas.
+    - `frontend/src/app/review/[id]/page.tsx`: manejo de errores con estado `error` y pantalla amigable que ofrece botones "Iniciar Sesión" y "Modo Demo Offline" cuando falla la carga del documento por token inválido o ausente.
+    - `frontend/src/app/login/page.tsx`: corregido `api.setDemoMode(true)` (antes llamaba a función inexistente).
+  - **Por que:** El error `Token inválido o expirado` ocurría porque el backend requiere JWT Bearer token en todos los endpoints y el frontend no manejaba el caso de autenticación faltante o expirada. Ahora al navegar a `/review/[id]` sin token, se muestra una pantalla clara con opciones de inicio de sesión o modo demo, en lugar de un error en consola que rompe la interfaz.
+  - **Resultado:** Navegación fluida entre páginas. Modo demo funcional con datos de ejemplo. Errores de autenticación manejados graceful.
+  - **Archivos:** `frontend/src/lib/api.ts`, `frontend/src/lib/mock-data.ts`, `frontend/src/lib/types.ts`, `frontend/src/app/review/[id]/page.tsx`, `frontend/src/app/login/page.tsx`, `README.md`, `CHANGELOG.md`.
+
+### [2026-08-20 09:30] (America/Bogota)
+
+- **[Frontend / TypeError Fix]** Corrección del error `TypeError: Cannot read properties of undefined (reading 'length')` al cargar el dashboard
+  - **Que:**
+    - `frontend/src/lib/types.ts` (NUEVO): archivo de tipos TypeScript con las interfaces `CheckSummary`, `DocumentItem`, `Organization` y `UserProfile` que faltaban y causaban fallos silenciosos en los componentes.
+    - `frontend/src/lib/api.ts` (REESCRITO): centralizacion completo del cliente API con las funciones `getProfile`, `listDocuments`, `getDocument`, `uploadDocument`, `getOrganization`, `setOrganization`, `login`, `register` y `logout`. Anteriormente solo existia una funcion `getProfile` incompleta.
+    - `frontend/src/app/page.tsx`: adicion de manejo de errores en `fetchDocuments` para evitar el crash cuando la API retorna `undefined` (por error de red o autenticacion). Ahora usa `setDocuments(data || [])` y captura excepciones devolviendo arreglo vacio.
+    - `frontend/src/components/Header.tsx`: validacion robusta en `getProfile()` para verificar que la respuesta tenga `profile.user` y `Array.isArray(profile.organizations)` antes de asignar el estado, evitando el crash cuando el backend devuelve 401.
+    - `frontend/src/components/FileUploadModal.tsx`: correccion del nombre de funcion de `api.uploadFile(file)` a `api.uploadDocument(file)` para coincidir con la implementacion real.
+  - **Por que:** El error ocurria porque `api.listDocuments()` no estaba definida y retornaba `undefined`. Al acceder a `.length` en `page.tsx` linea 36 (`const total = documents.length`) se lanzaba la excepcion. Ademas, `types.ts` no existia, generando errores de compilacion silenciosos, y `Header.tsx` no validaba la respuesta de `getProfile()` antes de acceder a `profile.organizations.length`.
+  - **Resultado:** El frontend carga correctamente mostrando el dashboard con KPIs en 0 y la tabla de documentos vacia (sin errores en consola).
+  - **Archivos:** `frontend/src/lib/types.ts`, `frontend/src/lib/api.ts`, `frontend/src/app/page.tsx`, `frontend/src/components/Header.tsx`, `frontend/src/components/FileUploadModal.tsx`, `README.md`, `CHANGELOG.md`.
+
+### [2026-08-20 07:15] (America/Bogota)
+
+- **[Desktop / P4 — Automatizacion Hot-Folder e Integracion Final]** Implementacion completa de la fase de automatizacion del agente de bandeja y cierre del vertical de facturas y comprobantes
+  - **Que:**
+    - `desktop/ui/settings_view.py` (NUEVO): pantalla de configuracion del agente Hot-Folder con campos de API Key (toggle mostrar/ocultar), Organization ID, URL del backend, carpetas de entrada/salida con selector de directorio, botones iniciar/parar el agente, registro de actividad con timestamps y senal `agent_status_changed`.
+    - `desktop/services/tray_agent.py` (REESCRITO): `HotFolderHandler._process_file` bifurca entre `_process_via_backend` (cuando `client.api_key` esta configurado — envia a `POST /api/v1/documents/upload` con headers `X-API-Key` y `X-Organization-Id`) y `_process_locally` (modo offline sin API Key — escribe JSON en `output_dir`). `HotFolderWatcher` acepta cliente inyectable. Manejo explicito de `FlowMindApiError` con reporte en el callback `on_processed`.
+    - `tests/test_desktop_automation.py` (NUEVO, 461 lineas, 17 tests): cubre routing al backend con API Key, headers correctos, fallback local, skip de archivos temporales/ocultos/no soportados por extension, idempotencia de `start()`, cliente inyectado, end-to-end con mock del backend y modo offline con escritura de JSON.
+    - `docs/01-product/03-roadmap.md`: items de P4a (hot-folder y SettingsView) y P4b (orquestacion final) marcados como completados.
+    - `docs/01-product/04-proyecto4-alineacion-tarea.md`: brechas de P4a y P4b actualizadas a estado completado.
+    - `docs/08-operations/02-trabajo-equipo-proyecto4.md`: estado de Beatriz (P4a) y Hector (P4b) actualizados a COMPLETADO.
+  - **Por que:** Completar el vertical end-to-end del Proyecto 4: el agente de escritorio ahora alimenta automaticamente la base de datos del backend al detectar nuevos comprobantes en la carpeta monitorizada, disparando el pipeline de extraccion, validacion matematica, Sentinel y reglas/webhooks. Sin API Key el sistema cae a modo offline garantizando operacion en entornos sin backend.
+  - **Resultado:** Suite completa 17/17 tests en verde. Vertical completo integrado y verificado.
+  - **Archivos:** `desktop/ui/settings_view.py`, `desktop/services/tray_agent.py`, `tests/test_desktop_automation.py`, `docs/01-product/03-roadmap.md`, `docs/01-product/04-proyecto4-alineacion-tarea.md`, `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `CHANGELOG.md`.
 ### [2026-08-20 08:16] (America/Bogota)
 
 - **[Backend / Invoice Validation & Review API (P1 + P2)]** Implementacion integral del dominio de factura estructurada, pipeline determinista de auditoria y endpoints de revision visual

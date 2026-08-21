@@ -15,10 +15,16 @@ export default function Header({ onOpenUpload }: HeaderProps) {
   const [selectedOrg, setSelectedOrg] = useState<string>('default-org');
 
   useEffect(() => {
-    api.getProfile().then((p) => {
-      setProfile(p);
-      setSelectedOrg(api.getOrganization());
-    });
+    api.getProfile()
+      .then((p) => {
+        if (p && p.user && Array.isArray(p.organizations)) {
+          setProfile(p);
+        }
+        setSelectedOrg(api.getOrganization());
+      })
+      .catch(() => {
+        setProfile(null);
+      });
   }, []);
 
   const handleOrgChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

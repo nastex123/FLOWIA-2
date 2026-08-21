@@ -53,7 +53,7 @@ export default function FileUploadModal({
     setLoading(true);
     setError(null);
     try {
-      await api.uploadFile(file);
+      await api.uploadDocument(file);
       onUploaded();
       onClose();
       setFile(null);

@@ -23,7 +23,9 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const data = await api.listDocuments();
-      setDocuments(data);
+      setDocuments(data || []);
+    } catch {
+      setDocuments([]);
     } finally {
       setLoading(false);
     }

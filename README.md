@@ -246,7 +246,42 @@ Esto levantará los siguientes servicios:
 
 ---
 
-## 🔑 Credenciales y Acceso por Defecto
+## Resolucion de Problemas
+
+### TypeError: Cannot read properties of undefined (reading 'length')
+
+Si el frontend muestra este error en consola o pantalla blanc al cargar `http://localhost:3000`, las causas mas comunes son:
+
+1. **Falta el archivo de tipos TypeScript (`src/lib/types.ts`):** Sin este archivo, los componentes que importan `DocumentItem` o `UserProfile` fallan silenciosamente. Asegurate de que exista en `frontend/src/lib/types.ts` con las interfaces `CheckSummary`, `DocumentItem`, `Organization` y `UserProfile`.
+
+2. **Falta la funcion `listDocuments` en el cliente API (`src/lib/api.ts`):** Si `api.listDocuments` no esta definida, retorna `undefined`, y al intentar acceder a `.length` en `page.tsx` se produce el error. Verifica que `api.ts` exporte todas las funciones necesarias: `getProfile`, `listDocuments`, `getDocument`, `uploadDocument`, `getOrganization`, `setOrganization`, `login`, `register`, `logout`.
+
+3. **Nombre incorrecto de funcion en modales de subida:** El componente `FileUploadModal.tsx` debe llamar a `api.uploadDocument(file)`, no a `api.uploadFile(file)`.
+
+4. **Respuesta del backend sin validar en `Header.tsx`:** Si `getProfile()` devuelve una respuesta de error (ej. 401 por falta de token), `profile.organizations` puede ser `undefined`. La validacion debe verificar que `profile.user` y `Array.isArray(profile.organizations)` sean truthy antes de asignar el estado.
+
+5. **Proceso zombie ocupando el puerto 3000:** Un servidor Next.js anterior puede haber quedado colgado. Verifica con `ss -tlnp | grep 3000` y, si hay un proceso sin responder, eliminalo con `pkill -f "next-server"` antes de reiniciar.
+
+### Arquitectura del Cliente API Frontend
+
+El frontend utiliza un cliente API centralizado en `frontend/src/lib/api.ts` con las siguientes caracteristicas:
+
+- **Proxy de rewrites:** `next.config.mjs` redirige todas las peticiones `/api/v1/*` al backend FastAPI en `http://127.0.0.1:8000`, evitando problemas de CORS.
+- **Autenticacion por JWT:** El token se almacena en `localStorage` bajo la clave `flowmind_token` y se envia como `Authorization: Bearer *** en cada peticion JSON.
+- **Fallback seguro:** `listDocuments()` y `getProfile()` incluyen manejo de errores que devuelven arreglos vacios o `null` en lugar de propagar excepciones al renderizado.
+- **Modo Demo (Cripta Offline):** El boton "Ingresar en Modo Cripta Offline" en la pagina de login activa un modo de demostracion que utiliza datos mock locales (`src/lib/mock-data.ts`) en lugar de llamar al backend. Esto permite probar el frontend sin configurar autenticacion ni tener el backend corriendo. Los datos mock incluyen 3 documentos de factura con toda la estructura completa (emisor, receptor, items, checks Sentinel, validaciones matematicas).
+
+### Error: Token invalido o expirado
+
+Si al navegar a `/review/[id]` o cualquier pagina que llama a la API aparece `Error: Token invalido o expirado`, significa que:
+
+1. **No has iniciado sesion:** El backend requiere autenticacion JWT en todos los endpoints excepto `/health`. Ve a `/login` e inicia sesion con `admin@flowmind.local` / `admin123`.
+2. **El token expiro:** El token JWT tiene un tiempo de expiracion configurado en `JWT_EXPIRES_MINUTES` (por defecto 60 minutos). Cierra sesion y vuelve a iniciar.
+3. **Usa el modo demo:** Si solo quieres explorar la interfaz sin configurar el backend, haz clic en "Ingresar en Modo Cripta Offline" en la pagina de login. Esto activa datos de ejemplo locales sin necesidad de autenticacion.
+
+---
+
+## Credenciales y Acceso por Defecto
 
 Al iniciar el backend por primera vez en modo local, se inicializa automáticamente la base de datos con un usuario administrador predeterminado:
 
