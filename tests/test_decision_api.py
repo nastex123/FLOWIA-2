@@ -1,7 +1,10 @@
-"""Integration tests for the Decision Engine REST API."""
+"""Integration tests for the Decision Engine REST API with database-backed persistence."""
 
+from datetime import datetime
 import pytest
 from httpx import AsyncClient
+from app.infrastructure.database import async_session_factory
+from app.infrastructure.models import EntityRecord, InvoiceFingerprint
 
 
 @pytest.mark.asyncio
@@ -34,6 +37,20 @@ async def test_api_validate_math_endpoint(auth_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_api_resolve_entity_endpoint(auth_client: AsyncClient):
+    # Seed known entity into database for default-org
+    async with async_session_factory() as session:
+        ent = EntityRecord(
+            organization_id="default-org",
+            entity_id="ent-001",
+            name="Suministros Industriales Iberica S.L.",
+            tax_id="ESB12345678",
+            ibans_json=["ES9121000418450200051332"],
+            email_domain="suministros.es",
+            phone="+34912345678",
+        )
+        session.add(ent)
+        await session.commit()
+
     payload = {
         "name": "Suministros Industriales Iberica",
         "tax_id": "ESB12345678",
@@ -54,6 +71,27 @@ async def test_api_resolve_entity_endpoint(auth_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_api_sentinel_audit_endpoint(auth_client: AsyncClient):
+    # Seed historical invoice fingerprint in database
+    async with async_session_factory() as session:
+        fp = InvoiceFingerprint(
+            organization_id="default-org",
+            document_id="doc-hist-001",
+            fingerprint="test-fp-1",
+            vendor_tax_id="ESB12345678",
+            invoice_number="F-2024-001",
+            invoice_date=datetime(2024, 5, 10),
+            total_amount=1500.00,
+        )
+        ent = EntityRecord(
+            organization_id="default-org",
+            entity_id="ent-001",
+            name="Suministros Industriales",
+            tax_id="ESB12345678",
+            ibans_json=["ES9121000418450200051332"],
+        )
+        session.add_all([fp, ent])
+        await session.commit()
+
     payload = {
         "document_id": "doc-test-123",
         "vendor_tax_id": "ESB12345678",

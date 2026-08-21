@@ -21,14 +21,12 @@ from app.infrastructure.database import Base, engine, init_db
 from app.core.config import settings
 
 
-@pytest.fixture(autouse=True)
-def clean_db():
+@pytest_asyncio.fixture(autouse=True)
+async def clean_db():
     """Ensures each test starts with a clean isolated database state with standard presets."""
-    async def _reset():
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await init_db()
-    asyncio.run(_reset())
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await init_db()
     yield
 
 

@@ -1,6 +1,11 @@
-"""FlowMind AI Backend - FastAPI Application with local SQLite persistence and async pipeline."""
-
+import sys
+from pathlib import Path
 from contextlib import asynccontextmanager
+
+# Ensure backend directory is present in sys.path for direct module execution
+_backend_dir = str(Path(__file__).resolve().parent.parent)
+if _backend_dir not in sys.path:
+    sys.path.insert(0, _backend_dir)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

@@ -43,6 +43,21 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
   - **Por que:** Completar el vertical end-to-end del Proyecto 4: el agente de escritorio ahora alimenta automaticamente la base de datos del backend al detectar nuevos comprobantes en la carpeta monitorizada, disparando el pipeline de extraccion, validacion matematica, Sentinel y reglas/webhooks. Sin API Key el sistema cae a modo offline garantizando operacion en entornos sin backend.
   - **Resultado:** Suite completa 17/17 tests en verde. Vertical completo integrado y verificado.
   - **Archivos:** `desktop/ui/settings_view.py`, `desktop/services/tray_agent.py`, `tests/test_desktop_automation.py`, `docs/01-product/03-roadmap.md`, `docs/01-product/04-proyecto4-alineacion-tarea.md`, `docs/08-operations/02-trabajo-equipo-proyecto4.md`, `CHANGELOG.md`.
+### [2026-08-20 08:16] (America/Bogota)
+
+- **[Backend / Invoice Validation & Review API (P1 + P2)]** Implementacion integral del dominio de factura estructurada, pipeline determinista de auditoria y endpoints de revision visual
+  - **Qué:** 
+    - `backend/app/domain/invoice_models.py`: modelos de dominio Pydantic v2 `InvoiceLineItem`, `TaxBreakdownItem`, `StructuredInvoice` y `DocumentCheckDTO`.
+    - `backend/app/services/invoice/structurizer.py`: motor `InvoiceStructurizer` con mapeo difuso de columnas (`rapidfuzz`), normalizacion de importes/fechas, extraccion de lineas de items y calculo de desglose de IVA por tramos.
+    - `backend/app/infrastructure/models.py`: incorporacion de los modelos ORM `DocumentCheck`, `EntityRecord`, `InvoiceFingerprint`, ampliacion de `Document` (`review_status`, `reviewed_at`, `reviewed_by`, relaciones) y `ExtractionRecord.structured_json`.
+    - `backend/alembic/versions/2fa027476344_feat_invoice_validation_and_review.py`: migracion de base de datos compatible con PostgreSQL y SQLite batch.
+    - `backend/app/services/pipeline.py`: orquestacion del pipeline para facturas conectando estructurador, validador matematico, Sentinel (duplicidad y cambio de IBAN) y resolucion de entidades, persistiendo checks y huellas.
+    - `backend/app/api/routers/documents.py`: enriquecimiento de `GET /documents` con `check_summary` y `review_status`; enriquecimiento de `GET /documents/{id}` con `structured_invoice` y lista de checks; nuevo endpoint `POST /documents/{id}/review` para aprobacion y transicion de checks a `acknowledged`.
+    - `backend/app/api/routers/decision.py`: nuevo endpoint `GET /decision/checks` con filtros y paginacion; eliminacion de datos simulados/mocks y conexion a la base de datos real con filtrado multi-tenant estricto.
+    - `tests/`: creacion de `test_invoice_structurizer.py`, `test_invoice_pipeline.py`, `test_invoice_review_api.py` y adaptacion de `test_decision_api.py` (98 tests pasando en verde).
+    - `docs/`: actualizacion de `docs/04-engineering/01-api-reference.md`, `docs/04-engineering/02-database.md` y `docs/08-operations/02-trabajo-equipo-proyecto4.md`.
+  - **Por qué:** Completar la totalidad de las tareas asignadas a Luis (P1 + P2) para habilitar la revision de facturas en la app de escritorio y la ingesta automatizada.
+  - **Archivos:** `backend/app/domain/invoice_models.py`, `backend/app/services/invoice/__init__.py`, `backend/app/services/invoice/structurizer.py`, `backend/app/infrastructure/models.py`, `backend/alembic/versions/2fa027476344_feat_invoice_validation_and_review.py`, `backend/app/services/pipeline.py`, `backend/app/api/routers/documents.py`, `backend/app/api/routers/decision.py`, `tests/test_invoice_structurizer.py`, `tests/test_invoice_pipeline.py`, `tests/test_invoice_review_api.py`, `tests/test_decision_api.py`, `docs/04-engineering/01-api-reference.md`, `docs/04-engineering/02-database.md`, `CHANGELOG.md`.
 
 ---
 
