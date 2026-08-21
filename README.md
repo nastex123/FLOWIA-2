@@ -369,6 +369,10 @@ Para profundizar en el diseño y arquitectura del sistema, consulta la documenta
   * [`docs/04-engineering/02-database.md`](docs/04-engineering/02-database.md) — Base de datos asíncrona y migraciones.
   * [`docs/04-engineering/03-advanced-engines.md`](docs/04-engineering/03-advanced-engines.md) — Conciliación a 3 vías, Norma 43, Barcode/QR, OMR y Nóminas.
 * **05 — Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Machine Learning local y TF-IDF sin LLMs externos.
+
+* https://github.com/nastex123/FLOWIA-2.git
 * **06 — Seguridad & Cumplimiento:** [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Seguridad, RBAC y aislamiento multi-tenant.
 * **09 — Decisiones Arquitectónicas (ADR):** [`docs/09-decisions/ADR-003-desktop-first-ui.md`](docs/09-decisions/ADR-003-desktop-first-ui.md) — Adopción de PySide6 como interfaz única y retiro del frontend web.— Inteligencia Artificial Local:** [`docs/05-ai/01-local-ai-architecture.md`](docs/05-ai/01-local-ai-architecture.md) — Machine Learning local y TF-IDF sin LLMs externos.
 * **06 — Seguridad & Cumplimiento:** [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Seguridad, RBAC y aislamiento multi-tenant.
+
+https://github.com/nastex123/FLOWIA-2.git
