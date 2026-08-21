@@ -376,3 +376,5 @@ Para profundizar en el diseño y arquitectura del sistema, consulta la documenta
 * **06 — Seguridad & Cumplimiento:** [`docs/06-security/01-security-and-privacy.md`](docs/06-security/01-security-and-privacy.md) — Seguridad, RBAC y aislamiento multi-tenant.
 
 https://github.com/nastex123/FLOWIA-2.git
+
+Colaboradores: Luis Guerrero, Hector el father, Beatriz, Brandon.
