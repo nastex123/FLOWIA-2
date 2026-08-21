@@ -101,3 +101,5 @@ hot_folder/
 *.joblib
 *.pkl
 models_cache/
+mock_output/
+*.zip

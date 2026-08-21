@@ -4,6 +4,25 @@ Todas las modificaciones notables realizadas en el proyecto FlowMind AI se docum
 
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+### [2026-08-20 23:15] (America/Bogota)
+
+- **[Operations / Technical Pitch Guide]** Creación del documento de pitch técnico y guion de defensa para el equipo de 4 personas (Proyecto 4)
+  - **Que:**
+    - `PITCH_TECNICO.md` y `docs/08-operations/03-pitch-tecnico-proyecto4.md` (NUEVOS): estructuración completa del pitch técnico para el jurado/mentor con roles asignados (Hector, Luis, Brandon, Beatriz), guion de 5-6 minutos por bloques con tiempos exactos, matriz de defensa técnica y preguntas difíciles (Q&A), checklist de demostración en vivo y justificación arquitectónica 100% local.
+  - **Por que:** Facilitar la sustentación ejecutiva y técnica de FlowMind AI ante el jurado/mentor, evidenciando el cumplimiento de los 5 entregables gerenciales del sprint.
+  - **Resultado:** Documento de pitch técnico consolidado y sincronizado.
+  - **Archivos:** `PITCH_TECNICO.md`, `docs/08-operations/03-pitch-tecnico-proyecto4.md`, `CHANGELOG.md`.
+
+### [2026-08-20 23:05] (America/Bogota)
+
+- **[Tooling / Enhanced Cross-Platform Installer & Stack Alignment]** Actualización de `install.py` con todas las dependencias requeridas, soporte nativo Windows/Linux y remoción de `PySide6`
+  - **Que:**
+    - `install.py` (ACTUALIZADO): instalación automatizada de dependencias backend y de procesamiento desde `requirements.txt` y `flowmind-backend[dev]`, ejecución automática de migraciones Alembic (`alembic upgrade head`), instalación de paquetes npm para Next.js 14+ App Router en `frontend/`, verificación de Node.js/npm, flags `--skip-migrations`, `--skip-frontend`, `--skip-smoke-test`, y eliminación de `PySide6` del smoke test y banners.
+    - `requirements.txt` y `backend/pyproject.toml`: remoción de la dependencia `PySide6` al alinearse con la arquitectura oficial basada en frontend web Next.js.
+  - **Por que:** La interfaz gráfica oficial del producto opera mediante el frontend web Next.js 14+ (App Router con Tailwind CSS), prescindiendo de la biblioteca de interfaz de escritorio PySide6 para optimizar los tiempos de instalación, peso del entorno y compatibilidad multiplataforma.
+  - **Resultado:** Instalador determinista de 7 pasos con verificación completa en verde para Windows y Linux.
+  - **Archivos:** `install.py`, `requirements.txt`, `backend/pyproject.toml`, `CHANGELOG.md`.
+
 ### [2026-08-20 10:00] (America/Bogota)
 
 - **[Frontend / Token Invalid Fix & Demo Mode]** Corrección del error `Token inválido o expirado` al inspeccionar facturas y implementación de Modo Demo Offline

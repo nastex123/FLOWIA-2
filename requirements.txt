@@ -35,9 +35,6 @@ pytesseract>=0.3.10
 networkx>=3.2.1
 watchdog>=4.0.0
 
-# Desktop Application (PySide6 / Qt)
-PySide6>=6.7.0
-
 # Testing & QA
 pytest>=8.1.0
 pytest-asyncio>=0.23.5
