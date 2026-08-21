@@ -28,13 +28,20 @@ from app.domain.schema_models import (
     NormalizeRequest,
 )
 from app.domain.schemas import ExtractionResult
+from datetime import datetime, timezone
+from pydantic import BaseModel
 from app.infrastructure.database import get_db
 from app.infrastructure.models import (
     Document,
+    DocumentCheck,
     DocumentStatus,
     Organization,
     SchemaDefinition,
 )
+
+
+class ReviewDocumentRequest(BaseModel):
+    note: Optional[str] = None
 from app.services.automation.runner import run_automation_for_document
 from app.services.extractors.pdf_extractor import PDFExtractor
 from app.services.extractors.tabular_extractor import TabularExtractor
@@ -142,10 +149,13 @@ async def get_document_details(
     auth: AuthContext = Depends(resolve_auth),
     db: AsyncSession = Depends(get_db),
 ):
-    """Retrieves document processing status and extracted structured data."""
+    """Retrieves document processing status, structured invoice data, and validation checks."""
     stmt = (
         select(Document)
-        .options(selectinload(Document.extraction_record))
+        .options(
+            selectinload(Document.extraction_record),
+            selectinload(Document.checks),
+        )
         .where(
             Document.id == document_id,
             Document.organization_id == auth.org_id,
@@ -166,9 +176,14 @@ async def get_document_details(
         "filename": doc.filename,
         "file_size_bytes": doc.file_size_bytes,
         "status": doc.status.value,
+        "review_status": getattr(doc, "review_status", "unreviewed") or "unreviewed",
+        "reviewed_at": doc.reviewed_at.isoformat() if doc.reviewed_at else None,
+        "reviewed_by": doc.reviewed_by,
         "created_at": doc.created_at.isoformat(),
         "error_message": doc.error_message,
         "extraction": None,
+        "structured_invoice": None,
+        "checks": [],
     }
 
     if doc.extraction_record:
@@ -181,6 +196,22 @@ async def get_document_details(
             "summary": rec.raw_summary,
             "processing_time_ms": rec.processing_time_ms,
         }
+        response["structured_invoice"] = rec.structured_json
+
+    if doc.checks:
+        response["checks"] = [
+            {
+                "id": c.id,
+                "document_id": c.document_id,
+                "check_type": c.check_type,
+                "severity": c.severity,
+                "status": c.status,
+                "title": c.title,
+                "detail_json": c.detail_json,
+                "created_at": c.created_at.isoformat(),
+            }
+            for c in doc.checks
+        ]
 
     return response
 
@@ -192,25 +223,85 @@ async def list_documents(
     auth: AuthContext = Depends(resolve_auth),
     db: AsyncSession = Depends(get_db),
 ):
-    """Lists all uploaded documents for the requesting organization."""
+    """Lists all uploaded documents for the requesting organization with check summaries."""
     stmt = (
         select(Document)
+        .options(selectinload(Document.checks))
         .where(Document.organization_id == auth.org_id)
         .order_by(Document.created_at.desc())
     )
     result = await db.execute(stmt)
     docs = result.scalars().all()
 
-    return [
-        {
+    items = []
+    for d in docs:
+        summary = {"ok": 0, "warning": 0, "critical": 0, "info": 0}
+        for chk in (d.checks or []):
+            sev = (chk.severity or "ok").lower()
+            if sev in summary:
+                summary[sev] += 1
+        items.append({
             "document_id": d.id,
+            "organization_id": d.organization_id,
             "filename": d.filename,
             "file_size_bytes": d.file_size_bytes,
             "status": d.status.value,
+            "review_status": getattr(d, "review_status", "unreviewed") or "unreviewed",
+            "check_summary": summary,
             "created_at": d.created_at.isoformat(),
-        }
-        for d in docs
-    ]
+        })
+    return items
+
+
+@router.post(
+    "/documents/{document_id}/review",
+    status_code=status.HTTP_200_OK,
+)
+async def review_document(
+    document_id: str,
+    payload: Optional[ReviewDocumentRequest] = None,
+    auth: AuthContext = Depends(resolve_auth),
+    db: AsyncSession = Depends(get_db),
+):
+    """Marks an invoice document as reviewed by the financial team and acknowledges all checks."""
+    stmt = (
+        select(Document)
+        .options(selectinload(Document.checks))
+        .where(
+            Document.id == document_id,
+            Document.organization_id == auth.org_id,
+        )
+    )
+    result = await db.execute(stmt)
+    doc = result.scalar_one_or_none()
+
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Document '{document_id}' not found.",
+        )
+
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    user_id = auth.user.id if auth.user else None
+    doc.review_status = "reviewed"
+    doc.reviewed_at = now
+    doc.reviewed_by = user_id
+
+    acknowledged_count = 0
+    for chk in (doc.checks or []):
+        chk.status = "acknowledged"
+        acknowledged_count += 1
+
+    await db.commit()
+
+    return {
+        "status": "reviewed",
+        "document_id": doc.id,
+        "reviewed_at": now.isoformat(),
+        "reviewed_by": doc.reviewed_by,
+        "acknowledged_checks_count": acknowledged_count,
+        "note": payload.note if payload else None,
+    }
 
 
 @router.post(

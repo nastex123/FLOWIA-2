@@ -15,7 +15,8 @@ backend/
     ├── env.py                  # Entorno asíncrono (importa modelos, target_metadata)
     ├── script.py.mako          # Plantilla para nuevas revisiones
     └── versions/               # Revisiones de migración
-        └── 3bfc3f0c7da4_initial_schema.py
+        ├── 3bfc3f0c7da4_initial_schema.py
+        └── 2fa027476344_feat_invoice_validation_and_review.py
 ```
 
 ---
@@ -45,8 +46,11 @@ python -m alembic downgrade -1
 
 1. **`organizations`**: Tenants del sistema (`id`, `name`, `created_at`).
 2. **`users`**: Usuarios y credenciales hasheadas con PBKDF2 (`email`, `hashed_password`, `role`).
-3. **`documents`**: Documentos subidos y su estado de procesamiento (`filename`, `status`, `organization_id`).
-4. **`extraction_records`**: Datos normalizados y estructurados extraídos por documento (`fields_json`, `tables_json`).
-5. **`schema_definitions`**: Plantillas canónicas de datos (`fields_schema_json`).
-6. **`automation_rules`**: Reglas deterministas de negocio disparadas por eventos (`event`, `operator`, `value`).
-7. **`webhook_configs`** & **`webhook_deliveries`**: Integraciones salientes y auditoría de entregas.
+3. **`documents`**: Documentos subidos y su estado de procesamiento y revisión (`filename`, `status`, `review_status`, `reviewed_at`, `reviewed_by`, `organization_id`).
+4. **`extraction_records`**: Datos normalizados y estructurados extraídos por documento (`fields_json`, `tables_json`, `structured_json`).
+5. **`document_checks`**: Hallazgos de auditoría determinista, discrepancias matemáticas, duplicidad y alertas Sentinel (`check_type`, `severity`, `status`, `title`, `detail_json`).
+6. **`entity_records`**: Registro canónico de proveedores y clientes con historial de IBANs validados (`entity_id`, `name`, `tax_id`, `ibans_json`, `email_domain`, `phone`).
+7. **`invoice_fingerprints`**: Huellas criptográficas deterministas únicas por tenant para deduplicación exacta (`fingerprint`, `vendor_tax_id`, `invoice_number`, `invoice_date`, `total_amount`).
+8. **`schema_definitions`**: Plantillas canónicas de datos (`fields_config_json`).
+9. **`automation_rules`**: Reglas deterministas de negocio disparadas por eventos (`event`, `operator`, `value`).
+10. **`webhook_configs`** & **`webhook_deliveries`**: Integraciones salientes y auditoría de entregas.

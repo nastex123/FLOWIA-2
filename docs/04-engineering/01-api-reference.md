@@ -116,7 +116,7 @@ Sube un archivo Excel, CSV o PDF e inicia el procesamiento en segundo plano.
   ```
 
 ### `GET /api/v1/documents/{document_id}`
-Obtiene el estado de procesamiento y los datos extraídos (campos normalizados y tablas).
+Obtiene el estado de procesamiento, datos extraídos, factura estructurada canónica y hallazgos de auditoría/checks.
 
 * **Respuesta 200 OK:**
   ```json
@@ -126,34 +126,82 @@ Obtiene el estado de procesamiento y los datos extraídos (campos normalizados y
     "filename": "factura_suministros_2024.xlsx",
     "file_size_bytes": 6230,
     "status": "completed",
+    "review_status": "unreviewed",
+    "reviewed_at": null,
+    "reviewed_by": null,
     "created_at": "2026-08-15T21:00:00.000000",
     "error_message": null,
     "extraction": {
       "document_type": "invoice",
       "confidence": 0.95,
-      "fields": {
-        "invoice_number": {
-          "key": "invoice_number",
-          "value": "F-2024-0982",
-          "confidence": 0.95,
-          "extractor_type": "rule_regex"
-        }
-      },
-      "tables": [
-        {
-          "sheet_or_page": "Factura F-2024-0982",
-          "headers": ["Referencia", "Descripción de Producto", "Cantidad", "Precio Unitario (€)", "Importe (€)"],
-          "rows_count": 5,
-          "records": []
-        }
-      ],
+      "fields": { "invoice_number": { "value": "F-2024-0982" } },
+      "tables": [],
       "processing_time_ms": 42.5
-    }
+    },
+    "structured_invoice": {
+      "document_id": "8f8b8946-b6b8-4775-9b2f-981881775791",
+      "invoice_number": "F-2024-0982",
+      "vendor_name": "Suministros Industriales S.L.",
+      "vendor_tax_id": "B12345678",
+      "issue_date": "2024-06-18",
+      "currency": "EUR",
+      "subtotal": 1250.50,
+      "tax_total": 262.61,
+      "total_amount": 1513.11,
+      "items": [
+        { "description": "Material oficina", "quantity": 10, "unit_price": 25.0, "tax_rate_pct": 21.0, "line_total": 250.0 }
+      ],
+      "tax_breakdown": [ { "tax_rate_pct": 21.0, "taxable_base": 1250.50, "tax_quota": 262.61 } ]
+    },
+    "checks": [
+      {
+        "id": "chk-001",
+        "document_id": "8f8b8946-...",
+        "check_type": "math_discrepancy",
+        "severity": "ok",
+        "status": "open",
+        "title": "Recálculo matemático de totales e impuestos correcto",
+        "detail_json": { "deviation": 0.0 },
+        "created_at": "2026-08-15T21:00:01.000000"
+      }
+    ]
   }
   ```
 
 ### `GET /api/v1/documents`
-Lista todos los documentos registrados para la organización autenticada.
+Lista todos los documentos registrados para la organización autenticada, incluyendo el estado de revisión (`review_status`) y el resumen de severidades de checks (`check_summary`).
+
+* **Respuesta 200 OK:**
+  ```json
+  [
+    {
+      "document_id": "8f8b8946-b6b8-4775-9b2f-981881775791",
+      "organization_id": "default-org",
+      "filename": "factura_suministros_2024.xlsx",
+      "file_size_bytes": 6230,
+      "status": "completed",
+      "review_status": "unreviewed",
+      "check_summary": { "ok": 2, "warning": 0, "critical": 0, "info": 1 },
+      "created_at": "2026-08-15T21:00:00.000000"
+    }
+  ]
+  ```
+
+### `POST /api/v1/documents/{document_id}/review`
+Marca una factura como revisada por el equipo financiero y pasa los checks asociados al estado `acknowledged`.
+
+* **Payload JSON:** `{ "note": "Revisado por contabilidad" }`
+* **Respuesta 200 OK:**
+  ```json
+  {
+    "status": "reviewed",
+    "document_id": "8f8b8946-b6b8-4775-9b2f-981881775791",
+    "reviewed_at": "2026-08-15T21:05:00.000000",
+    "reviewed_by": "user-uuid",
+    "acknowledged_checks_count": 3,
+    "note": "Revisado por contabilidad"
+  }
+  ```
 
 ---
 
@@ -323,6 +371,32 @@ Unifica variantes de nombres de clientes o proveedores contra la base histórica
 
 ### `POST /api/v1/decision/sentinel-audit`
 Ejecuta la batería de auditoría continua antifraude de FlowMind Sentinel (cambio de IBAN no autorizado, duplicados multidimensionales y Ley de Benford).
+
+### `GET /api/v1/decision/checks`
+Lista los hallazgos y comprobaciones de validación y auditoría de la organización con filtros y paginación.
+
+* **Query Parameters:** `document_id` (opcional), `severity` (`ok|warning|critical|info`), `status` (`open|acknowledged`), `limit` (1–500, defecto 100), `offset` (defecto 0).
+* **Respuesta 200 OK:**
+  ```json
+  {
+    "items": [
+      {
+        "id": "chk-uuid",
+        "document_id": "doc-uuid",
+        "filename": "factura_proveedor.pdf",
+        "check_type": "math_discrepancy",
+        "severity": "critical",
+        "status": "open",
+        "title": "El total del documento difiere del recálculo en 12.30 €",
+        "detail_json": { "deviation": 12.30 },
+        "created_at": "2026-08-20T07:45:00.000000"
+      }
+    ],
+    "total": 1,
+    "limit": 100,
+    "offset": 0
+  }
+  ```
 
 ---
 
